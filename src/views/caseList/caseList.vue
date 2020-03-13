@@ -1,0 +1,449 @@
+<template>
+    <div class="case-main">
+      <div class="item-left">
+
+      </div>
+      <div class="item-right">
+        <div class="time-box">
+            <img src="@/assets/img/time-icon.png" alt="">
+            <span>{{time}}</span>
+            <span>{{count}}个案件</span>
+        </div>
+        <ul class="case-box">
+            <li v-for="(item,index) in caseList">
+                <img src="@/assets/img/state-3.png" v-if="!item.isOpen" style="float:right;" alt="">
+                <img src="@/assets/img/state-2.png" v-if="item.isOpen" style="float:right;" alt="">
+                <div style="text-align: left;padding: 0px 15px;">
+                    <el-checkbox @change="selectItem($event,item)" v-model="item.isChecked">
+                        <span style="font-size: 20px;font-weight: bold;color: #282828;">
+                            {{item.caseNo}}
+                        </span>
+                    </el-checkbox>
+                </div>
+                <p class="title-box">
+                    <span>开庭时间：{{item.openDate}}</span>
+                    <span>开庭类型：在线庭审</span>
+                    <span>案件类型：民事一审</span>
+                </p>
+                <div class="feature-box">
+                    <div class="feature-content">
+                        <img src="@/assets/img/role-icon1.png" alt="">
+                        <div>
+                            <p style="margin: 0;">法官</p>
+                            <p style="padding: 0;margin: 0;">{{item.judge}}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-content">
+                        <img src="@/assets/img/role-icon2.png" alt="">
+                        <div>
+                            <p style="margin: 0;">书记员</p>
+                            <p style="padding: 0;margin: 0;">{{item.clerk}}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-content">
+                        <img src="@/assets/img/role-icon3.png" alt="">
+                        <div>
+                            <p style="margin: 0;">人民陪审员</p>
+                            <p style="padding: 0;margin: 0;">默认陪审员</p>
+                        </div>
+                    </div>
+                    
+                    <div class="download-box">
+                        <img src="@/assets/img/down-icon.png" alt="">
+                        <span>庭审笔录</span>
+                    </div>
+                    
+                    <div class="download-box">
+                        <img src="@/assets/img/down-icon.png" alt="">
+                        <span>庭审录像</span>
+                    </div>
+                    <div style="width:200px;">
+                        <el-button type="success" size="mini">测试房间</el-button>
+                        <el-button type="primary" size="mini">进入房间</el-button>
+                    </div>
+                    <img style="display: inline-block;
+                    width: 10px;
+                    height: 15px;
+                    margin-top: 5px;
+                    margin-right: 55px;
+                    cursor: pointer;" src="@/assets/img/arrow-down.png" class="icon_arrowDown" :class="{'icon_arrowUp':nowIndex == index && item.isShow,'icon_arrowDown':nowIndex == index && !item.isShow}" @click="item.isShow = !item.isShow;getRecord(item.caseId,item.isShow,index)" alt="">
+                </div>
+                <el-table
+                    :data="tableData"
+                    stripe
+                    style="width: 100%"
+                    v-show="item.isShow && nowIndex == index">
+                    <el-table-column
+                    type="index"
+                    label="序号">
+                    </el-table-column>
+                    <el-table-column
+                    prop="litigant.litigationStatus.name"
+                    label="诉讼地位">
+                    </el-table-column>
+                    <el-table-column
+                    prop="litigant.litigantName"
+                    label="名称">
+                    </el-table-column>
+                    <el-table-column
+                    prop="litigant.identityCard"
+                    label="证件号码"
+                    width="180">
+                    </el-table-column>
+                    <el-table-column
+                    prop="litigant.litigantPhone"
+                    label="手机号码">
+                    </el-table-column>
+                    <el-table-column
+                    label="操作">
+                    <template slot-scope="scope">
+                        <img style="cursor: pointer;" title="发送短信" src="@/assets/img/message-btn.png" @click="sendM(scope.row,item)" alt="">
+                    </template>
+                    </el-table-column>
+                </el-table>
+            </li>
+        </ul>
+        <div class="right-footer">
+            <div style="width: 200px;float: left;">
+                <el-checkbox v-model="allSelect" @change="selectAll($event)">
+                    全选
+                </el-checkbox>
+                <el-badge class="selectedBtn" :value="selectList.length">
+                    <el-button type="primary" @click="dialogFormVisible = true" size="small">已选择的案件</el-button>
+                </el-badge>
+            </div>
+            <el-pagination
+                @current-change="handleCurrentChange"
+                :current-page="currentPage"
+                :page-size="7"
+                layout="total, prev, pager, next, jumper"
+                :total="totalPage">
+            </el-pagination>
+        </div>
+    </div>
+    <el-dialog width="30%" title="已选择案件" :visible.sync="dialogFormVisible">
+        <el-table
+            :data="selectList"
+            stripe
+            >
+            <el-table-column
+            prop="caseNo"
+            label="案号">
+            </el-table-column>
+            <el-table-column
+            label="操作">
+            <template slot-scope="scope">
+                <el-button @click="handleClick(scope.row)" type="text" size="small">删除</el-button>
+              </template>
+            </el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="warning" @click="empty">清空</el-button>
+            <el-button type="primary" @click="openCourt">批量开庭</el-button>
+        </div>
+    </el-dialog>
+    </div>
+  </template>
+  
+  <script>
+    export default {
+        name: 'caseList',
+      data(){
+        return {
+            time:'2020年03月13日',
+            count:3,
+            caseList:[],
+            isSelect:0,
+            selectList:[],
+            allSelect:false,
+            dialogFormVisible:false,
+            currentPage:1,
+            total:1,
+            totalPage:1,
+            tableData:[],
+            nowIndex:null,
+        }
+      },
+      computed:{
+        
+      },
+      watch:{
+        
+      },
+      mounted(){
+        const params = {
+            caseNo:'',
+            pageNumber:1
+        }
+        this.$api.caseList.caseList(params).then(res => {
+            if(res.state == 100){
+                for(const item of res.result){
+                    const params = {
+                        caseNo:item.caseNo,
+                        openDate:item.openDate,
+                        judge:item.judge,
+                        clerk:item.clerk,
+                        isShow:false,
+                        caseId:item.caseId,
+                        isOpen:item.isOpen
+                    }
+                    this.caseList.push(params);
+                }
+                this.totalPage = res.total;
+            }
+        })
+      },
+      methods:{
+        selectItem(e,item){
+            if(e){
+                this.selectList.push(item);
+                this.isSelect ++;
+            }else{
+                this.isSelect --;
+                for(let i = 0;i < this.selectList.length;i++){
+                    if(item.caseNo == this.selectList[i].caseNo){
+                        this.selectList.splice(i,1);
+                    }
+                }
+            }
+            if(this.isSelect == this.caseList.length){
+                this.allSelect = true;
+            }else{
+                this.allSelect = false;
+            }
+            console.log(this.selectList);
+        },
+        selectAll(e){
+            if(e){
+                this.selectList = this.caseList;
+                for(let i = 0;i < this.caseList.length;i++){
+                    this.caseList[i].isChecked = true;
+                }
+            }else{
+                this.selectList = []
+                for(let i = 0;i < this.caseList.length;i++){
+                    this.caseList[i].isChecked = false;
+                }
+            }
+        },
+        handleClick(e){
+            for(let i = 0;i < this.selectList.length;i++){
+                if(e.caseNo == this.selectList[i].caseNo){
+                    this.selectList.splice(i,1);
+                }
+            }
+            for(let i = 0;i < this.caseList.length;i++){
+                if(e.caseNo == this.caseList[i].caseNo){
+                    this.caseList[i].isChecked = false;
+                }
+            }
+        },
+        empty(){
+            this.selectList = [];
+            for(let i = 0;i < this.caseList.length;i++){
+                this.caseList[i].isChecked = false;
+                this.allSelect = false;
+            }
+        },
+        openCourt(){
+
+        },
+        handleCurrentChange(val){
+            const params = {
+                caseNo:'',
+                pageNumber:val
+            }
+            this.$api.caseList.caseList(params).then(res => {
+                if(res.state == 100){
+                    this.caseList = [];
+                    for(const item of res.result){
+                        const params = {
+                            caseNo:item.caseNo,
+                            openDate:item.openDate,
+                            judge:item.judge,
+                            clerk:item.clerk,
+                            isShow:false,
+                            caseId:item.caseId,
+                            isOpen:item.isOpen
+                        }
+                        this.caseList.push(params);
+                    }
+                    this.totalPage = res.total;
+                }
+            })
+        },
+        getRecord(id,isShow,index){
+            if(isShow){
+                this.nowIndex = index;
+                const params = {
+                    lawCaseId:id
+                }
+                this.$api.caseList.getCaseDetail(params).then(res => {
+                    console.log(res)
+                    this.tableData = res.litigants;
+                })
+            }
+        },
+        sendM(row,item){
+            let sendType = 3;
+            if(row.litigant.litigationStatus.name == '代理人'){
+                sendType = 8;
+            }
+            const params = {
+                lawCaseId:item.caseId,
+                openDate:item.openDate,
+                name:row.litigant.litigantName,
+                phone:row.litigant.litigantPhone,
+                idCard:row.litigant.identityCard,
+                type:sendType,
+            }
+            this.$api.caseList.getMessageInfo(params).then(res => {
+                if(res.state == 100){
+                    this.$confirm(res.info, '短信内容预览', {
+                        confirmButtonText: '确认发送',
+                        cancelButtonText: '取消', 
+                        center:true,
+                        type:'info'   
+                    }).then(() => {
+                        this.$api.caseList.sendMessage(params).then(res => {
+                        if(res.state == 100){
+                            this.$message({
+                            type: 'success',
+                            message: res.message
+                            });
+                        }else{
+                            this.$message({
+                            type: 'warning',
+                            message: res.message
+                            });
+                        }
+                        })
+                    })
+                    .catch(() => {
+
+                    }) 
+                }
+            })
+        },
+      }
+    }
+  </script>
+  
+  <style lang="less" scoped>
+    
+    .case-main{
+        width: 100%;
+        height: 100%;
+    }
+    .item-left {
+        width: 29%;
+        height: 100%;
+        float: left;
+    }
+    .item-right {
+        width: 69%;
+        height: 100%;
+        float: left;
+        border-left: 1px solid;
+    }
+    .time-box {
+        width: 250px;
+        float: left;
+        height: 50px;
+        line-height: 50px;
+        img{
+            vertical-align: middle;
+        }
+        span{
+            color: #0096FA;
+            font-size: 16px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    }
+    .case-box {
+        list-style: none;
+        float: left;
+        padding: 0;
+        width: 100%;
+        height: 400px;
+        overflow-y: scroll;
+        li{
+            width: 98%;
+            list-style: none;
+            height: auto;
+            border: 1px solid #CDECFA;
+            margin: 0 auto;
+            padding-top: 20px;
+            margin-bottom: 10px;
+            p:nth-child(2){
+                text-align: left;
+                padding: 0px 50px;
+                color: #818181;
+                font-size: 14px;
+                span{
+                    margin-right: 10px;
+                }
+            }
+        }
+    }
+    .feature-box {
+        width: 100%;
+        height: 50px;
+        font-size: 12px;
+        margin-top: 30px;
+        div{
+            float: left;
+            width: 70px;
+            p{
+
+            }
+        }
+        .feature-content{
+            text-align: left;
+            width: 107px;
+            height: 50px;
+            margin-left: 10px;
+            img{
+                display: block;
+                float: left;
+            }
+        }
+    }
+    .download-box {
+        width: 80px;
+        height: 40px;
+        line-height: 40px;
+        margin-left: 10px;
+        color: #26A0FB;
+        font-weight: bold;
+        font-size: 14px;
+        cursor: pointer;
+    }
+    .right-footer {
+        float: left;
+        width: 100%;
+        height: 100px;
+    }
+    .title-box{
+        text-align: left;
+        font-size: 14px;
+        color: #7F7F7F;
+        span{
+            margin-left: 30px;
+        }
+    }
+    /* 上下箭头按钮 */
+    .icon_arrowDown{
+        transition: 0.8s;
+        transform-origin:center center;
+        transform: rotateZ(0deg);
+    }
+    .icon_arrowUp{
+        transition: 0.8s;
+        transform-origin:center center;
+        transform: rotateZ(180deg);
+    }
+  </style>
