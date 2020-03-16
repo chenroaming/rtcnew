@@ -1,5 +1,7 @@
 module.exports = {
     publicPath: process.env.NODE_ENV === 'production' ? './' : './',
+    outputDir:'dist',
+    assetsDir:'',
     devServer: {
       proxy: {
         //   将 setBaseUrl.js 里的 baseUrl 匹配过来

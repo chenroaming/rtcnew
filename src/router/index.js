@@ -31,21 +31,31 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to,from,next) => {
+  // next()
   // ViewUI.LoadingBar.start()
   store.dispatch('getUserInfo').then(res => {
     console.log(to.name,res)
     if(to.name != 'Home' && res.state != 100){
+      document.title = '全在线庭审平台'
       next({
         name:'Home'
       })
     }else if(to.name == 'Home' && res.state == 100){
+      document.title = '案件列表'
       next({
-        name:'Main'
+        name:'caseList'
       })
     }else{
+      document.title = to.meta.title
       next()
     }
   })
+  // .catch(err => {
+  //   console.log(err)
+  //   // next({
+  //   //   name:'Home'
+  //   // })
+  // })
 })
 
 router.afterEach(route => {

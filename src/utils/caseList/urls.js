@@ -4,4 +4,5 @@ export default {
   getCaseDetail: baseUrl + '/court/case/getCaseDetail.jhtml',
   getMessageInfo:baseUrl + '/court/case/getMessageInfo.jhtml',
   sendMessage:baseUrl + '/court/case/sendMessage.jhtml',
+  downRecord:baseUrl + '/court/case/downRecord.jhtml',
 }

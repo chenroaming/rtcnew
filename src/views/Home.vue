@@ -171,7 +171,7 @@ export default {
          this.$api.user.optionRole(setType).then(res => {
            if(res.state == 100){
             this.$router.push({
-              name:'Main'
+              name:'caseList'
             })
            }
          })//调用设置用户类型接口

@@ -16,5 +16,8 @@ export default {
   },
   sendMessage(params){
     return api.get(urls.sendMessage, params, header)
+  },
+  downRecord(params){
+    return api.get(urls.downRecord,params,header)
   }
 }

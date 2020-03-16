@@ -1,7 +1,13 @@
 <template>
     <div class="case-main">
       <div class="item-left">
-
+        <p>我的庭审<img src="@/assets/img/today-icon.png" alt=""></p>
+        <Calendar
+            v-on:choseDay="clickDay"
+        ></Calendar>
+        <p>共{{caseCount.total}}件案件</p>
+        <p>未开庭<span>{{caseCount.un}}</span>件</p>
+        <p>已开庭<span>{{caseCount.ed}}</span>件</p>
       </div>
       <div class="item-right">
         <div class="time-box">
@@ -50,7 +56,7 @@
                         </div>
                     </div>
                     
-                    <div class="download-box">
+                    <div class="download-box" @click="downRecord(item)">
                         <img src="@/assets/img/down-icon.png" alt="">
                         <span>庭审笔录</span>
                     </div>
@@ -107,7 +113,7 @@
         </ul>
         <div class="right-footer">
             <div style="width: 200px;float: left;">
-                <el-checkbox v-model="allSelect" @change="selectAll($event)">
+                <el-checkbox v-model="allSelect" @change="selectAll($event)" style="margin-right: 10px;">
                     全选
                 </el-checkbox>
                 <el-badge class="selectedBtn" :value="selectList.length">
@@ -148,8 +154,12 @@
   </template>
   
   <script>
+    import Calendar from 'vue-calendar-component'
     export default {
-        name: 'caseList',
+    name: 'caseList',
+    components: {
+        Calendar
+    },
       data(){
         return {
             time:'2020年03月13日',
@@ -164,6 +174,11 @@
             totalPage:1,
             tableData:[],
             nowIndex:null,
+            caseCount:{
+                total:100,
+                un:50,
+                ed:50
+            }
         }
       },
       computed:{
@@ -274,7 +289,7 @@
                 }
             })
         },
-        getRecord(id,isShow,index){
+        getRecord(id,isShow,index){//获取案件详情
             if(isShow){
                 this.nowIndex = index;
                 const params = {
@@ -286,7 +301,7 @@
                 })
             }
         },
-        sendM(row,item){
+        sendM(row,item){//发送信息
             let sendType = 3;
             if(row.litigant.litigationStatus.name == '代理人'){
                 sendType = 8;
@@ -327,12 +342,62 @@
                 }
             })
         },
+        downRecord(item){
+            const data = {
+                lawCaseId:item.caseId
+            }
+            this.$api.caseList.downRecord(data).then(res => {
+                if(res.state == 100){
+                    const link = document.createElement('a');
+                    // 设置下载的文件名
+                    link.download = '';
+                    link.style.display = 'none';
+                    //设置下载路径
+                    link.href = location.origin + res.file;
+                    //触发点击
+                    document.body.appendChild(link);
+                    link.click();
+                    //移除节点
+                    document.body.removeChild(link);
+                }else{
+                    this.$message({
+                    type:'error',
+                    message:res.message
+                    })
+                }
+            })
+        },
+        clickDay(data) {
+            console.log(data); //选中某天
+        },
       }
     }
   </script>
   
+  <style>
+      /* 更改日历组件样式 */
+    .wh_content_all {
+        background-color: #E6F4FF!important;
+    }
+    .wh_content_item {
+        color:#199CFA!important;
+        font-weight: bold;
+    }
+    .wh_content_li {
+        color: #199CFA!important;
+        font-weight: bold;
+    }
+    .wh_jiantou1 {
+        border-top: 2px solid #199CFA!important;
+        border-left: 2px solid #199CFA!important;
+    }
+    .wh_jiantou2 {
+        border-top: 2px solid #199CFA!important;
+        border-right: 2px solid #199CFA!important;
+    }
+  </style>
+  
   <style lang="less" scoped>
-    
     .case-main{
         width: 100%;
         height: 100%;
@@ -341,12 +406,43 @@
         width: 29%;
         height: 100%;
         float: left;
+        background-color: #E6F4FF;
+        span{
+          color:#FE7175;
+        }
+        p:nth-child(1){
+            color: #199CFA;
+            font-weight: bold;
+            text-align: left;
+            padding: 0 20px;
+        }
+        p:nth-child(3){
+            color: #199CFA;
+            font-weight: bold;
+            text-align: left;
+            padding: 0 20px;
+        }
+        p:nth-child(4){
+            color: #199CFA;
+            text-align: left;
+            padding: 0 20px;
+            font-size: 14px;
+        }
+        p:nth-child(5){
+            color: #199CFA;
+            text-align: left;
+            padding: 0 20px;
+            font-size: 14px;
+        }
+        img{
+            float: right;
+        }
     }
+    
     .item-right {
         width: 69%;
         height: 100%;
         float: left;
-        border-left: 1px solid;
     }
     .time-box {
         width: 250px;

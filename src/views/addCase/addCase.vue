@@ -1,15 +1,42 @@
 <template>
-    <div>
-      <h1>新增案件</h1>
+    <div class="addCase-main">
+      <p>新增案件</p>
+      <div class="step-box">
+        <el-steps :active="nowActive" align-center>
+          <el-step title="基本信息"></el-step>
+          <el-step title="诉讼参与人"></el-step>
+          <el-step title="证据"></el-step>
+        </el-steps>
+      </div>
+      <div>
+        <step1 ref="step1" v-if="nowActive == 1" v-on:listenToChildEvent="receive"></step1>
+        <step2 ref="step2" v-if="nowActive == 2" v-on:listenToChildEvent="receive"></step2>
+        <step3 ref="step3" v-if="nowActive == 3" v-on:listenToChildEvent="receive"></step3>
+      </div>
+      <div style="text-align: right;padding:0 80px;">
+        <el-button type="warning" size="mini" @click="upStep" v-show="nowActive != 1">上一步</el-button>
+        <el-button type="primary" size="mini" @click="nextStep" v-show="nowActive != 3">下一步</el-button>
+        <el-button type="primary" size="mini" @click="nextStep" v-show="nowActive == 3">保存</el-button>
+      </div>
     </div>
   </template>
   
   <script>
+    import step1 from '@/components/addCase/step1.vue'
+    import step2 from '@/components/addCase/step2.vue'
+    import step3 from '@/components/addCase/step3.vue'
+
     export default {
         name: 'addCase',
+        components:{
+          step1,
+          step2,
+          step3,
+        },
       data(){
         return {
-
+          nowActive:1,
+          courtType:1,
         }
       },
       computed:{
@@ -19,11 +46,47 @@
         
       },
       methods:{
-        
+        receive(e){
+          console.log(e)
+        },
+        nextStep(){
+          if(this.nowActive == 1){
+            this.$refs.step1.submit();
+          }else if(this.nowActive == 2){
+            this.$refs.step2.submit();
+          }else{
+            this.$refs.step3.submit();
+          }
+          this.nowActive ++;
+          if(this.nowActive > 3){
+            this.nowActive = 1;
+          }
+        },
+        upStep(){
+          this.nowActive --;
+        }
       }
     }
   </script>
   
   <style lang="less" scoped>
-    
+    p{
+      text-align: left;
+      font-weight: bold;
+      font-size: 18px;
+      margin: 0;
+      padding-top: 20px;
+      padding-left: 15px;
+    }
+    .step-box {
+      width: 95%;
+      height: 70px;
+      padding-top: 15px;
+      background-color: #F9F9F9;
+      margin: 0 auto;
+    }
+    .addCase-main{
+      width: 100%;
+      height: 100%;
+    }
   </style>

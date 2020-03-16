@@ -1,7 +1,9 @@
 import axios from 'axios'
 import Vue from 'vue'
-import { Loading } from 'element-ui'//引入加载效果组件
+// import { Loading } from 'element-ui'
+import { Loading,Message } from 'element-ui'//引入加载效果组件
 Vue.use(Loading)
+// Vue.use(Message)
 const service = axios.create({
     // headers:{'Content-Type': 'application/json'},
     timeout:60000
@@ -71,22 +73,22 @@ service.interceptors.response.use(
         if(loadingCount == 0){
             loadingInstance.close();//收到回复后隐藏加载效果
         }
-        // Message.error('error')
+        Message.warning('网络错误，请稍后重试！')
         let info = {},
         { status, statusText, data } = error.response
 
         if (!error.response) {
-        info = {
-            code: 5000,
-            msg: 'Network Error'
-        }
+            info = {
+                code: 5000,
+                msg: 'Network Error'
+            }
         } else {
-        // 此处整理错误信息格式
-        info = {
-            code: status,
-            data: data,
-            msg: statusText
-        }
+            // 此处整理错误信息格式
+            // info = {
+            //     code: status,
+            //     data: data,
+            //     msg: statusText
+            // }
         }
     }
 )

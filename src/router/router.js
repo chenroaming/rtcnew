@@ -8,7 +8,10 @@ const routes = [
     {
         path: '/',
         name: 'Home',
-        component: Home
+        component: Home,
+        meta:{
+            title:'全在线庭审平台'
+        }
     },
     {
         path: '/main',
@@ -21,21 +24,27 @@ const routes = [
         children:[
             {
                 path: '/main/caseList',
-                title: '首页',
                 name: 'caseList',
-                component: caseList
+                component: caseList,
+                meta:{
+                    title: '案件列表',
+                }
             },
             {
                 path: '/main/addCase',
-                title: '首页',
                 name: 'addCase',
-                component: addCase
+                component: addCase,
+                meta:{
+                    title: '添加案件',
+                }
             },
             {
                 path: '/main/roleManage',
-                title: '首页',
                 name: 'roleManage',
-                component: roleManage
+                component: roleManage,
+                meta:{
+                    title: '角色管理',
+                }
             },
         ]
     }
