@@ -25,6 +25,8 @@
                             {{item.caseNo}}
                         </span>
                     </el-checkbox>
+                    <el-button type="text" style="float: right;">删除</el-button>
+                    <el-button type="text" style="float: right;" @click="edit(item)">编辑</el-button>
                 </div>
                 <p class="title-box">
                     <span>开庭时间：{{item.openDate}}</span>
@@ -370,6 +372,13 @@
         clickDay(data) {
             console.log(data); //选中某天
         },
+        edit(item){
+            this.$store.dispatch('setCaseId',item.caseId);
+            this.$emit('getMessage',2);
+            this.$router.push({
+              name:'addCase'
+            })
+        }
       }
     }
   </script>

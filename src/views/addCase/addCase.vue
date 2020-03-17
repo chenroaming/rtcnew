@@ -1,6 +1,6 @@
 <template>
     <div class="addCase-main">
-      <p>新增案件</p>
+      <p>{{status ? '案件编辑' : '新增案件'}}</p>
       <div class="step-box">
         <el-steps :active="nowActive" align-center>
           <el-step title="基本信息"></el-step>
@@ -37,6 +37,7 @@
         return {
           nowActive:1,
           courtType:1,
+          status:false,
         }
       },
       computed:{
@@ -45,9 +46,29 @@
       watch:{
         
       },
+      mounted(){
+        // console.log(this.$route.params.lawCaseId);
+        // this.lawCaseId = this.$route.params.lawCaseId;
+        
+        if(this.$store.getters.getCaseId){
+          this.status = true;
+        }else{
+          this.status = false;
+        }
+        if(!this.$store.getters.getCaseId && !this.$store.getters.getStatus){
+          this.$router.push({
+            name:'caseList'
+          })
+        }
+      },
       methods:{
         receive(e){
-          console.log(e)
+          if(e){
+            this.nowActive ++;
+            if(this.nowActive > 3){
+              this.nowActive = 1;
+            }
+          }
         },
         nextStep(){
           if(this.nowActive == 1){
@@ -56,10 +77,6 @@
             this.$refs.step2.submit();
           }else{
             this.$refs.step3.submit();
-          }
-          this.nowActive ++;
-          if(this.nowActive > 3){
-            this.nowActive = 1;
           }
         },
         upStep(){

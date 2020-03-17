@@ -30,7 +30,7 @@ service.interceptors.request.use(
         tipsSwitch ++
         if (config.method === 'post' || config.method === 'put') {
             // post、put 提交时，将对象转换为string, 为处理Java后台解析问题
-            config.data = JSON.stringify(config.data)
+            config.data = JSON.stringify(config.params)
         }
         // 请求发送前进行处理,判断是否使用form-data进行文件传输
         if(config.headers['Content-Type'] == 'multipart/form-data'){

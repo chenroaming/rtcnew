@@ -25,6 +25,7 @@ const routes = [
             {
                 path: '/main/caseList',
                 name: 'caseList',
+                access:['法官','当事人','书记员','开庭小助手'],
                 component: caseList,
                 meta:{
                     title: '案件列表',
@@ -33,6 +34,7 @@ const routes = [
             {
                 path: '/main/addCase',
                 name: 'addCase',
+                access:['法官','书记员'],
                 component: addCase,
                 meta:{
                     title: '添加案件',
@@ -41,6 +43,7 @@ const routes = [
             {
                 path: '/main/roleManage',
                 name: 'roleManage',
+                access:['法官','书记员'],
                 component: roleManage,
                 meta:{
                     title: '角色管理',

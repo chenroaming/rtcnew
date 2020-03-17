@@ -1,6 +1,6 @@
 <template>
     <div class="step1">
-        <el-button type="primary" @click="addLitigant('form')">新增诉讼参与人</el-button>
+        <el-button type="primary" @click="addLitigant('form')"><i class="el-icon-circle-plus"></i>新增诉讼参与人</el-button>
         <el-table
             :data="tableData"
             height="300"
@@ -32,21 +32,23 @@
             <template slot-scope="scope">
                 <el-button
                     type="text"
-                    size="small">
+                    size="small"
+                    @click="edit(scope.row)">
                     编辑
                 </el-button>
                 <el-button
                     type="text"
-                    size="small">
+                    size="small"
+                    @click="del(scope.row)">
                     删除
                 </el-button>
             </template>
             </el-table-column>
         </el-table>
-        <el-dialog width="500px" title="新增诉讼参与人" :visible.sync="dialogFormVisible">
+        <el-dialog :close-on-click-modal="false" width="500px" title="新增诉讼参与人" :visible.sync="dialogFormVisible">
             <el-form :rules="rules" :model="form" ref="form">
                 <el-form-item label="诉讼地位" prop="litigationType" :label-width="formLabelWidth">
-                    <el-select v-model="form.litigationType" placeholder="请选择活动区域">
+                    <el-select v-model="form.litigationType" placeholder="请选择诉讼地位">
                         <el-option v-for="(item,index) in litigationStatusArr" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
@@ -83,7 +85,7 @@
             <el-form v-for="(item,index) in form.layerList">
                 <el-form-item :label-width="formLabelWidth">
                     <span>代理人{{index + 1}}</span>
-                    <el-button type="text" siz="mini" @click="delLayer(index)">删除</el-button>
+                    <el-button type="text" siz="mini" @click="delLayer(index,item)">删除</el-button>
                 </el-form-item>
                 <el-form-item label="名称" :label-width="formLabelWidth">
                     <el-input v-model="item.name"></el-input>
@@ -97,7 +99,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+                <el-button type="primary" @click="submitLitigant">确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -122,6 +124,7 @@
                 idCard: [
                 ]
             },
+            lawCaseId:'',
             tableData:[],
             dialogFormVisible:false,
             form:{
@@ -135,20 +138,36 @@
             },
             formLabelWidth:'100px',
             idCardType:[{name:'大陆身份证',id:1},{name:'其他',id:2}],
-            litigationStatusArr:[
-                {name:'原告',id:1},
-                {name:'被告',id:2},
-            ],
+            litigationStatusArr:[],
+            caseType:'',
+            litigantId:'',
+            visible2:false,
         }
       },
       computed:{
-        
+        getCaseId(){
+            return this.$store.getters.getCaseId//通过计算属性返回vuex中的状态值
+        }
       },
       watch:{
-        
+        getCaseId(curval,oldVal){//当前值和原来的值
+            // this.lawCaseId = curval;//监听变化改变页面数据
+            console.log(curval);
+            // this.lawCaseId = '27b61df5a49941c4b20f6ad704d08c8f';
+        }
       },
       mounted(){
-
+        this.caseType = this.$store.getters.getCaseType;
+        this.lawCaseId = this.$store.getters.getCaseId;
+        const data = {
+            caseType:this.caseType
+        }
+        this.getCaseDetail();
+        this.$api.addCase.getLitigationStatus(data).then(res => {
+            if(res.state == 100){
+                this.litigationStatusArr = res.litigationStatus;
+            }
+        })
       },
       methods:{
         submit(){
@@ -156,23 +175,175 @@
             this.$emit('listenToChildEvent',2);
         },
         addLitigant(name){
-            if (this.$refs[name] !== undefined) {
-                this.$refs[name].resetFields();
-                this.form.layerList = [];
-            }
+            this.litigantId = '';
+            this.form = {
+                litigationType:'',
+                name:'',
+                litigationStatus:'',
+                phone:'',
+                idCardType:'',
+                idCard:'',
+                layerList:[]
+            };//清空表单函数偶尔失效，暂时先用赋值方式解决
+            // if (this.$refs[name] !== undefined) {
+            //     this.$refs[name].resetFields();
+            //     this.form.layerList = [];
+            // }
             this.dialogFormVisible = true;
         },
         addLayer(){
             const data = {
                 name:'',
                 phone:'',
-                idCard:''
+                idCard:'',
+                litigantId:this.litigantId
             }
             this.form.layerList.push(data);
         },
-        delLayer(index){
-            this.form.layerList.splice(index,1);
+        delLayer(index,item){
+            // console.log(item);
+            if(item.id){
+                this.$confirm('确认删除该代理人？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    const data = {
+                        litigantId:this.litigantId,
+                        lawyerId:item.id
+                    }
+                    this.$api.addCase.delLawyer(data).then(res => {
+                        if(res.state == 100){
+                            this.$message({
+                                message:res.message,
+                                type:'success'
+                            })
+                            this.form.layerList.splice(index,1);
+                            this.getCaseDetail();
+                        }else{
+                            this.$message({
+                                message:res.message,
+                                type:'warning'
+                            })
+                        }
+                    })
+                }).catch(() => {
+                    
+                });
+            }else{
+                this.form.layerList.splice(index,1);
+            }
         },
+        submitLitigant(){//新增或修改当事人
+            const data = {
+                name:this.form.name,
+                idCard:this.form.idCard,
+                phone:this.form.phone,
+                litigantType:this.form.litigationStatus,
+                litigationStatus:this.form.litigationType,
+                idCardType:this.form.idCardType,
+                litigantId:'',
+                lawCaseId:this.lawCaseId,
+                lawyers:this.form.layerList
+            }
+            if(!this.litigantId){
+                this.$api.addCase.addTrialLitigant(data).then(res => {
+                    if(res.state == 100){
+                        this.dialogFormVisible = false;
+                        this.$message({
+                            message:res.message,
+                            type:'success'
+                        })
+                        const data2= {
+                            lawCaseId:this.lawCaseId
+                        }
+                        this.$api.caseList.getCaseDetail(data2).then(res => {
+                            this.tableData = res.litigants;
+                        })
+                        return;
+                    }
+                    this.$message({
+                        message:res.message,
+                        type:'warning'
+                    })
+                })
+            }else{
+                data.litigantId = this.litigantId;
+                this.$api.addCase.updateTrialLitigant(data).then(res => {
+                    if(res.state == 100){
+                        this.dialogFormVisible = false;
+                        this.$message({
+                            message:'修改成功',
+                            type:'success'
+                        })
+                        this.getCaseDetail();
+                        return;
+                    }
+                    this.$message({
+                        message:res.message,
+                        type:'warning'
+                    })
+                })
+            }
+        },
+        edit(item){
+            console.log(item)
+            this.litigantId = item.litigant.id;
+            this.form.name = item.litigant.litigantName;
+            this.form.idCard = item.litigant.identityCard;
+            this.form.phone = item.litigant.litigantPhone;
+            this.form.litigationStatus = item.litigant.litigantType;
+            this.form.litigationType = item.litigant.litigationStatus.id;
+            this.form.idCardType = '';
+            this.form.layerList = [];
+            if(item.litigant.lawyer.length > 0){
+                for(const item of item.litigant.lawyer){
+                    const data = {
+                        name:item.agentName,
+                        phone:item.agentMobile,
+                        idCard:item.agentIdentiCard,
+                        id:item.id
+                    }
+                    this.form.layerList.push(data);
+                }
+            }
+            this.dialogFormVisible = true;
+        },
+        del(item){
+            this.$confirm('确认删除该当事人？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                const data = {
+                litigantId:item.litigant.id 
+                }
+                this.$api.addCase.delTrialLitigant(data).then(res => {
+                    if(res.state == 100){
+                        this.$message({
+                            message:res.message,
+                            type:'success'
+                        })
+                        this.getCaseDetail();
+                    }else{
+                        this.$message({
+                            message:res.message,
+                            type:'warning'
+                        })
+                    }
+                })
+            }).catch(() => {
+                  
+            });
+        },
+        getCaseDetail(){
+            const data= {
+                lawCaseId:this.lawCaseId
+            }
+            this.$api.caseList.getCaseDetail(data).then(res => {
+                this.tableData = res.litigants;
+            })
+        }
       }
     }
   </script>

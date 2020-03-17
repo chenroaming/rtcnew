@@ -32,7 +32,7 @@
               </li>
               <li :class="{'isSelect':nowSelect == 2}" @click="go(2)">
                 <img src="../assets/img/left-icon2.png" alt="">
-                <p>新增案件</p>
+                <p>案件编辑</p>
               </li>
               <li :class="{'isSelect':nowSelect == 3}" @click="go(3)">
                 <img src="../assets/img/left-icon3.png" alt="">
@@ -47,7 +47,7 @@
         </el-aside>
         <el-main>
           <div class="main-box">
-            <router-view></router-view>
+            <router-view @getMessage="showMsg"></router-view>
           </div>
         </el-main>
       </el-container>
@@ -81,6 +81,9 @@
       
     },
     methods:{
+      showMsg(msg){
+        this.nowSelect = msg;
+      },
       go(index){
         this.nowSelect = index;
         switch(index){
@@ -90,6 +93,8 @@
             })
             break;
           case 2:
+          this.$store.dispatch('setCaseId','');
+          this.$store.dispatch('setStatus',true);
             this.$router.push({
               name:'addCase'
             })

@@ -16,7 +16,6 @@ export default {
   },
   post(url, params, headers, data) {
     let options = {}
-
     if (params) {
       options.params = params
     }
