@@ -379,7 +379,7 @@
         },
         edit(item){
             this.$store.dispatch('setCaseId',item.caseId);
-            this.$emit('getMessage',2);
+            this.$emit('getMessage',1);
             this.$router.push({
               name:'addCase'
             })

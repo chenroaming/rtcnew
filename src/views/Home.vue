@@ -4,7 +4,11 @@
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <div class="header">
       <div class="login-form">
-        <p>法官登录</p>
+        <p>
+          <el-button type="primary" @click="loginType = 'court'" size="mini" :plain="loginType != 'court'">法官</el-button>
+          <el-button type="primary" @click="loginType = 'litigant'" size="mini" :plain="loginType != 'litigant'">当事人/诉讼代理人</el-button>
+        </p>
+        <!-- <p><span style="cursor: pointer;" @click="loginType = 'court'">法官登录</span><span style="margin-left: 10px;cursor: pointer;" @click="loginType = 'litigant'">当事人/诉讼代理人登录</span></p> -->
         <el-form label-width="0px" :model="formLabelAlign">
           <el-form-item>
             <el-input v-model="formLabelAlign.user" placeholder="请输入账号">
@@ -128,7 +132,8 @@ export default {
         {src:require('../assets/img/case-logo.png'),title:'同安法院'},
         {src:require('../assets/img/case-logo.png'),title:'同安法院'},
         {src:require('../assets/img/case-logo.png'),title:'同安法院'},
-      ]
+      ],
+      loginType:'court',
     }
   },
   computed:{
@@ -155,7 +160,7 @@ export default {
       const data = {
         username:this.formLabelAlign.user,
         password:md5(this.formLabelAlign.password),
-        loginType:'court',
+        loginType:this.loginType,
         code: this.formLabelAlign.code
       }
       this.$store.dispatch('login',data).then(res => {

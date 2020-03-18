@@ -29,6 +29,7 @@ const routes = [
                 component: caseList,
                 meta:{
                     title: '案件列表',
+                    imgSrc:require('../assets/img/left-icon1.png'),
                 }
             },
             {
@@ -38,6 +39,7 @@ const routes = [
                 component: addCase,
                 meta:{
                     title: '添加案件',
+                    imgSrc:require('../assets/img/left-icon2.png'),
                 }
             },
             {
@@ -47,6 +49,7 @@ const routes = [
                 component: roleManage,
                 meta:{
                     title: '角色管理',
+                    imgSrc:require('../assets/img/left-icon3.png'),
                 }
             },
         ]

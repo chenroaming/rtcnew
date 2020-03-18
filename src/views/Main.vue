@@ -26,7 +26,11 @@
           <div class="item-left">
             <ul class="left-menu">
               <li></li>
-              <li :class="{'isSelect':nowSelect == 1}" @click="go(1)">
+              <li v-for="(item,index) in menuList" :class="{'isSelect':nowSelect == index}" @click="go(index,item.name)">
+                <img :src="item.meta.imgSrc" alt="">
+                <p>{{item.meta.title}}</p>
+              </li>
+              <!-- <li :class="{'isSelect':nowSelect == 1}" @click="go(1)">
                 <img src="../assets/img/left-icon1.png" alt="">
                 <p>案件管理</p>
               </li>
@@ -37,7 +41,7 @@
               <li :class="{'isSelect':nowSelect == 3}" @click="go(3)">
                 <img src="../assets/img/left-icon3.png" alt="">
                 <p>角色管理</p>
-              </li>
+              </li> -->
             </ul>
             <div>
               <img style="cursor: pointer;" @click="logout" src="../assets/img/out.png" alt="">
@@ -61,50 +65,58 @@
       return {
         value1: '1',
         file:[],
-        isLogin:'已登录',
-        theme2: 'dark',
-        nowSelect:1,
+        nowSelect:0,
         caseNo:'',
+        menuList:[],
       }
     },
     computed:{
-      getLoginStatus(){
-        return this.$store.getters.isLogin//通过计算属性返回vuex中的状态值
+      getMenuList(){
+        return this.$store.getters.getMenuList
       }
     },
     watch:{
-      getLoginStatus(curval,oldVal){
-        this.isLogin = curval ? '已登录' : '未登录'//监听变化改变页面数据
+      getMenuList(curval,oldVal){
+        console.log(curval)
+        this.menuList = curval;
       }
     },
     mounted(){
-      
+      console.log(this.$store.getters.getUserInfo)
+      this.$store.dispatch('setMenuList');
     },
     methods:{
       showMsg(msg){
         this.nowSelect = msg;
       },
-      go(index){
+      go(index,name){
         this.nowSelect = index;
-        switch(index){
-          case 1:
-            this.$router.push({
-              name:'caseList'
-            })
-            break;
-          case 2:
+        this.$router.push({
+          name:name
+        })
+        if(index == 1){
           this.$store.dispatch('setCaseId','');
           this.$store.dispatch('setStatus',true);
-            this.$router.push({
-              name:'addCase'
-            })
-            break;
-          case 3:
-            this.$router.push({
-              name:'roleManage'
-            })
-            break;
         }
+        // switch(index){
+        //   case 1:
+        //     this.$router.push({
+        //       name:'caseList'
+        //     })
+        //     break;
+        //   case 2:
+        //   this.$store.dispatch('setCaseId','');
+        //   this.$store.dispatch('setStatus',true);
+        //     this.$router.push({
+        //       name:'addCase'
+        //     })
+        //     break;
+        //   case 3:
+        //     this.$router.push({
+        //       name:'roleManage'
+        //     })
+        //     break;
+        // }
       },
       searchCase(){
         const params = {

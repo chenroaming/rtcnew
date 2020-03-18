@@ -4,6 +4,7 @@ const getters = {
     getCaseId:state => state.caseInfo.lawCaseId,
     getStatus:state => state.caseInfo.enterStatus,
     getCaseType:state => state.caseInfo.caseType,
+    getMenuList:state => state.app.menuList,
 }
 
 export default getters

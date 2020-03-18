@@ -56,7 +56,7 @@ export default {
     header = {'Content-Type': 'multipart/form-data'}//文件传输时更改请求头为form-data类型
     return api.post(urls.updateEvidence,data,header)
   },
-  delEvidence(params){//代理人
+  delEvidence(params){//删除证据
     header = {}
     return api.get(urls.delEvidence,params,header)
   },
