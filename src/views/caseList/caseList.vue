@@ -25,7 +25,7 @@
                             {{item.caseNo}}
                         </span>
                     </el-checkbox>
-                    <el-button type="text" style="float: right;">删除</el-button>
+                    <el-button type="text" style="float: right;" @click="del(item)">删除</el-button>
                     <el-button type="text" style="float: right;" @click="edit(item)">编辑</el-button>
                 </div>
                 <p class="title-box">
@@ -190,27 +190,15 @@
         
       },
       mounted(){
+        if(this.$route.params){
+            this.search(this.$route.params)
+            return;
+        }
         const params = {
             caseNo:'',
             pageNumber:1
         }
-        this.$api.caseList.caseList(params).then(res => {
-            if(res.state == 100){
-                for(const item of res.result){
-                    const params = {
-                        caseNo:item.caseNo,
-                        openDate:item.openDate,
-                        judge:item.judge,
-                        clerk:item.clerk,
-                        isShow:false,
-                        caseId:item.caseId,
-                        isOpen:item.isOpen
-                    }
-                    this.caseList.push(params);
-                }
-                this.totalPage = res.total;
-            }
-        })
+        this.search(params);
       },
       methods:{
         selectItem(e,item){
@@ -298,8 +286,25 @@
                     lawCaseId:id
                 }
                 this.$api.caseList.getCaseDetail(params).then(res => {
-                    console.log(res)
-                    this.tableData = res.litigants;
+                    this.tableData = [];
+                    for(const item of res.litigants){
+                        this.tableData.push(item)
+                        if(item.litigant.lawyer.length > 0){
+                            for(const item2 of item.litigant.lawyer){
+                                const data = {
+                                    litigant:{
+                                        litigationStatus:{name:'代理人'},
+                                        litigantName:item2.agentName,
+                                        identityCard:item2.agentIdentiCard,
+                                        litigantPhone:item2.agentMobile,
+                                    }
+                                }
+                                this.tableData.push(data);
+                            }
+                        }
+                    }
+                    // this.tableData = res.litigants;
+                    // console.log(this.tableData)
                 })
             }
         },
@@ -377,6 +382,43 @@
             this.$emit('getMessage',2);
             this.$router.push({
               name:'addCase'
+            })
+        },
+        del(item){
+            console.log(item)
+            this.$confirm('确认删除该案件？', '提示', {
+                confirmButtonText: '确定',
+                type: 'warning'
+            }).then(() => {
+                this.$message({
+                    message:'已删除',
+                    type:'success'
+                })
+            })
+            .catch(() => {
+
+            })
+        },
+        search(params){
+            this.$api.caseList.caseList(params).then(res => {
+                if(res.state == 100){
+                    this.caseList = [];
+                    if(res.result.length > 0){
+                        for(const item of res.result){
+                        const params = {
+                            caseNo:item.caseNo,
+                            openDate:item.openDate,
+                            judge:item.judge,
+                            clerk:item.clerk,
+                            isShow:false,
+                            caseId:item.caseId,
+                            isOpen:item.isOpen
+                        }
+                        this.caseList.push(params);
+                    } 
+                    }
+                    this.totalPage = res.total;
+                }
             })
         }
       }

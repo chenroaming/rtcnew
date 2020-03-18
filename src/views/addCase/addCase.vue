@@ -13,10 +13,10 @@
         <step2 ref="step2" v-if="nowActive == 2" v-on:listenToChildEvent="receive"></step2>
         <step3 ref="step3" v-if="nowActive == 3" v-on:listenToChildEvent="receive"></step3>
       </div>
-      <div style="text-align: right;padding:0 80px;">
+      <div style="text-align: right;padding:0 80px;margin: 20px 0px;">
         <el-button type="warning" size="mini" @click="upStep" v-show="nowActive != 1">上一步</el-button>
         <el-button type="primary" size="mini" @click="nextStep" v-show="nowActive != 3">下一步</el-button>
-        <el-button type="primary" size="mini" @click="nextStep" v-show="nowActive == 3">保存</el-button>
+        <el-button type="primary" size="mini" @click="nextStep" v-show="nowActive == 3">完成</el-button>
       </div>
     </div>
   </template>
@@ -66,7 +66,11 @@
           if(e){
             this.nowActive ++;
             if(this.nowActive > 3){
-              this.nowActive = 1;
+              // this.nowActive = 1;
+              this.$emit('getMessage',1);
+              this.$router.push({
+                name:'caseList'
+              })
             }
           }
         },
@@ -81,6 +85,13 @@
         },
         upStep(){
           this.nowActive --;
+        },
+        search(params){
+          this.$emit('getMessage',1);
+          this.$router.push({
+            name:'caseList',
+            params:params
+          })
         }
       }
     }

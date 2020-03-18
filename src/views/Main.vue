@@ -22,7 +22,7 @@
         </div>
       </el-header>
       <el-container>
-        <el-aside width="200px">
+        <el-aside width="150px">
           <div class="item-left">
             <ul class="left-menu">
               <li></li>
@@ -47,7 +47,7 @@
         </el-aside>
         <el-main>
           <div class="main-box">
-            <router-view @getMessage="showMsg"></router-view>
+            <router-view @getMessage="showMsg" ref="caseList"></router-view>
           </div>
         </el-main>
       </el-container>
@@ -111,9 +111,16 @@
           caseNo:this.caseNo,
           pageNumber:1
         }
-        this.$api.caseList.caseList(params).then(res => {
-          console.log(res)
-        })
+        this.$refs['caseList'].search(params)
+        // this.$api.caseList.caseList(params).then(res => {
+        //   console.log(res)
+        //   this.$router.push({
+        //     name:'caseList',
+        //     params:{
+        //       caseList:res
+        //     }
+        //   })
+        // })
       },
       test(){
         console.log(222)

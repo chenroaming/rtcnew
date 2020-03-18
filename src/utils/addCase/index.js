@@ -47,5 +47,17 @@ export default {
   delLawyer(params){//代理人
     header = {}
     return api.get(urls.delLawyer,params,header)
-  }
+  },
+  addEvidence(data){//上传证据
+    header = {'Content-Type': 'multipart/form-data'}//文件传输时更改请求头为form-data类型
+    return api.post(urls.addEvidence,data,header)
+  },
+  updateEvidence(data){//更新证据
+    header = {'Content-Type': 'multipart/form-data'}//文件传输时更改请求头为form-data类型
+    return api.post(urls.updateEvidence,data,header)
+  },
+  delEvidence(params){//代理人
+    header = {}
+    return api.get(urls.delEvidence,params,header)
+  },
 }

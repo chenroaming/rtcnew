@@ -172,6 +172,13 @@
       methods:{
         submit(){
             console.log(222);
+            if(this.tableData.length < 1){
+                this.$message({
+                    message:'请添加诉讼参与人！',
+                    type:'warning'
+                })
+                return false;
+            }
             this.$emit('listenToChildEvent',2);
         },
         addLitigant(name){
@@ -195,8 +202,10 @@
             const data = {
                 name:'',
                 phone:'',
-                idCard:'',
-                litigantId:this.litigantId
+                idCard:''
+            }
+            if(this.litigantId){
+                data.litigantId = this.litigantId;
             }
             this.form.layerList.push(data);
         },
@@ -287,13 +296,20 @@
             }
         },
         edit(item){
-            console.log(item)
+            if(
+                this.litigationStatusArr.some(res => {
+                    return res.id == item.litigant.litigationStatus.id
+                })
+            ){
+                this.form.litigationType = item.litigant.litigationStatus.id;
+            }else{
+                this.form.litigationType = '';
+            }
             this.litigantId = item.litigant.id;
             this.form.name = item.litigant.litigantName;
             this.form.idCard = item.litigant.identityCard;
             this.form.phone = item.litigant.litigantPhone;
             this.form.litigationStatus = item.litigant.litigantType;
-            this.form.litigationType = item.litigant.litigationStatus.id;
             this.form.idCardType = '';
             this.form.layerList = [];
             if(item.litigant.lawyer.length > 0){

@@ -11,4 +11,7 @@ export default {
     updateTrialLitigant:baseUrl + '/court/case/updateTrialLitigant.jhtml',//修改当事人
     delTrialLitigant:baseUrl + '/court/case/delTrialLitigant.jhtml',//删除当事人
     delLawyer:baseUrl + '/court/case/delLawyer.jhtml',//删除代理人
+    addEvidence:baseUrl + '/court/case/addEvidence.jhtml',//添加证据
+    updateEvidence:baseUrl + '/court/case/updateEvidence.jhtml',//修改证据
+    delEvidence:baseUrl + '/court/case/delEvidence.jhtml',//删除证据
 }
