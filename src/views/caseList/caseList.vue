@@ -69,7 +69,7 @@
                     </div>
                     <div style="width:200px;">
                         <el-button type="success" size="mini">测试房间</el-button>
-                        <el-button type="primary" size="mini">进入房间</el-button>
+                        <el-button type="primary" size="mini" @click="intoRoom(item)">进入房间</el-button>
                     </div>
                     <img style="display: inline-block;
                     width: 10px;
@@ -194,6 +194,7 @@
             this.search(this.$route.params)
             return;
         }
+        
         const params = {
             caseNo:'',
             pageNumber:1
@@ -420,7 +421,21 @@
                     this.totalPage = res.total;
                 }
             })
-        }
+        },
+        intoRoom(item){
+            const params = {
+                caseId:item.caseId,
+                type:0
+            }
+            this.$api.room.getRoomToken(params).then(res => {
+                this.$router.push({
+                    name:'Room',
+                    params:{
+                        roomToken:res
+                    }
+                })
+            })
+        },
       }
     }
   </script>

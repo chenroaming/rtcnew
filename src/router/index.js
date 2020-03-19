@@ -32,9 +32,8 @@ const router = new VueRouter({
 
 router.beforeEach((to,from,next) => {
   // next()
-  // ViewUI.LoadingBar.start()
   store.dispatch('getUserInfo').then(res => {
-    console.log(to.name,res)
+    console.log(to.meta.access,res.roleName)
     if(to.name != 'Home' && res.state != 100){
       document.title = '全在线庭审平台'
       next({

@@ -4,13 +4,15 @@ const Main = () => import('../views/Main.vue')
 const caseList = () => import('../views/caseList/caseList.vue')
 const addCase = () => import('../views/addCase/addCase.vue')
 const roleManage = () => import('../views/roleManage/roleManage.vue')
+const Room = () => import('../views/room/room.vue')
 const routes = [
     {
         path: '/',
         name: 'Home',
         component: Home,
         meta:{
-            title:'全在线庭审平台'
+            access:['法官','当事人','书记员','开庭小助手'],
+            title:'全在线庭审平台',
         }
     },
     {
@@ -30,6 +32,7 @@ const routes = [
                 meta:{
                     title: '案件列表',
                     imgSrc:require('../assets/img/left-icon1.png'),
+                    access:['法官','当事人','书记员','开庭小助手'],
                 }
             },
             {
@@ -40,6 +43,7 @@ const routes = [
                 meta:{
                     title: '添加案件',
                     imgSrc:require('../assets/img/left-icon2.png'),
+                    access:['法官','当事人','书记员','开庭小助手'],
                 }
             },
             {
@@ -50,9 +54,22 @@ const routes = [
                 meta:{
                     title: '角色管理',
                     imgSrc:require('../assets/img/left-icon3.png'),
+                    access:['法官','当事人','书记员','开庭小助手'],
                 }
             },
         ]
+    },
+    {
+        path: '/room',
+        name: 'Room',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        // component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+        component:Room,
+        meta:{
+            title:'庭审房间'
+        }
     }
 ]
 
