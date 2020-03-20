@@ -49,7 +49,7 @@
             <el-form :rules="rules" :model="form" ref="form">
                 <el-form-item label="诉讼地位" prop="litigationType" :label-width="formLabelWidth">
                     <el-select v-model="form.litigationType" placeholder="请选择诉讼地位">
-                        <el-option v-for="(item,index) in litigationStatusArr" :label="item.name" :value="item.id"></el-option>
+                        <el-option v-for="(item,index) in litigationStatusArr" :key="index" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="类型" prop="litigationStatus" :label-width="formLabelWidth">
@@ -82,7 +82,7 @@
                     <el-button type="primary" @click="addLayer" v-show="form.layerList.length < 2"><i class="el-icon-circle-plus"></i>新增代理人</el-button>
                 </el-form-item>
             </el-form>
-            <el-form v-for="(item,index) in form.layerList">
+            <el-form v-for="(item,index) in form.layerList" :key="index">
                 <el-form-item :label-width="formLabelWidth">
                     <span>代理人{{index + 1}}</span>
                     <el-button type="text" siz="mini" @click="delLayer(index,item)">删除</el-button>

@@ -55,7 +55,7 @@
             <el-form :model="form" ref="form">
                 <el-form-item label="当事人" prop="litigationType" :label-width="formLabelWidth">
                     <el-select v-model="form.litigantId" placeholder="请选择当事人">
-                        <el-option v-for="(item,index) in litigantList" :label="item.name" :value="item.id"></el-option>
+                        <el-option v-for="(item,index) in litigantList" :key="index" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="证据名称" prop="name" :label-width="formLabelWidth">

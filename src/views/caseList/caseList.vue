@@ -437,6 +437,7 @@
             }
             this.$api.room.getRoomToken(params).then(res => {
                 if(res.state == 100){
+                    this.$store.dispatch('setWebSocket');
                     this.$router.push({
                         name:'Room',
                         params:{
