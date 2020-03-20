@@ -1,4 +1,4 @@
-import api from '@/utils/apiList'//引入api列表文件
+import api from '@/api/apiList'//引入api列表文件
 const caseInfo = {
     state:{
         lawCaseId:'',//案件Id

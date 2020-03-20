@@ -287,22 +287,29 @@
                     lawCaseId:id
                 }
                 this.$api.caseList.getCaseDetail(params).then(res => {
-                    this.tableData = [];
-                    for(const item of res.litigants){
-                        this.tableData.push(item)
-                        if(item.litigant.lawyer.length > 0){
-                            for(const item2 of item.litigant.lawyer){
-                                const data = {
-                                    litigant:{
-                                        litigationStatus:{name:'代理人'},
-                                        litigantName:item2.agentName,
-                                        identityCard:item2.agentIdentiCard,
-                                        litigantPhone:item2.agentMobile,
+                    if(res.state == 100){
+                        this.tableData = [];
+                        for(const item of res.litigants){
+                            this.tableData.push(item)
+                            if(item.litigant.lawyer.length > 0){
+                                for(const item2 of item.litigant.lawyer){
+                                    const data = {
+                                        litigant:{
+                                            litigationStatus:{name:'代理人'},
+                                            litigantName:item2.agentName,
+                                            identityCard:item2.agentIdentiCard,
+                                            litigantPhone:item2.agentMobile,
+                                        }
                                     }
+                                    this.tableData.push(data);
                                 }
-                                this.tableData.push(data);
                             }
                         }
+                    }else{
+                        this.$message({
+                            message:res.message,
+                            type:'warning'
+                        })
                     }
                     // this.tableData = res.litigants;
                     // console.log(this.tableData)

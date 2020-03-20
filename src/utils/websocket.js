@@ -1,5 +1,4 @@
-import baseUrl from './baseUrl.js'
-const path = window.location.host;
+const path = window.location.host
 const wsuri = 'ws://' + path + '/api/voice/ws.jhtml'
 const webSocketObj = new WebSocket(wsuri)
 webSocketObj.onopen = function(event) {
