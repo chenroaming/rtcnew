@@ -16,4 +16,14 @@ module.exports = {
           }
       },  // 配置多个代理
     },
+    configureWebpack:{//webpack配置
+      performance:{
+        hints:'warning',
+        maxEntrypointSize:50000000,
+        maxAssetSize:50000000,
+        assetFilter: function(assetFilename) {
+          return assetFilename.endsWith('.js');//只给初相关js文件的性能提示
+        }
+      }
+    },
 };

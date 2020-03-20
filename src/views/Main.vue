@@ -1,11 +1,6 @@
 <template>
   <div class="about">
-    <!-- <h1>This is an about page</h1> -->
-    <!-- <P>{{isLogin}}</P>
-    <Button type="primary" @click="test">test</Button>
-    <Button type="primary" @click="upfile">点击上传</Button>
-    <Button type="warning" @click="logout">登出</Button> -->
-    <input type="file" id="getFile" @change="fileChange" multiple style="display: none;">
+    <!-- <input type="file" id="getFile" @change="fileChange" multiple style="display: none;"> -->
     <el-container>
       <el-header>
         <!-- <el-button type="warning" @click="logout">登出</el-button> -->
@@ -124,6 +119,7 @@
           pageNumber:1
         }
         this.$refs['caseList'].search(params)
+        this.nowSelect = 0;
         // this.$api.caseList.caseList(params).then(res => {
         //   console.log(res)
         //   this.$router.push({
@@ -133,48 +129,6 @@
         //     }
         //   })
         // })
-      },
-      test(){
-        console.log(222)
-        // this.$store.dispatch('getUserInfo');
-        // setTimeout(() => {
-        //   console.log(this.getLoginStatus);
-        // },1000)
-        const params = {
-          caseNo:'',
-          pageNumber:1
-        }
-        this.$api.user.caseList(params).then(res => {
-          console.log(res);
-        });
-        // this.$Loading.start();
-        // setTimeout(() => {
-        //   this.$Loading.finish();
-        // },2000)
-        // this.$http.get('main/getUserInfo.jhtml').then(res => {
-        //   console.log(res.data);
-        // })
-        // getUserInfo().then(res => {
-        //   console.log(res);
-        // });
-      },
-      upfile(){
-        document.getElementById('getFile').click();
-      },
-      fileChange(event){
-        this.file = [];
-        for(const item of event.target.files){
-          this.file.push(item);
-        }
-        const data = {
-          file:this.file,
-          evidenceId: '8a96ea540b9649679a7f7b97e32e042e',
-          lawCaseId: '3cb7dcf66d1d4afc9435fee804157cab'
-        }
-        this.$api.user.updateIndictment(data).then(res => {
-          console.log(res);
-          document.getElementById('getFile').value = '';
-        })
       },
       logout(){
         this.$store.dispatch('logout').then(res => {

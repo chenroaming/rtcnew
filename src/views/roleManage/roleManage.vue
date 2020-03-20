@@ -73,7 +73,7 @@
         
       },
       mounted(){        
-        this.$emit('getMessage',3);
+        this.$emit('getMessage',2);
       },
       methods:{
         receive(e){
@@ -97,6 +97,13 @@
         },
         handleCurrentChange(e){
           console.log(e)
+        },
+        search(params){
+          this.$emit('getMessage',1);
+          this.$router.push({
+            name:'caseList',
+            params:params
+          })
         },
       }
     }

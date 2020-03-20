@@ -41,7 +41,7 @@ const routes = [
                 access:['法官','书记员'],
                 component: addCase,
                 meta:{
-                    title: '添加案件',
+                    title: '案件编辑',
                     imgSrc:require('../assets/img/left-icon2.png'),
                     access:['法官','当事人','书记员','开庭小助手'],
                 }
@@ -54,7 +54,7 @@ const routes = [
                 meta:{
                     title: '角色管理',
                     imgSrc:require('../assets/img/left-icon3.png'),
-                    access:['法官','当事人','书记员','开庭小助手'],
+                    access:['法官','书记员'],
                 }
             },
         ]
@@ -62,13 +62,11 @@ const routes = [
     {
         path: '/room',
         name: 'Room',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        // component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
         component:Room,
+        access:['法官','当事人','书记员','开庭小助手'],
         meta:{
-            title:'庭审房间'
+            title:'庭审房间',
+            access:['法官','当事人','书记员','开庭小助手'],
         }
     }
 ]

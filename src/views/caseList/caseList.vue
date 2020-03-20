@@ -16,6 +16,7 @@
             <span>{{count}}个案件</span>
         </div>
         <ul class="case-box">
+            <p v-if="caseList.length == 0">暂无数据</p>
             <li v-for="(item,index) in caseList">
                 <img src="@/assets/img/state-3.png" v-if="!item.isOpen" style="float:right;" alt="">
                 <img src="@/assets/img/state-2.png" v-if="item.isOpen" style="float:right;" alt="">
@@ -435,12 +436,19 @@
                 type:0
             }
             this.$api.room.getRoomToken(params).then(res => {
-                this.$router.push({
-                    name:'Room',
-                    params:{
-                        roomToken:res
-                    }
-                })
+                if(res.state == 100){
+                    this.$router.push({
+                        name:'Room',
+                        params:{
+                            roomToken:res
+                        }
+                    })
+                }else{
+                    this.$message({
+                        message:res.message,
+                        type:'warning'
+                    })
+                }
             })
         },
       }

@@ -48,6 +48,15 @@ router.beforeEach((to,from,next) => {
       document.title = to.meta.title
       next()
     }
+    if(
+      !to.meta.access.some(unit => {
+        return unit == res.roleName
+      }) && res.state == 100
+    ){
+      next({
+        name:'Home'
+      })
+    }
   })
   // .catch(err => {
   //   console.log(err)
