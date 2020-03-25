@@ -3,7 +3,7 @@ import Vue from 'vue'
 // import { Loading } from 'element-ui'
 import { Loading,Message } from 'element-ui'//引入加载效果组件
 Vue.use(Loading)
-// Vue.use(Message)
+Vue.use(Message)
 const service = axios.create({
     // headers:{'Content-Type': 'application/json'},
     timeout:60000
@@ -14,9 +14,10 @@ const options = {
     spinner: 'el-icon-loading',
     background: 'rgba(255, 255, 255, 0.7)'
 }
-let loadingInstance;
+let loadingInstance
 let loadingCount = 0//全局加载效果计数器
 let tipsSwitch = 0
+let showTips = false
 service.defaults.headers.post['Content-Type'] = 'application/json'
 service.defaults.headers.put['Content-Type'] = 'application/json'
 // 添加请求拦截器
@@ -30,7 +31,12 @@ service.interceptors.request.use(
         tipsSwitch ++
         if (config.method === 'post' || config.method === 'put') {
             // post、put 提交时，将对象转换为string, 为处理Java后台解析问题
-            config.data = JSON.stringify(config.params)
+            config.data = JSON.stringify(config.data)
+        }
+        if(config.showTips){
+            showTips = true;
+        }else{
+            showTips = false;
         }
         // 请求发送前进行处理,判断是否使用form-data进行文件传输
         if(config.headers['Content-Type'] == 'multipart/form-data'){
@@ -66,6 +72,14 @@ service.interceptors.response.use(
             loadingInstance.close();//收到回复后隐藏加载效果
         }
         let { data } = response
+        if(showTips) {
+            // console.log(data)
+            if(data.state == 100){
+                Message.success(data.message)
+            }else{
+                Message.warning(data.message)
+            }
+        }
         return data
     },
     (error) => {

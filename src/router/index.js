@@ -33,7 +33,23 @@ const router = new VueRouter({
 router.beforeEach((to,from,next) => {
   // next()
   store.dispatch('getUserInfo').then(res => {
-    console.log(to.meta.access,res.roleName)
+    console.log(to.name);
+    if(!to.name){
+      next({
+        name:'noPage'
+      })
+      return;
+    }
+    if(
+      !to.meta.access.some(unit => {
+        return unit == res.roleName
+      }) && res.state == 100
+    ){
+      next({
+        name:'Home'
+      })
+      return;
+    }
     if(to.name != 'Home' && res.state != 100){
       document.title = '全在线庭审平台'
       next({
@@ -47,15 +63,6 @@ router.beforeEach((to,from,next) => {
     }else{
       document.title = to.meta.title
       next()
-    }
-    if(
-      !to.meta.access.some(unit => {
-        return unit == res.roleName
-      }) && res.state == 100
-    ){
-      next({
-        name:'Home'
-      })
     }
   })
   // .catch(err => {

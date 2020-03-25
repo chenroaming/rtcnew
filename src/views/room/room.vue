@@ -2,8 +2,7 @@
     <div class="room">
       <h1>庭审房间</h1>
       <el-button type="text" @click="outRoom">退出</el-button>
-      <el-button type="primary" @click="sendTest('open')">开庭</el-button>
-      <el-button type="primary" @click="sendTest('close')">休庭</el-button>
+      <chat></chat>
       <video autoPlay muted ref="video" class="video"></video>
       <div id="remote-box">
         <!-- 本地自己的视频流 -->
@@ -26,9 +25,11 @@
     import myRoom from '@/utils/pili.js'
     import { deviceManager } from 'pili-rtc-web'
     import remotePlay from '@/components/room/remotePlay.vue'
+    import chat from '@/components/room/chat.vue'
     export default {
         components:{
             remotePlay,
+            chat,
         },
       data(){
         return {
@@ -37,7 +38,7 @@
             roleName:'',
             name:'',
             address:'',
-            wsObj:null,
+            // wsObj:null,
         }
       },
       computed:{
@@ -53,12 +54,7 @@
             })
             return;
         }
-        try{
-            this.websocketInit();
-        }
-        catch(e){
-            console.log(e)
-        }
+        // this.websocketInit();
 
         try {
             await myRoom.joinRoomWithToken(this.$route.params.roomToken.result);//加入房间
@@ -93,6 +89,10 @@
         }
         catch(e){
             console.log(e)
+            this.$message({
+                message:'请检查摄像头等设备否正常！',
+                type:'error'
+            })
         }
 
         try{
@@ -128,22 +128,6 @@
         });
       },
       methods:{
-        websocketInit(){//ws初始化
-            this.wsObj = this.$store.getters.getWebSocket;
-            this.wsObj.onopen = () => {
-                console.log("WebSocket:已连接");
-            }
-            this.wsObj.onmessage = (e) => {
-                console.log(JSON.parse(e.data))
-            }
-            this.wsObj.onerror = (e) => {
-                console.log("WebSocket:发生错误",e);
-                console.log(e);
-            }
-            this.wsObj.onclose = (e) => {
-                console.log("WebSocket:已关闭",e);
-            }
-        },
         receive(e){//接收子组件消息后放大全屏
             const srcObj = document.getElementsByClassName('video');
             srcObj[0].srcObject = e;
@@ -151,7 +135,10 @@
         outRoom(){
             this.$api.room.closeRoom().then(res => {})
             // this.wsObj.close();
-            this.stream.release();//释放采集流
+            console.log(this.stream)
+            if(this.stream){
+                this.stream.release();//释放采集流
+            }
             myRoom.leaveRoom();//离开房间
             this.$router.push({
                 name:'caseList'
@@ -163,29 +150,6 @@
             const srcObj = document.getElementsByClassName('video');
             srcObj[0].srcObject = domElement.children[1].srcObject;
         },
-        sendTest(status){
-            if(status == 'open'){
-                const data = {
-                    'name': '',
-                    'roleName': '',
-                    'type': 11,
-                    'wav': '',
-                    'content': 1,
-                    'createDate': ''
-                }
-                this.wsObj.send(JSON.stringify(data));
-            }else{
-                const data = {
-                    'name': '',
-                    'roleName': '',
-                    'type': 11,
-                    'wav': '',
-                    'content': 0,
-                    'createDate': ''
-                }
-                this.wsObj.send(JSON.stringify(data));
-            }
-        }
       }
     }
   </script>

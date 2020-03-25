@@ -18,6 +18,7 @@ const user = {
                 api.user.getUserInfo().then(res => {
                     if(res.state == 100){
                         commit('SET_LOGIN',true)
+                        commit('SET_USERINFO',res)
                     }else{
                         commit('SET_LOGIN',false)
                     }

@@ -39,6 +39,7 @@ const app = {
             })
         },
         setWebSocket({ commit }){//设置ws
+            commit('SET_WSOBJ',{});
             commit('SET_WSOBJ',new WebSocket(wsurl));
         },
     }

@@ -223,17 +223,8 @@
                     }
                     this.$api.addCase.delLawyer(data).then(res => {
                         if(res.state == 100){
-                            this.$message({
-                                message:res.message,
-                                type:'success'
-                            })
                             this.form.layerList.splice(index,1);
                             this.getCaseDetail();
-                        }else{
-                            this.$message({
-                                message:res.message,
-                                type:'warning'
-                            })
                         }
                     })
                 }).catch(() => {
@@ -259,10 +250,6 @@
                 this.$api.addCase.addTrialLitigant(data).then(res => {
                     if(res.state == 100){
                         this.dialogFormVisible = false;
-                        this.$message({
-                            message:res.message,
-                            type:'success'
-                        })
                         const data2= {
                             lawCaseId:this.lawCaseId
                         }
@@ -271,27 +258,15 @@
                         })
                         return;
                     }
-                    this.$message({
-                        message:res.message,
-                        type:'warning'
-                    })
                 })
             }else{
                 data.litigantId = this.litigantId;
                 this.$api.addCase.updateTrialLitigant(data).then(res => {
                     if(res.state == 100){
                         this.dialogFormVisible = false;
-                        this.$message({
-                            message:'修改成功',
-                            type:'success'
-                        })
                         this.getCaseDetail();
                         return;
                     }
-                    this.$message({
-                        message:res.message,
-                        type:'warning'
-                    })
                 })
             }
         },
@@ -336,16 +311,7 @@
                 }
                 this.$api.addCase.delTrialLitigant(data).then(res => {
                     if(res.state == 100){
-                        this.$message({
-                            message:res.message,
-                            type:'success'
-                        })
                         this.getCaseDetail();
-                    }else{
-                        this.$message({
-                            message:res.message,
-                            type:'warning'
-                        })
                     }
                 })
             }).catch(() => {

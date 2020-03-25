@@ -25,10 +25,10 @@
         <el-form-item label="案由" style="width: 100%;" prop="caseReason">
             <el-select v-model="form.caseReason" placeholder="请选择" style="width:380px;">
                 <el-option
-                    v-for="(item,index) in options2"
-                    :key="index"
-                    :label="item.name"
-                    :value="item.id">
+                  v-for="(item,index) in options2"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
             </el-select>
         </el-form-item>
@@ -44,15 +44,15 @@
         <el-form-item label="法官" style="width: 45%;" prop="judge">
             <el-select v-model="form.judge" placeholder="请选择" style="width:100px;">
                 <el-option
-                    v-for="(item,index) in judgeList"
-                    :key="index"
-                    :label="item.name"
-                    :value="item.id">
+                  v-for="(item,index) in judgeList"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
             </el-select>
         </el-form-item>
-        <el-form-item label="书记员" style="width: 45%;" prop="clerk">
-            <el-select v-model="form.clerk" placeholder="请选择" style="width:100px;">
+        <el-form-item label="书记员" style="width: 42%;" prop="clerk">
+            <el-select v-model="form.clerk" placeholder="请选择" style="width:110px;">
                 <el-option
                     v-for="(item,index) in clerkList"
                     :key="index"
@@ -77,21 +77,27 @@
             <el-button type="primary" @click="upFile">点击选择文件</el-button>
             <div style="height: 50px;overflow-y: scroll;width: 350px;" v-show="filesList.length > 0">
               <p v-for="(item,index) in filesList">
-                <span>{{item.name}}</span>
+                <span @click="showFile(item)">{{item.name}}</span>
                 <el-button type="text" @click="delFile(index,item.id)">删除</el-button>
               </p>
             </div>
           </div>
         </el-form-item>
       </el-form>
+      <showFile ref="toFile" :fileItem="fileItem"></showFile>
     </div>
   </template>
   
   <script>
+    import showFile from '@/components/addCase/showFile.vue'
     export default {
         name: 'step1',
+        components: {
+          showFile
+        },
       data(){
         return {
+          fileItem:{},
           options:[
             {name:'民事一审',id:'民事一审'},
             {name:'民事二审',id:'民事二审'},
@@ -196,17 +202,8 @@
                     this.$store.dispatch('setCaseType',this.form.caseType);
                     this.$api.addCase.addIndictment(fileData).then(res => {
                       if(res.state == 100){
-                        this.$message({
-                          message:'添加案件成功！',
-                          type:'success'
-                        })
                         this.$emit('listenToChildEvent',true);
                       }
-                    })
-                  }else{
-                    this.$message({
-                      message:res.message,
-                      type:'warning'
                     })
                   }
                 })
@@ -226,17 +223,8 @@
                     }
                     this.$api.addCase.updateIndictment(fileData).then(res => {
                       if(res.state == 100){
-                        this.$message({
-                          message:'修改案件成功！',
-                          type:'success'
-                        })
                         this.$emit('listenToChildEvent',true);
                       }
-                    })
-                  }else{
-                    this.$message({
-                      message:res.message,
-                      type:'warning'
                     })
                   }
                 })
@@ -267,10 +255,6 @@
             this.$api.addCase.delFile(data).then(res => {
               if(res.state == 100){
                 this.filesList.splice(index,1);
-                this.$message({
-                  message:res.message,
-                  type:'success'
-                })
               }
             })
           }else{
@@ -303,7 +287,11 @@
               this.indictmentId = res.indictment[0].id;
             }
           })
-        }
+        },
+        showFile(item){
+          this.fileItem = item;
+          this.$refs.toFile.showEvidence();
+        },
       }
     }
   </script>

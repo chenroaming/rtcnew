@@ -3,7 +3,7 @@ import baseUrl from './baseUrl.js'
 let instance = axios()
 
 export default {
-  get(url, params, headers) {
+  get(url, params, headers,showTips) {
     let options = {}
 
     if (params) {
@@ -12,15 +12,21 @@ export default {
     if (headers) {
       options.headers = headers
     }
+    if(showTips){
+      options.showTips = showTips
+    }
     return instance.get(url, options)
   },
-  post(url, params, headers, data) {
+  post(url, params, headers, data,showTips) {
     let options = {}
     if (params) {
       options.params = params
     }
     if (headers) {
       options.headers = headers
+    }
+    if(showTips) {
+      options.showTips = showTips
     }
     return instance.post(url, data, options)
   },

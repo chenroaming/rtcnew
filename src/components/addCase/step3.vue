@@ -69,7 +69,7 @@
                 </el-form-item>
                 <el-form-item label="证据文件" prop="file" :label-width="formLabelWidth">
                     <p v-for="(item,index) in filesList">
-                        <span>{{item.name}}</span>
+                        <span @click="showFile(item)">{{item.name}}</span>
                         <i class="el-icon-circle-close" style="cursor: pointer;" @click="delfiles(item,index,'online')"></i>
                     </p>
                     <p v-for="(item,index) in fileList2">
@@ -88,14 +88,20 @@
                 <el-button type="primary" @click="upEvi">确 定</el-button>
             </div>
         </el-dialog>
+        <showFile ref="toFile" :fileItem="fileItem"></showFile>
     </div>
   </template>
   
   <script>
+    import showFile from '@/components/addCase/showFile.vue'
     export default {
         name: 'step3',
+        components: {
+          showFile
+        },
       data(){
         return {
+            fileItem:{},
             dialogFormVisible:false,
             formLabelWidth:'100px',
             tableData:[],
@@ -159,17 +165,8 @@
                 this.$api.addCase.addEvidence(data).then(res => {
                     console.log(res)
                     if(res.state == 100){
-                        this.$message({
-                            message:res.message,
-                            type:'success'
-                        })
                         this.dialogFormVisible = false;
                         this.getCaseDetail();
-                    }else{
-                        this.$message({
-                            message:res.message,
-                            type:'warning'
-                        })
                     }
                 })
                 return;
@@ -186,17 +183,8 @@
             }
             this.$api.addCase.updateEvidence(data).then(res => {
                 if(res.state == 100){
-                    this.$message({
-                        message:res.message,
-                        type:'success'
-                    })
                     this.dialogFormVisible = false;
                     this.getCaseDetail();
-                }else{
-                    this.$message({
-                        message:res.message,
-                        type:'warning'
-                    })
                 }
             }) 
         },
@@ -223,17 +211,8 @@
                         }
                         this.$api.addCase.delFile(data).then(res => {
                             if(res.state == 100){
-                                this.$message({
-                                    message:res.message,
-                                    type:'success'
-                                })
                                 this.getCaseDetail();
                                 this.filesList.splice(index,1);
-                            }else{
-                                this.$message({
-                                    message:res.message,
-                                    type:'warning'
-                                })
                             }
                         })
                     }).catch(() => {
@@ -266,16 +245,7 @@
                 }
                 this.$api.addCase.delEvidence(data).then(res => {
                     if(res.state == 100){
-                        this.$message({
-                            message:res.message,
-                            type:'success'
-                        })
                         this.getCaseDetail();
-                    }else{
-                        this.$message({
-                            message:res.message,
-                            type:'warning'
-                        })
                     }
                 })
             }).catch(() => {
@@ -311,7 +281,11 @@
                     }
                 }
             })
-        }
+        },
+        showFile(item){
+          this.fileItem = item;
+          this.$refs.toFile.showEvidence();
+        },
       }
     }
   </script>

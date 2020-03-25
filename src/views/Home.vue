@@ -3,6 +3,7 @@
     <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <div class="header">
+      <faceCheck ref="faceCheck"></faceCheck>
       <div class="login-form">
         <p>
           <el-button type="primary" @click="loginType = 'court'" size="mini" :plain="loginType != 'court'">法官</el-button>
@@ -94,11 +95,11 @@
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 import md5 from 'md5'
-
+import faceCheck from '@/components/faceCheck/faceCheck.vue'
 export default {
   name: 'Home',
   components: {
-    // HelloWorld
+    faceCheck
   },
   data(){
     return {
@@ -166,19 +167,26 @@ export default {
       this.$store.dispatch('login',data).then(res => {
         console.log(res)
         if(res.state == 100){
-          this.$message({
-            message: res.message,
-            type: 'success'
-          });
+          
           const setType = {
             roleType : res.data.roles[0].type
           }
          this.$api.user.optionRole(setType).then(res => {
-           if(res.state == 100){
+          this.$message({
+            message: res.message,
+            type: 'success'
+          });
+          if(res.state == 100 && !res.data.isFace){
             this.$router.push({
               name:'caseList'
             })
-           }
+          }
+          if(res.state == 100 && res.data.isFace){
+            // this.$store.dispatch('logout').then(res => {
+            //   console.log(res);
+            // });
+            this.$refs.faceCheck.show();
+          }
          })//调用设置用户类型接口
         }else{
           this.$message({

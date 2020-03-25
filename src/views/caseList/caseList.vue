@@ -21,18 +21,21 @@
                 <img src="@/assets/img/state-3.png" v-if="!item.isOpen" style="float:right;" alt="">
                 <img src="@/assets/img/state-2.png" v-if="item.isOpen" style="float:right;" alt="">
                 <div style="text-align: left;padding: 0px 15px;">
-                    <el-checkbox @change="selectItem($event,item)" v-model="item.isChecked">
+                    <el-checkbox v-if="isShow" @change="selectItem($event,item)" v-model="item.isChecked">
                         <span style="font-size: 20px;font-weight: bold;color: #282828;">
                             {{item.caseNo}}
                         </span>
                     </el-checkbox>
-                    <el-button type="text" style="float: right;" @click="del(item)">删除</el-button>
+                    <span v-else style="font-size: 20px;font-weight: bold;color: #282828;">
+                        {{item.caseNo}}
+                    </span>
+                    <el-button type="text" style="float: right;" @click="del(item)" v-if="isShow">删除</el-button>
                     <el-button type="text" style="float: right;" @click="edit(item)">编辑</el-button>
                 </div>
                 <p class="title-box">
                     <span>开庭时间：{{item.openDate}}</span>
-                    <span>开庭类型：在线庭审</span>
-                    <span>案件类型：民事一审</span>
+                    <span>开庭类型：{{item.trialType}}</span>
+                    <span>案件类型：{{item.caseType}}</span>
                 </p>
                 <div class="feature-box">
                     <div class="feature-content">
@@ -75,9 +78,8 @@
                     <img style="display: inline-block;
                     width: 10px;
                     height: 15px;
-                    margin-top: 5px;
                     margin-right: 55px;
-                    cursor: pointer;" src="@/assets/img/arrow-down.png" class="icon_arrowDown" :class="{'icon_arrowUp':nowIndex == index && item.isShow,'icon_arrowDown':nowIndex == index && !item.isShow}" @click="item.isShow = !item.isShow;getRecord(item.caseId,item.isShow,index)" alt="">
+                    cursor: pointer;position: absolute;top: 110px;" src="@/assets/img/arrow-down.png" class="icon_arrowDown" :class="{'icon_arrowUp':nowIndex == index && item.isShow,'icon_arrowDown':nowIndex == index && !item.isShow}" @click="item.isShow = !item.isShow;getRecord(item.caseId,item.isShow,index)" alt="">
                 </div>
                 <el-table
                     :data="tableData"
@@ -106,16 +108,29 @@
                     label="手机号码">
                     </el-table-column>
                     <el-table-column
-                    label="操作">
-                    <template slot-scope="scope">
-                        <img style="cursor: pointer;" title="发送短信" src="@/assets/img/message-btn.png" @click="sendM(scope.row,item)" alt="">
-                    </template>
+                    label="操作" width="50px" v-if="isShow">
+                        <template slot-scope="scope">
+                            <!-- <img style="cursor: pointer;" title="发送短信" src="@/assets/img/message-btn.png" @click="sendM(scope.row,item)" alt=""> -->
+                            <i class="el-icon-chat-line-square" style="cursor: pointer;" @click="sendM(scope.row,item)"></i>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                    label="面部识别开关" width="120px" v-if="isShow">
+                        <template slot-scope="scope">
+                            <el-switch
+                            v-model="scope.row.litigant.faceCheck"
+                            widht="10"
+                            @change="changeIsFace(scope.row)"
+                            active-color="#13ce66"
+                            inactive-color="#ff4949">
+                            </el-switch>
+                        </template>
                     </el-table-column>
                 </el-table>
             </li>
         </ul>
         <div class="right-footer">
-            <div style="width: 200px;float: left;">
+            <div style="width: 200px;float: left;" v-if="isShow">
                 <el-checkbox v-model="allSelect" @change="selectAll($event)" style="margin-right: 10px;">
                     全选
                 </el-checkbox>
@@ -165,7 +180,7 @@
     },
       data(){
         return {
-            time:'2020年03月13日',
+            time:'',
             count:3,
             caseList:[],
             isSelect:0,
@@ -181,7 +196,10 @@
                 total:100,
                 un:50,
                 ed:50
-            }
+            },
+            roleArr:['法官','书记员'],
+            isShow:false,
+            nowPage:1,
         }
       },
       computed:{
@@ -191,16 +209,25 @@
         
       },
       mounted(){
+        const nowRole = this.$store.getters.getUserInfo.roleName;
+        console.log(nowRole)
+        if(this.roleArr.some(res => {
+            return res == nowRole;
+        })){
+            this.isShow = true;
+        }
+        const today = new Date();
+        this.time = today.getFullYear() + '年' + (today.getMonth()+1) + '月' + today.getDate() + '日';
         if(this.$route.params){
             this.search(this.$route.params)
             return;
         }
-        
         const params = {
             caseNo:'',
             pageNumber:1
         }
         this.search(params);
+        
       },
       methods:{
         selectItem(e,item){
@@ -258,6 +285,7 @@
 
         },
         handleCurrentChange(val){
+            this.nowPage = val;
             const params = {
                 caseNo:'',
                 pageNumber:val
@@ -273,7 +301,9 @@
                             clerk:item.clerk,
                             isShow:false,
                             caseId:item.caseId,
-                            isOpen:item.isOpen
+                            isOpen:item.isOpen,
+                            trialType:item.trialType,
+                            caseType:item.caseType,
                         }
                         this.caseList.push(params);
                     }
@@ -300,6 +330,8 @@
                                             litigantName:item2.agentName,
                                             identityCard:item2.agentIdentiCard,
                                             litigantPhone:item2.agentMobile,
+                                            faceCheck:item2.faceCheck,
+                                            id:item2.id,
                                         }
                                     }
                                     this.tableData.push(data);
@@ -339,17 +371,17 @@
                         type:'info'   
                     }).then(() => {
                         this.$api.caseList.sendMessage(params).then(res => {
-                        if(res.state == 100){
-                            this.$message({
-                            type: 'success',
-                            message: res.message
-                            });
-                        }else{
-                            this.$message({
-                            type: 'warning',
-                            message: res.message
-                            });
-                        }
+                        // if(res.state == 100){
+                        //     this.$message({
+                        //     type: 'success',
+                        //     message: res.message
+                        //     });
+                        // }else{
+                        //     this.$message({
+                        //     type: 'warning',
+                        //     message: res.message
+                        //     });
+                        // }
                         })
                     })
                     .catch(() => {
@@ -383,8 +415,9 @@
                 }
             })
         },
-        clickDay(data) {
-            console.log(data); //选中某天
+        clickDay(data) { //选中某天
+            const choiceDay = data.split('/');
+            this.time = choiceDay[0] + '年' + choiceDay[1] + '月' + choiceDay[2] + '日';
         },
         edit(item){
             this.$store.dispatch('setCaseId',item.caseId);
@@ -399,10 +432,29 @@
                 confirmButtonText: '确定',
                 type: 'warning'
             }).then(() => {
-                this.$message({
-                    message:'已删除',
-                    type:'success'
+                const data = {
+                    lawCaseId:item.caseId
+                }
+                this.$api.caseList.delLawCase(data).then(res => {
+                    if(res.state == 100){
+                        const params = {
+                            caseNo:'',
+                            pageNumber:this.nowPage
+                        }
+                        this.search(params);
+                        // this.$message({
+                        //     message:res.message,
+                        //     type:'success'
+                        // })
+                    }
+                    // else{
+                    //     this.$message({
+                    //         message:res.message,
+                    //         type:'warning'
+                    //     })
+                    // }
                 })
+                
             })
             .catch(() => {
 
@@ -421,7 +473,9 @@
                             clerk:item.clerk,
                             isShow:false,
                             caseId:item.caseId,
-                            isOpen:item.isOpen
+                            isOpen:item.isOpen,
+                            trialType:item.trialType,
+                            caseType:item.caseType,
                         }
                         this.caseList.push(params);
                     } 
@@ -450,6 +504,27 @@
                         type:'warning'
                     })
                 }
+            })
+        },
+        changeIsFace(item){
+            const params = {
+                idCard:item.litigant.identityCard,
+                check:item.litigant.faceCheck ? 1 : 0,
+                litigantId:item.litigant.litigationStatus.name == '代理人' ? '' : item.litigant.id,
+                lawyerId:item.litigant.litigationStatus.name == '代理人' ? item.litigant.id : '',
+            }
+            this.$api.caseList.changeIsFace(params).then(res => {
+                // if(res.state == 100){
+                //     this.$message({
+                //         message:res.message,
+                //         type:'success'
+                //     })
+                // }else{
+                //     this.$message({
+                //         message:res.message,
+                //         type:'warning'
+                //     })
+                // }
             })
         },
       }
@@ -556,6 +631,7 @@
             margin: 0 auto;
             padding-top: 20px;
             margin-bottom: 10px;
+            position: relative;
             p:nth-child(2){
                 text-align: left;
                 padding: 0px 50px;

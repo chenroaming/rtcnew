@@ -30,12 +30,13 @@
                     @click="edit(scope.row)">
                     编辑
                 </el-button>
-                <el-button
+                <!-- <el-button
                     type="text"
                     size="small"
                     @click="del(scope.row)">
                     删除
-                </el-button>
+                </el-button> -->
+                <i class="el-icon-chat-line-square" style="margin-left: 10px;cursor: pointer;" @click="send(scope.row)"></i>
             </template>
             </el-table-column>
         </el-table>
@@ -62,14 +63,69 @@
         }
       },
       mounted(){
-        
+        this.$api.addCase.getJudgeBriefCourt().then(res => {
+            console.log(res)
+            this.tableData = [];
+            for(const item of res.judgeList){
+                const data = {
+                    roleName:'法官',
+                    name:item.name,
+                    phone:item.phone,
+                    id:item.id
+                }
+                this.tableData.push(data);
+            }
+            for(const item of res.jurorList){
+                const data = {
+                    roleName:'陪审员',
+                    name:item.name,
+                    phone:item.phone,
+                    id:item.id
+                }
+                this.tableData.push(data);
+            }
+            for(const item of res.clerkList){
+                const data = {
+                    roleName:'书记员',
+                    name:item.name,
+                    phone:item.phone,
+                    id:item.id
+                }
+                this.tableData.push(data);
+            }
+        })
       },
       methods:{
         edit(item){
             this.$emit('listenToChild',item);
         },
-        del(item){
+        send(item){
             // this.$emit('listenToChild',item);
+            console.log(item)
+            if(!item.phone){
+                this.$message({
+                    message:'请填写手机号码',
+                    type:'warning'
+                })
+                return;
+            }
+            const data = {
+                judgeId:item.id,
+                phone:item.phone
+            }
+            this.$api.role.sendJudgeMessage(data).then(res => {
+                // if(res.state == 100){
+                //     this.$message({
+                //         message:res.message,
+                //         type:'success'
+                //     })
+                // }else{
+                //     this.$message({
+                //         message:res.message,
+                //         type:'warning'
+                //     })
+                // }
+            })
         }
       }
     }

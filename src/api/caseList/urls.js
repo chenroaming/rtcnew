@@ -5,4 +5,6 @@ export default {
   getMessageInfo:baseUrl + '/court/case/getMessageInfo.jhtml',//获取发送短信内容
   sendMessage:baseUrl + '/court/case/sendMessage.jhtml',//发送短信
   downRecord:baseUrl + '/court/case/downRecord.jhtml',//下载笔录
+  changeIsFace:baseUrl + '/main/changeIsFace.jhtml',//面部识别开关
+  delLawCase: baseUrl + '/court/case/delLawCase.jhtml',//删除案件
 }

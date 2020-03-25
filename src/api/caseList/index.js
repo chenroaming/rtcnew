@@ -15,9 +15,15 @@ export default {
     return api.get(urls.getMessageInfo, params, header)
   },
   sendMessage(params){
-    return api.get(urls.sendMessage, params, header)
+    return api.get(urls.sendMessage, params, header,true)
   },
   downRecord(params){
     return api.get(urls.downRecord,params,header)
-  }
+  },
+  changeIsFace(params){
+    return api.get(urls.changeIsFace,params,header,true)
+  },
+  delLawCase(params){
+    return api.get(urls.delLawCase,params,header,true)
+  },
 }

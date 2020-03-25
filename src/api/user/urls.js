@@ -4,5 +4,6 @@ export default {
   login: baseUrl + '/main/login.jhtml',//登录
   upfile:baseUrl + '/court/case/updateIndictment.jhtml',//上传文件
   logout:baseUrl + '/main/loginOut.jhtml',//登出
-  optionRole:baseUrl + '/main/optionRole.jhtml'//设置用户信息
+  optionRole:baseUrl + '/main/optionRole.jhtml',//设置用户信息
+  faceRecognition:baseUrl + '/main/faceRecognition.jhtml',//人脸识别接口
 }

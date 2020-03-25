@@ -21,13 +21,13 @@
           :total="totalPage">
         </el-pagination>
       </div>
-      <el-dialog :close-on-click-modal="false" width="500px" title="新增角色" :visible.sync="dialogFormVisible">
+      <el-dialog :close-on-click-modal="false" width="500px" :title="form.id ? '编辑角色' : '新增角色'" :visible.sync="dialogFormVisible">
         <el-form :model="form" ref="form">
           <el-form-item label="角色名称" prop="roleName" :label-width="formLabelWidth">
               <el-radio-group v-model="form.roleName">
-                  <el-radio label="法官">法官</el-radio>
-                  <el-radio label="书记员">书记员</el-radio>
-                  <el-radio label="人民陪审员">人民陪审员</el-radio>
+                  <el-radio :disabled="noChoice" label="0">法官</el-radio>
+                  <el-radio :disabled="noChoice" label="1">书记员</el-radio>
+                  <el-radio :disabled="noChoice" label="2">人民陪审员</el-radio>
               </el-radio-group>
           </el-form-item>
           <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
@@ -60,10 +60,12 @@
           form:{
             roleName:'',
             name:'',
-            phone:''
+            phone:'',
+            id:'',
           },
           totalPage:5,
           currentPage:1,
+          noChoice:false,
         }
       },
       computed:{
@@ -80,20 +82,66 @@
           console.log(e)
           this.form.name = e.name;
           this.form.roleName = e.roleName;
-          this.phone = e.phone;
+          this.form.phone = e.phone;
+          this.form.id = e.id;
           this.dialogFormVisible = true;
+          this.noChoice = true;
         },
         newRole(){
+          this.form = {
+            roleName:'',
+            name:'',
+            phone:'',
+            id:''
+          },
+          this.noChoice = false;
           this.dialogFormVisible = true;
         },
         submit(){
+          console.log(this.form)
+          if(this.form.id){
+            const data = {
+              name:this.form.name,
+              phone:this.form.phone,
+              judgeId:this.form.id
+            }
+            this.$api.role.updateJudge(data).then(res => {
+              if(res.state == 100){
+                this.$message({
+                  message:res.message,
+                  type:'success'
+                })
+                this.dialogFormVisible = false;
+              }else{
+                this.$message({
+                  message:res.message,
+                  type:'warning'
+                })
+              }
+            })
+            return;
+          }
           const data = {
             name:this.form.name,
-            roleName:this.form.roleName,
+            type:this.form.roleName,
             phone:this.form.phone
           }
+          this.$api.role.addJudge(data).then(res => {
+            console.log(res)
+            if(res.state == 100){
+              this.$message({
+                message:res.message,
+                type:'success'
+              })
+              this.dialogFormVisible = false;
+            }else{
+              this.$message({
+                message:res.message,
+                type:'warning'
+              })
+            }
+          })
           this.data = data;
-          this.dialogFormVisible = false;
         },
         handleCurrentChange(e){
           console.log(e)
