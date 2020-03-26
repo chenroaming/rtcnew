@@ -2,7 +2,8 @@ import api from '@/api/apiList'//引入api列表文件
 const user = {
     state:{
         isLogin:false,//登录状态
-        userInfo:{}//用户信息
+        userInfo:{},//用户信息
+        canEdit:false,//编辑状态
     },
     mutations:{
         SET_LOGIN:(state, status) => {
@@ -10,7 +11,10 @@ const user = {
         },
         SET_USERINFO:(state, info) => {
             state.userInfo = info
-        }
+        },
+        SET_EDIT:(state, status) => {
+            state.canEdit = status
+        },
     },
     actions: {
         getUserInfo({ commit }){
@@ -19,6 +23,11 @@ const user = {
                     if(res.state == 100){
                         commit('SET_LOGIN',true)
                         commit('SET_USERINFO',res)
+                        if(res.roleName == '法官' || res.roleName == '书记员'){
+                            commit('SET_EDIT',true)
+                        }else{
+                            commit('SET_EDIT',false)
+                        }
                     }else{
                         commit('SET_LOGIN',false)
                     }

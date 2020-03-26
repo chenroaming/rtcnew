@@ -16,4 +16,7 @@ export default {
     // return出去了一个promise
     return api.get(urls.sendJudgeMessage, params, header,true)
   },
+  getJudges(params){
+    return api.get(urls.getJudges, params,header)
+  }
 }

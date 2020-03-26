@@ -87,17 +87,8 @@
                 }
                 this.$api.user.faceRecognition(data).then(res => {
                     if(res.state == 100){
-                        this.$message({
-                            message:res.message,
-                            type:'success'
-                        })
                         this.$router.push({
                             name:'caseList'
-                        })
-                    }else{
-                        this.$message({
-                            message:res.message,
-                            type:'warning'
                         })
                     }
                 })     

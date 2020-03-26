@@ -158,24 +158,19 @@ export default {
       this.codeSrc = '/api/main/code.jhtml?tm=' + Math.random();
     },
     login(){
+      const {user,password,code} = this.formLabelAlign;
       const data = {
-        username:this.formLabelAlign.user,
-        password:md5(this.formLabelAlign.password),
+        username:user,
+        password:md5(password),
         loginType:this.loginType,
-        code: this.formLabelAlign.code
+        code:code
       }
       this.$store.dispatch('login',data).then(res => {
-        console.log(res)
         if(res.state == 100){
-          
           const setType = {
             roleType : res.data.roles[0].type
           }
          this.$api.user.optionRole(setType).then(res => {
-          this.$message({
-            message: res.message,
-            type: 'success'
-          });
           if(res.state == 100 && !res.data.isFace){
             this.$router.push({
               name:'caseList'
@@ -188,17 +183,12 @@ export default {
             this.$refs.faceCheck.show();
           }
          })//调用设置用户类型接口
-        }else{
-          this.$message({
-            message: res.message,
-            type: 'warning'
-          });
         }
       });
     },
     logout(){
       this.$store.dispatch('logout').then(res => {
-        console.log(res);
+        
       });
     }
   }

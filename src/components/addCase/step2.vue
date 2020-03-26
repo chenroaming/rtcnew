@@ -1,6 +1,6 @@
 <template>
     <div class="step1">
-        <el-button type="primary" @click="addLitigant('form')"><i class="el-icon-circle-plus"></i>新增诉讼参与人</el-button>
+        <el-button v-if="isEdit" type="primary" @click="addLitigant('form')"><i class="el-icon-circle-plus"></i>新增诉讼参与人</el-button>
         <el-table
             :data="tableData"
             height="300"
@@ -28,7 +28,7 @@
             label="手机号码">
             </el-table-column>
             <el-table-column
-            label="操作">
+            label="操作" v-if="isEdit">
             <template slot-scope="scope">
                 <el-button
                     type="text"
@@ -142,6 +142,7 @@
             caseType:'',
             litigantId:'',
             visible2:false,
+            isEdit:false,
         }
       },
       computed:{
@@ -157,6 +158,7 @@
         }
       },
       mounted(){
+        this.isEdit = this.$store.getters.getEditStatus;
         this.caseType = this.$store.getters.getCaseType;
         this.lawCaseId = this.$store.getters.getCaseId;
         const data = {
@@ -172,6 +174,10 @@
       methods:{
         submit(){
             console.log(222);
+            if(!this.isEdit){
+                this.$emit('listenToChildEvent',2);
+                return;
+            }
             if(this.tableData.length < 1){
                 this.$message({
                     message:'请添加诉讼参与人！',

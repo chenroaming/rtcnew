@@ -3,7 +3,7 @@ import baseUrl from './baseUrl.js'
 let instance = axios()
 
 export default {
-  get(url, params, headers,showTips) {
+  get(url, params, headers,showTips) {//最后的参数指示该方式接口是否需要弹窗提示
     let options = {}
 
     if (params) {
@@ -17,7 +17,7 @@ export default {
     }
     return instance.get(url, options)
   },
-  post(url, params, headers, data,showTips) {
+  post(url, params, headers, data,showTips) {//最后的参数指示该方式接口是否需要弹窗提示
     let options = {}
     if (params) {
       options.params = params

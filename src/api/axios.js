@@ -1,9 +1,6 @@
 import axios from 'axios'
 import Vue from 'vue'
-// import { Loading } from 'element-ui'
 import { Loading,Message } from 'element-ui'//引入加载效果组件
-Vue.use(Loading)
-Vue.use(Message)
 const service = axios.create({
     // headers:{'Content-Type': 'application/json'},
     timeout:60000
@@ -16,8 +13,7 @@ const options = {
 }
 let loadingInstance
 let loadingCount = 0//全局加载效果计数器
-let tipsSwitch = 0
-let showTips = false
+let showTips = false//是否需要弹窗提示开关
 service.defaults.headers.post['Content-Type'] = 'application/json'
 service.defaults.headers.put['Content-Type'] = 'application/json'
 // 添加请求拦截器
@@ -28,7 +24,6 @@ service.interceptors.request.use(
             // console.log('isOpen')
         }
         loadingCount ++
-        tipsSwitch ++
         if (config.method === 'post' || config.method === 'put') {
             // post、put 提交时，将对象转换为string, 为处理Java后台解析问题
             config.data = JSON.stringify(config.data)
@@ -67,12 +62,11 @@ service.interceptors.request.use(
 service.interceptors.response.use(
     (response) => {
         loadingCount --
-        tipsSwitch --
         if(loadingCount == 0){
             loadingInstance.close();//收到回复后隐藏加载效果
         }
-        let { data } = response
-        if(showTips) {
+        let { data } = response//对象解构，直接获取回复消息中的data
+        if(showTips) {//是否需要弹窗提示
             // console.log(data)
             if(data.state == 100){
                 Message.success(data.message)

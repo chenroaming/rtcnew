@@ -50,6 +50,7 @@
       data(){
         return {
             tableData:[],
+            roleType:['法官','书记员','陪审员'],
         }
       },
       computed:{
@@ -59,40 +60,32 @@
       },
       watch:{
         getData(curval,oldval){
-            this.tableData.push(curval);
+            // this.tableData.push(curval);
+            this.tableData = [];
+            // console.log(curval)
+            for(const item of curval){
+                const data = {
+                    roleName:this.roleType[item.judgeType],
+                    name:item.name,
+                    phone:item.phone,
+                    id:item.id
+                }
+                this.tableData.push(data);
+            }
         }
       },
       mounted(){
-        this.$api.addCase.getJudgeBriefCourt().then(res => {
-            console.log(res)
-            this.tableData = [];
-            for(const item of res.judgeList){
+        this.$api.role.getJudges().then(res => {
+            this.$emit('getPage',res)
+            for (const item of res.judgeList){
                 const data = {
-                    roleName:'法官',
+                    roleName:this.roleType[item.judgeType],
                     name:item.name,
                     phone:item.phone,
                     id:item.id
                 }
                 this.tableData.push(data);
-            }
-            for(const item of res.jurorList){
-                const data = {
-                    roleName:'陪审员',
-                    name:item.name,
-                    phone:item.phone,
-                    id:item.id
-                }
-                this.tableData.push(data);
-            }
-            for(const item of res.clerkList){
-                const data = {
-                    roleName:'书记员',
-                    name:item.name,
-                    phone:item.phone,
-                    id:item.id
-                }
-                this.tableData.push(data);
-            }
+            } 
         })
       },
       methods:{
@@ -113,19 +106,7 @@
                 judgeId:item.id,
                 phone:item.phone
             }
-            this.$api.role.sendJudgeMessage(data).then(res => {
-                // if(res.state == 100){
-                //     this.$message({
-                //         message:res.message,
-                //         type:'success'
-                //     })
-                // }else{
-                //     this.$message({
-                //         message:res.message,
-                //         type:'warning'
-                //     })
-                // }
-            })
+            this.$api.role.sendJudgeMessage(data).then(res => {})
         }
       }
     }

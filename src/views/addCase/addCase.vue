@@ -66,8 +66,7 @@
           if(e){
             this.nowActive ++;
             if(this.nowActive > 3){
-              // this.nowActive = 1;
-              this.$emit('getMessage',1);
+              this.$emit('getMessage',0);
               this.$router.push({
                 name:'caseList'
               })

@@ -3,14 +3,14 @@
       <el-form ref="form" :rules="rules" label-position="right" :inline="true" size="mini" :model="form" label-width="120px">
         <el-form-item label="开庭类型" style="width: 100%;" prop="courtType">
           <el-radio-group v-model="form.courtType">
-            <el-radio label="在线调解">在线调解</el-radio>
-            <el-radio label="法庭调查">法庭调查</el-radio>
-            <el-radio label="在线庭审">在线庭审</el-radio>
-            <el-radio label="听证">听证</el-radio>
+            <el-radio :disabled="!isEdit" label="在线调解">在线调解</el-radio>
+            <el-radio :disabled="!isEdit" label="法庭调查">法庭调查</el-radio>
+            <el-radio :disabled="!isEdit" label="在线庭审">在线庭审</el-radio>
+            <el-radio :disabled="!isEdit" label="听证">听证</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="案件类型" style="width: 100%;" prop="caseType">
-            <el-select v-model="form.caseType" placeholder="请选择" style="width:380px;">
+            <el-select v-model="form.caseType" :disabled="!isEdit" placeholder="请选择" style="width:380px;">
                 <el-option
                     v-for="(item,index) in options"
                     :key="index"
@@ -20,10 +20,10 @@
             </el-select>
         </el-form-item>
         <el-form-item label="案号" style="width: 100%;" prop="caseNo">
-            <el-input v-model="form.caseNo" placeholder="请输入案号" style="width:380px;"></el-input>
+            <el-input :disabled="!isEdit" v-model="form.caseNo" placeholder="请输入案号" style="width:380px;"></el-input>
         </el-form-item>
         <el-form-item label="案由" style="width: 100%;" prop="caseReason">
-            <el-select v-model="form.caseReason" placeholder="请选择" style="width:380px;">
+            <el-select :disabled="!isEdit" v-model="form.caseReason" placeholder="请选择" style="width:380px;">
                 <el-option
                   v-for="(item,index) in options2"
                   :key="index"
@@ -38,11 +38,11 @@
                 format="yyyy-MM-dd HH:mm"
                 value-format= "yyyy-MM-dd HH:mm"
                 type="datetime"
-                placeholder="选择日期时间" style="width:380px;">
+                placeholder="选择日期时间" :disabled="!isEdit" style="width:380px;">
             </el-date-picker>
         </el-form-item>
         <el-form-item label="法官" style="width: 45%;" prop="judge">
-            <el-select v-model="form.judge" placeholder="请选择" style="width:100px;">
+            <el-select :disabled="!isEdit" v-model="form.judge" placeholder="请选择" style="width:100px;">
                 <el-option
                   v-for="(item,index) in judgeList"
                   :key="index"
@@ -52,7 +52,7 @@
             </el-select>
         </el-form-item>
         <el-form-item label="书记员" style="width: 42%;" prop="clerk">
-            <el-select v-model="form.clerk" placeholder="请选择" style="width:110px;">
+            <el-select :disabled="!isEdit" v-model="form.clerk" placeholder="请选择" style="width:110px;">
                 <el-option
                     v-for="(item,index) in clerkList"
                     :key="index"
@@ -62,7 +62,7 @@
             </el-select>
         </el-form-item>
         <el-form-item label="人民陪审员" style="width: 100%;" prop="juror">
-            <el-select v-model="form.juror" value-key="id" multiple placeholder="请选择" style="width:380px;">
+            <el-select :disabled="!isEdit" v-model="form.juror" value-key="id" multiple placeholder="请选择" style="width:380px;">
                 <el-option
                     v-for="(item,index) in jurorList"
                     :key="index"
@@ -74,11 +74,12 @@
         <el-form-item label="起诉状">
           <div style="width:380px;">
             <input type="file" @change="getFiles" id="upFile" style="display: none;">
-            <el-button type="primary" @click="upFile">点击选择文件</el-button>
+            <el-button type="primary" @click="upFile" v-if="isEdit">点击选择文件</el-button>
             <div style="height: 50px;overflow-y: scroll;width: 350px;" v-show="filesList.length > 0">
               <p v-for="(item,index) in filesList">
-                <span @click="showFile(item)">{{item.name}}</span>
-                <el-button type="text" @click="delFile(index,item.id)">删除</el-button>
+                <span>{{item.name}}</span>
+                <el-button type="text" v-if="isEdit" @click="delFile(index,item.id)">删除</el-button>
+                <el-button type="text" @click="showFile(item)">查看</el-button>
               </p>
             </div>
           </div>
@@ -130,6 +131,7 @@
             // juror:[{required: true, message: '请选择陪审员', trigger: 'change'}],
           },
           indictmentId:'',//证据id
+          isEdit:false,
         }
       },
       computed:{
@@ -146,21 +148,30 @@
       },
       mounted(){
         // console.log(this.$store.getters.getCaseId)
+        // console.log(this.$store.getters.getEditStatus)
+        this.isEdit = this.$store.getters.getEditStatus;
         if(this.$store.getters.getCaseId){
           this.lawCaseId = this.$store.getters.getCaseId;
           this.getCaseDetail();
         }
-        this.$api.addCase.getJudgeBriefCourt().then(res => {
+        if(this.isEdit){
+          this.$api.addCase.getJudgeBriefCourt().then(res => {
             // console.log(res)
             this.options2 = res.briefList;
             this.judgeList = res.judgeList;
             this.clerkList = res.clerkList;
             this.jurorList = res.jurorList;
-        })
+          })
+        }
+        
       },
       methods:{
         submit(){//提交案件信息或者修改案件信息
           // console.log(this.lawCaseId)
+          if(!this.isEdit){
+            this.$emit('listenToChildEvent',true);
+            return;
+          }
           if(this.filesList.length < 1){
             this.$message({
               message:'请上传起诉状！',
@@ -269,16 +280,21 @@
             // console.log(res)
             if(res.state == 100){
               this.form.caseType = res.lawCase.caesType;
-              this.form.caseReason = res.lawCase.brief.id;
+              this.form.caseReason = this.isEdit ? res.lawCase.brief.id : res.lawCase.brief.name;
               this.form.courtType = res.lawCase.trialType;
               this.form.caseNo = res.lawCase.caseNo;
-              this.form.judge = res.lawCase.judge.id;
-              this.form.clerk = res.lawCase.clerk.id;
+              this.form.judge = this.isEdit ? res.lawCase.judge.id : res.lawCase.judge.name;
+              this.form.clerk = this.isEdit ? res.lawCase.clerk.id : res.lawCase.clerk.name;
               this.form.openTime = new Date(res.openDate);
               this.form.juror = [];
-              if(res.lawCase.jurors.length > 0){
+              if(res.lawCase.jurors.length > 0 && this.isEdit){
                 for(const item of res.lawCase.jurors){
                   this.form.juror.push(item);
+                }
+              }
+              if(res.lawCase.jurors.length > 0 && !this.isEdit){
+                for(const item of res.lawCase.jurors){
+                  this.form.juror.push(item.name);
                 }
               }
               if(res.indictment[0].filePaths.length > 0){

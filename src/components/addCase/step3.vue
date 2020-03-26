@@ -1,53 +1,24 @@
 <template>
     <div class="step1">
         <el-button type="primary" @click="addEvi('form')"><i class="el-icon-circle-plus"></i>新增证据</el-button>
-        <el-table
-            :data="tableData"
-            height="300"
-            stripe
-            style="width: 100%">
-            <el-table-column
-            type="index"
-            label="序号">
+        <el-table :data="tableData" height="300" stripe style="width: 100%">
+            <el-table-column type="index" label="序号"></el-table-column>
+            <el-table-column prop="litigantName" label="当事人"></el-table-column>
+            <el-table-column prop="name" label="证据名称"></el-table-column>
+            <el-table-column prop="prove" label="证明对象"></el-table-column>
+            <el-table-column prop="source" label="证据来源" width="180"></el-table-column>
+            <el-table-column label="证据文件">
+                <template slot-scope="scope">
+                    <p v-for="(item,index) in scope.row.filePaths">
+                        {{item.name}}
+                        <el-button type="text" @click="showFile(item)">查看</el-button>
+                    </p>
+                </template>
             </el-table-column>
-            <el-table-column
-            prop="litigantName"
-            label="当事人">
-            </el-table-column>
-            <el-table-column
-            prop="name"
-            label="证据名称">
-            </el-table-column>
-            <el-table-column
-            prop="prove"
-            label="证明对象">
-            </el-table-column>
-            <el-table-column
-            prop="source"
-            label="证据来源"
-            width="180">
-            </el-table-column>
-            <el-table-column
-            label="证据文件">
+            <el-table-column label="操作">
             <template slot-scope="scope">
-                <p v-for="(item,index) in scope.row.filePaths">{{item.name}}</p>
-            </template>
-            </el-table-column>
-            <el-table-column
-            label="操作">
-            <template slot-scope="scope">
-                <el-button
-                    type="text"
-                    size="small"
-                    @click="edit(scope.row)">
-                    编辑
-                </el-button>
-                <el-button
-                    type="text"
-                    size="small"
-                    @click="delEvi(scope.row)">
-                    删除
-                </el-button>
+                <el-button v-if="scope.row.canChange || isEdit" type="text" size="small" @click="edit(scope.row)">编辑</el-button>
+                <el-button v-if="scope.row.canChange || isEdit" type="text" size="small" @click="delEvi(scope.row)">删除</el-button>
             </template>
             </el-table-column>
         </el-table>
@@ -69,7 +40,7 @@
                 </el-form-item>
                 <el-form-item label="证据文件" prop="file" :label-width="formLabelWidth">
                     <p v-for="(item,index) in filesList">
-                        <span @click="showFile(item)">{{item.name}}</span>
+                        <span>{{item.name}}</span>
                         <i class="el-icon-circle-close" style="cursor: pointer;" @click="delfiles(item,index,'online')"></i>
                     </p>
                     <p v-for="(item,index) in fileList2">
@@ -118,6 +89,8 @@
             filesList:[],
             fileList2:[],
             evidenceId:'',
+            litigantId:[],
+            isEdit:false,
         }
       },
       computed:{
@@ -128,6 +101,7 @@
       },
       mounted(){
         this.lawCaseId = this.$store.getters.getCaseId;
+        this.isEdit = this.$store.getters.getEditStatus;
         this.getCaseDetail();
       },
       methods:{
@@ -260,26 +234,51 @@
             this.$api.caseList.getCaseDetail(data).then(res => {
                 this.litigantList = [];
                 this.tableData = [];
+                this.litigantId = res.litigantId;
                 for(const item of res.litigants){
-                    if(
-                        type.some(res => {
-                            return res == item.litigant.litigationStatus.name;
-                        })
-                    ){
-                        const data = {
-                            name:item.litigant.litigantName,
-                            id:item.litigant.id
+                    if(this.isEdit){//法官书记员当事人不同情况不同列表
+                        if(
+                            type.some(res => {
+                                return res == item.litigant.litigationStatus.name;
+                            })
+                        ){
+                            const data = {
+                                name:item.litigant.litigantName,
+                                id:item.litigant.id
+                            }
+                            this.litigantList.push(data);
                         }
-                        this.litigantList.push(data);
+                    }else{
+                        if(
+                            this.litigantId.some(unit => {
+                                return unit == item.litigant.id
+                            })
+                        ){
+                            const data = {
+                                name:item.litigant.litigantName,
+                                id:item.litigant.id
+                            }
+                            this.litigantList.push(data);
+                        }
                     }
                     if(item.evidence.length > 0){
                         for(const item2 of item.evidence){
                             item2.litigantId = item.litigant.id;
                             item2.litigantName = item.litigant.litigantName;
+                            if(
+                                this.litigantId.some(unit => {
+                                    return unit == item2.litigantId
+                                })
+                            ){
+                                item2.canChange = true;
+                            }else{
+                                item2.canChange = false;
+                            }
                             this.tableData.push(item2)
                         }
                     }
                 }
+                console.log(this.tableData)
             })
         },
         showFile(item){

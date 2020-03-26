@@ -3,20 +3,21 @@
       <p>角色管理</p>
       <div class="select-box">
         <el-button-group>
-          <el-button type="primary" plain>法官</el-button>
-          <el-button type="primary" plain>书记员</el-button>
-          <el-button type="primary" plain>人民陪审员</el-button>
+          <el-button type="primary" plain :class="nowRole === 3 ? 'isSelect' : ''" @click="changeRole(3)">全部</el-button>
+          <el-button type="primary" plain :class="nowRole === 0 ? 'isSelect' : ''" @click="changeRole(0)">法官</el-button>
+          <el-button type="primary" plain :class="nowRole === 1 ? 'isSelect' : ''" @click="changeRole(1)">书记员</el-button>
+          <el-button type="primary" plain :class="nowRole === 2 ? 'isSelect' : ''" @click="changeRole(2)">人民陪审员</el-button>
         </el-button-group>
       </div>
       <div class="select-box-right">
         <el-button type="primary" @click="newRole"><i class="el-icon-circle-plus"></i>新增角色</el-button>
       </div>
-      <roleManage :data="data" v-on:listenToChild="receive"></roleManage>
+      <roleManage :data="data" v-on:listenToChild="receive" v-on:getPage="getPage"></roleManage>
       <div class="page-box">
         <el-pagination
           @current-change="handleCurrentChange"
           :current-page="currentPage"
-          :page-size="7"
+          :page-size="10"
           layout="total, prev, pager, next, jumper"
           :total="totalPage">
         </el-pagination>
@@ -66,6 +67,7 @@
           totalPage:5,
           currentPage:1,
           noChoice:false,
+          nowRole:3,
         }
       },
       computed:{
@@ -78,8 +80,10 @@
         this.$emit('getMessage',2);
       },
       methods:{
+        getPage(e){
+          this.totalPage = e.total;
+        },
         receive(e){
-          console.log(e)
           this.form.name = e.name;
           this.form.roleName = e.roleName;
           this.form.phone = e.phone;
@@ -107,16 +111,7 @@
             }
             this.$api.role.updateJudge(data).then(res => {
               if(res.state == 100){
-                this.$message({
-                  message:res.message,
-                  type:'success'
-                })
                 this.dialogFormVisible = false;
-              }else{
-                this.$message({
-                  message:res.message,
-                  type:'warning'
-                })
               }
             })
             return;
@@ -129,22 +124,38 @@
           this.$api.role.addJudge(data).then(res => {
             console.log(res)
             if(res.state == 100){
-              this.$message({
-                message:res.message,
-                type:'success'
-              })
               this.dialogFormVisible = false;
-            }else{
-              this.$message({
-                message:res.message,
-                type:'warning'
-              })
             }
           })
           this.data = data;
         },
         handleCurrentChange(e){
-          console.log(e)
+          const data = {
+            pageNumber:e,
+            type:this.nowRole
+          }
+          this.$api.role.getJudges(data).then(res => {
+            this.data = res.judgeList;
+            this.totalPage = res.total;
+          })
+        },
+        changeRole(index){
+          if(index == this.nowRole) return;
+          this.nowRole = index;
+          const data = {
+            type:this.nowRole
+          }
+          if(index === 3){
+            this.$api.role.getJudges().then(res => {
+              this.data = res.judgeList;
+              this.totalPage = res.total;
+            })
+          }else{
+            this.$api.role.getJudges(data).then(res => {
+              this.data = res.judgeList;
+              this.totalPage = res.total;
+            })
+          }
         },
         search(params){
           this.$emit('getMessage',1);
@@ -185,5 +196,10 @@
       width: 80%;
       margin: 0 auto;
       margin-top: 20px;
+    }
+    .isSelect {
+      background: #409EFF;
+      border-color: #409EFF;
+      color: #FFF;
     }
   </style>
