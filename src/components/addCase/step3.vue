@@ -47,7 +47,7 @@
                         <span>{{item.name}}</span>
                         <i class="el-icon-circle-close" style="cursor: pointer;" @click="delfiles(item,index,'noline')"></i>
                     </p>
-                    <input type="file" style="display: none;" id="getFiles" @change="getFile">
+                    <input type="file" style="display: none;" ref="getFile" @change="getFile">
                     <el-button type="primary" size="mini" @click="upFile">点击选择证据文件</el-button>
                 </el-form-item>
                 <el-form-item :label-width="formLabelWidth">
@@ -163,7 +163,8 @@
             }) 
         },
         upFile(){
-            const button = document.getElementById('getFiles');
+            // const button = document.getElementById('getFiles');
+            const button = this.$refs.getFiles;
             button.click();
             button.value = '';
         },

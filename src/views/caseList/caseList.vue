@@ -1,7 +1,10 @@
 <template>
     <div class="case-main">
       <div class="item-left">
-        <p>我的庭审<img src="@/assets/img/today-icon.png" alt=""></p>
+        <p>我的庭审
+            <!-- <img src="@/assets/img/today-icon.png" alt=""> -->
+            <el-button type="text" @click="searchAll">查询全部</el-button>
+        </p>
         <Calendar
             v-on:choseDay="clickDay"
         ></Calendar>
@@ -13,7 +16,7 @@
         <div class="time-box">
             <img src="@/assets/img/time-icon.png" alt="">
             <span>{{time}}</span>
-            <span>{{count}}个案件</span>
+            <span>{{caseCount.total}}个案件</span>
         </div>
         <ul class="case-box">
             <p v-if="caseList.length == 0">暂无数据</p>
@@ -193,13 +196,14 @@
             tableData:[],
             nowIndex:null,
             caseCount:{
-                total:100,
-                un:50,
-                ed:50
+                total:0,
+                un:0,
+                ed:0,
             },
             roleArr:['法官','书记员'],
             isShow:false,
             nowPage:1,
+            startDate:'',
         }
       },
       computed:{
@@ -288,28 +292,10 @@
             this.nowPage = val;
             const params = {
                 caseNo:'',
-                pageNumber:val
+                pageNumber:val,
+                startDate:this.startDate
             }
-            this.$api.caseList.caseList(params).then(res => {
-                if(res.state == 100){
-                    this.caseList = [];
-                    for(const item of res.result){
-                        const params = {
-                            caseNo:item.caseNo,
-                            openDate:item.openDate,
-                            judge:item.judge,
-                            clerk:item.clerk,
-                            isShow:false,
-                            caseId:item.caseId,
-                            isOpen:item.isOpen,
-                            trialType:item.trialType,
-                            caseType:item.caseType,
-                        }
-                        this.caseList.push(params);
-                    }
-                    this.totalPage = res.total;
-                }
-            })
+            this.search(params);
         },
         getRecord(id,isShow,index){//获取案件详情
             if(isShow){
@@ -339,10 +325,7 @@
                             }
                         }
                     }else{
-                        this.$message({
-                            message:res.message,
-                            type:'warning'
-                        })
+                        this.$message.warning(res.message);
                     }
                     // this.tableData = res.litigants;
                     // console.log(this.tableData)
@@ -370,19 +353,7 @@
                         center:true,
                         type:'info'   
                     }).then(() => {
-                        this.$api.caseList.sendMessage(params).then(res => {
-                        // if(res.state == 100){
-                        //     this.$message({
-                        //     type: 'success',
-                        //     message: res.message
-                        //     });
-                        // }else{
-                        //     this.$message({
-                        //     type: 'warning',
-                        //     message: res.message
-                        //     });
-                        // }
-                        })
+                        this.$api.caseList.sendMessage(params);
                     })
                     .catch(() => {
 
@@ -408,16 +379,19 @@
                     //移除节点
                     document.body.removeChild(link);
                 }else{
-                    this.$message({
-                    type:'error',
-                    message:res.message
-                    })
+                    this.$message.error(res.message);
                 }
             })
         },
         clickDay(data) { //选中某天
             const choiceDay = data.split('/');
             this.time = choiceDay[0] + '年' + choiceDay[1] + '月' + choiceDay[2] + '日';
+            const ch = '/';
+            this.startDate = data.replace(new RegExp(ch,'g'),"-") + ' 00:00';
+            const startDate = {
+                startDate:this.startDate
+            }
+            this.search(startDate);
         },
         edit(item){
             this.$store.dispatch('setCaseId',item.caseId);
@@ -442,23 +416,17 @@
                             pageNumber:this.nowPage
                         }
                         this.search(params);
-                        // this.$message({
-                        //     message:res.message,
-                        //     type:'success'
-                        // })
                     }
-                    // else{
-                    //     this.$message({
-                    //         message:res.message,
-                    //         type:'warning'
-                    //     })
-                    // }
                 })
                 
             })
             .catch(() => {
 
             })
+        },
+        searchAll(){
+            this.startDate = '';
+            this.search();
         },
         search(params){
             this.$api.caseList.caseList(params).then(res => {
@@ -481,6 +449,7 @@
                     } 
                     }
                     this.totalPage = res.total;
+                    this.caseCount.total = res.total;
                 }
             })
         },
@@ -499,10 +468,7 @@
                         }
                     })
                 }else{
-                    this.$message({
-                        message:res.message,
-                        type:'warning'
-                    })
+                    this.$message.warning(res.message);
                 }
             })
         },
@@ -513,19 +479,7 @@
                 litigantId:item.litigant.litigationStatus.name == '代理人' ? '' : item.litigant.id,
                 lawyerId:item.litigant.litigationStatus.name == '代理人' ? item.litigant.id : '',
             }
-            this.$api.caseList.changeIsFace(params).then(res => {
-                // if(res.state == 100){
-                //     this.$message({
-                //         message:res.message,
-                //         type:'success'
-                //     })
-                // }else{
-                //     this.$message({
-                //         message:res.message,
-                //         type:'warning'
-                //     })
-                // }
-            })
+            this.$api.caseList.changeIsFace(params);
         },
       }
     }
@@ -591,8 +545,9 @@
             padding: 0 20px;
             font-size: 14px;
         }
-        img{
+        .el-button--text{
             float: right;
+            padding: 0;
         }
     }
     

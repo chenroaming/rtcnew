@@ -45,7 +45,7 @@
   
   <script>
     export default {
-        name: 'roleManage',
+        name: 'roleTable',
         props:['data'],
       data(){
         return {
@@ -63,6 +63,7 @@
             // this.tableData.push(curval);
             this.tableData = [];
             // console.log(curval)
+            if(curval == oldval) return;
             for(const item of curval){
                 const data = {
                     roleName:this.roleType[item.judgeType],
@@ -96,17 +97,14 @@
             // this.$emit('listenToChild',item);
             console.log(item)
             if(!item.phone){
-                this.$message({
-                    message:'请填写手机号码',
-                    type:'warning'
-                })
+                this.$message.warning('请填写手机号码');
                 return;
             }
             const data = {
                 judgeId:item.id,
                 phone:item.phone
             }
-            this.$api.role.sendJudgeMessage(data).then(res => {})
+            this.$api.role.sendJudgeMessage(data);
         }
       }
     }

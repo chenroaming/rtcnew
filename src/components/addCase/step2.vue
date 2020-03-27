@@ -179,10 +179,7 @@
                 return;
             }
             if(this.tableData.length < 1){
-                this.$message({
-                    message:'请添加诉讼参与人！',
-                    type:'warning'
-                })
+                this.$message.warning('请添加诉讼参与人！');
                 return false;
             }
             this.$emit('listenToChildEvent',2);

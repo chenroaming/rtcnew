@@ -12,11 +12,11 @@
       <div class="select-box-right">
         <el-button type="primary" @click="newRole"><i class="el-icon-circle-plus"></i>新增角色</el-button>
       </div>
-      <roleManage :data="data" v-on:listenToChild="receive" v-on:getPage="getPage"></roleManage>
+      <roleTable :data="data" v-on:listenToChild="receive" v-on:getPage="getPage"></roleTable>
       <div class="page-box">
         <el-pagination
           @current-change="handleCurrentChange"
-          :current-page="currentPage"
+          :current-page.sync="currentPage"
           :page-size="10"
           layout="total, prev, pager, next, jumper"
           :total="totalPage">
@@ -47,11 +47,11 @@
   </template>
   
   <script>
-    import roleManage from '@/components/roleManage/roleManage.vue'
+    import roleTable from '@/components/roleManage/roleTable.vue'
     export default {
         name: 'rolyManage',
         components:{
-          roleManage
+          roleTable
         },
       data(){
         return {
@@ -102,7 +102,7 @@
           this.dialogFormVisible = true;
         },
         submit(){
-          console.log(this.form)
+          // console.log(this.form)
           if(this.form.id){
             const data = {
               name:this.form.name,
@@ -112,6 +112,7 @@
             this.$api.role.updateJudge(data).then(res => {
               if(res.state == 100){
                 this.dialogFormVisible = false;
+                this.changeRole(3);
               }
             })
             return;
@@ -122,14 +123,25 @@
             phone:this.form.phone
           }
           this.$api.role.addJudge(data).then(res => {
-            console.log(res)
+            // console.log(res)
             if(res.state == 100){
               this.dialogFormVisible = false;
+              this.changeRole(3);
             }
           })
-          this.data = data;
+          // this.data = data;
         },
         handleCurrentChange(e){
+          if(this.nowRole === 3){
+            const data = {
+              pageNumber:e
+            }
+            this.$api.role.getJudges(data).then(res => {
+              this.data = res.judgeList;
+              this.totalPage = res.total;
+            })
+            return;
+          }
           const data = {
             pageNumber:e,
             type:this.nowRole
@@ -140,6 +152,8 @@
           })
         },
         changeRole(index){
+          // console.log(index)
+
           if(index == this.nowRole) return;
           this.nowRole = index;
           const data = {
@@ -156,6 +170,7 @@
               this.totalPage = res.total;
             })
           }
+          this.currentPage = 1;
         },
         search(params){
           this.$emit('getMessage',1);

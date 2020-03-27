@@ -73,7 +73,7 @@
         </el-form-item>
         <el-form-item label="起诉状">
           <div style="width:380px;">
-            <input type="file" @change="getFiles" id="upFile" style="display: none;">
+            <input type="file" @change="getFiles" ref="upFile" style="display: none;">
             <el-button type="primary" @click="upFile" v-if="isEdit">点击选择文件</el-button>
             <div style="height: 50px;overflow-y: scroll;width: 350px;" v-show="filesList.length > 0">
               <p v-for="(item,index) in filesList">
@@ -173,10 +173,7 @@
             return;
           }
           if(this.filesList.length < 1){
-            this.$message({
-              message:'请上传起诉状！',
-              type:'warning'
-            })
+            this.$message.warning('请上传起诉状！');
             return false;
           }
           this.$refs['form'].validate((valid) => {
@@ -241,16 +238,14 @@
                 })
               }
             } else {
-              this.$message({
-                message: '请确保选项填写完整！',
-                type: 'warning'
-              });
+              this.$message.warning('请确保选项填写完整！');
               return false;
             }
           });
         },
         upFile(){//获取文件按钮点击事件
-          const button = document.getElementById('upFile');
+          // const button = document.getElementById('upFile');
+          const button = this.$refs.upFile;
           button.value = '';
           button.click();
         },

@@ -1,23 +1,29 @@
 <template>
     <div class="room">
-      <h1>庭审房间</h1>
-      <el-button type="text" @click="outRoom">退出</el-button>
-      <chat></chat>
-      <video autoPlay muted ref="video" class="video"></video>
-      <div id="remote-box">
-        <!-- 本地自己的视频流 -->
-        <div class="video-box">
-            <div class="titie">
-                <span>{{roleName}}</span>
-                <span>{{name}}</span>
-                <span>{{address}}</span>
-                <el-button type="text" @click="fullScreen">放大</el-button>
-            </div>
-            <div id="video-box"></div>
-        </div>
-        <!-- 订阅的视频流 -->
-        <remotePlay v-on:srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
-      </div>
+        <el-container>
+            <el-header>
+                <el-button type="text" @click="outRoom">退出</el-button>
+                <chat></chat>
+            </el-header>
+            <el-main>
+                <video autoPlay muted ref="video" class="video"></video>
+                <div id="remote-box">
+                    <!-- 本地自己的视频流 -->
+                    <div class="video-box">
+                        <div class="titie">
+                            <span>{{roleName}}</span>
+                            <span>{{name}}</span>
+                            <span>{{address}}</span>
+                            <el-button type="text" @click="fullScreen">放大</el-button>
+                        </div>
+                        <div id="video-box"></div>
+                    </div>
+                    <!-- 订阅的视频流 -->
+                    <remotePlay v-on:srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
+                  </div>
+            </el-main>
+        </el-container>
+      <!-- <h1>庭审房间</h1> -->
     </div>
   </template>
   
@@ -129,11 +135,12 @@
       },
       methods:{
         receive(e){//接收子组件消息后放大全屏
-            const srcObj = document.getElementsByClassName('video');
-            srcObj[0].srcObject = e;
+            // const srcObj = document.getElementsByClassName('video');
+            const srcObj = this.$refs.video;
+            srcObj[0].srcObject = e.src;
         },
         outRoom(){
-            this.$api.room.closeRoom().then(res => {})
+            this.$api.room.closeRoom();
             // this.wsObj.close();
             console.log(this.stream)
             if(this.stream){
@@ -175,7 +182,7 @@
         position: absolute;
         bottom: 0;
     }
-    video{
+    .video{
         width: 100%;
         height: 100%;
     }

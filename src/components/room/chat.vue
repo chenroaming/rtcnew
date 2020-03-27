@@ -118,10 +118,7 @@
                 HZRecorder.throwError('无法发现指定的硬件设备。')
                 break
             default:
-                this.$message({
-                    message:'请检查麦克风设备是否有问题！',
-                    type:'error'
-                })
+                this.$message.error('请检查麦克风设备是否有问题！');
                 // HZRecorder.throwError('无法打开麦克风。异常信息:' + (error.name))
                 break
             }

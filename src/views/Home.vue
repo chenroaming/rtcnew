@@ -93,7 +93,6 @@
 
 <script>
 // @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
 import md5 from 'md5'
 import faceCheck from '@/components/faceCheck/faceCheck.vue'
 export default {
@@ -177,20 +176,12 @@ export default {
             })
           }
           if(res.state == 100 && res.data.isFace){
-            // this.$store.dispatch('logout').then(res => {
-            //   console.log(res);
-            // });
             this.$refs.faceCheck.show();
           }
          })//调用设置用户类型接口
         }
       });
     },
-    logout(){
-      this.$store.dispatch('logout').then(res => {
-        
-      });
-    }
   }
 }
 </script>

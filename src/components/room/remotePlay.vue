@@ -1,12 +1,12 @@
 <template>
     <div class="video-box">
         <div class="titie">
-            <span>{{roleName}}</span>
-            <span>{{name}}</span>
-            <span>{{address}}</span>
+            <span>{{info.roleName}}</span>
+            <span>{{info.name}}</span>
+            <span>{{info.address}}</span>
             <el-button type="text" @click="fullScreen">放大</el-button>
         </div>
-        <div class="palyer"></div>
+        <div class="player" ref="player"></div>
     </div>
 </template>
   
@@ -17,11 +17,12 @@
         name: 'remotePlay',
         props:['user'],
       data(){
-          
         return {
-            roleName:'',
-            name:'',
-            address:'',
+            info:{
+                roleName:'',
+                name:'',
+                address:'',
+            }
         }
       },
       computed:{
@@ -31,7 +32,8 @@
         
       },
       async mounted(){
-        const domElement = document.getElementsByClassName("palyer");
+        // const domElement = document.getElementsByClassName("player");
+        const domElement = this.$refs.player;
         console.log(this.user.userId);
         if(this.user.userId){
             const params = {
@@ -40,9 +42,7 @@
             this.$api.room.userDetail(params).then(res => {
                 console.log(res)
                 if(res.state == 100){
-                    this.roleName = res.result.roleName;
-                    this.name = res.result.name;
-                    this.address = res.result.address;
+                    this.info = res.result;
                 }
             })
             const stream = await myRoom.subscribe(this.user.userId);
@@ -51,8 +51,12 @@
       },
       methods:{
         fullScreen(){
-            const domElement = document.getElementsByClassName("palyer")[0].children[1].srcObject;
-            this.$emit('srcObj',domElement);
+            const domElement = this.$refs.player.children[1].srcObject;
+            const obj = {
+                src:domElement,
+                info:this.info
+            }
+            this.$emit('srcObj',obj);
         },
       }
     }
@@ -65,7 +69,7 @@
         display: inline-block;
         position: relative;
     }
-    .palyer {
+    .player {
         width: 300px;
         height: 200px;
         display: inline-block;
