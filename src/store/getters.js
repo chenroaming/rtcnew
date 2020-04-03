@@ -7,6 +7,7 @@ const getters = {
     getMenuList:state => state.app.menuList,//获取角色动态菜单列表
     getWebSocket:state => state.app.websocketObj,//获取ws
     getEditStatus:state => state.user.canEdit,//获取编辑状态
+    getCaseInfo:state => state.caseInfo.caseInfo,//获取案件整体信息
 }
 
 export default getters

@@ -23,7 +23,7 @@
             <el-input :disabled="!isEdit" v-model="form.caseNo" placeholder="请输入案号" style="width:380px;"></el-input>
         </el-form-item>
         <el-form-item label="案由" style="width: 100%;" prop="caseReason">
-            <el-select :disabled="!isEdit" v-model="form.caseReason" placeholder="请选择" style="width:380px;">
+            <el-select :disabled="!isEdit" filterable v-model="form.caseReason" placeholder="请选择" style="width:380px;">
                 <el-option
                   v-for="(item,index) in options2"
                   :key="index"
@@ -93,6 +93,7 @@
     import showFile from '@/components/addCase/showFile.vue'
     export default {
         name: 'step1',
+        props:['nextStr'],
         components: {
           showFile
         },
@@ -142,13 +143,10 @@
       watch:{
         getId(curval,oldVal){
           this.lawCaseId = curval;
-          // console.log(this.lawCaseId)
           this.getCaseDetail();
         }
       },
       mounted(){
-        // console.log(this.$store.getters.getCaseId)
-        // console.log(this.$store.getters.getEditStatus)
         this.isEdit = this.$store.getters.getEditStatus;
         if(this.$store.getters.getCaseId){
           this.lawCaseId = this.$store.getters.getCaseId;
@@ -156,25 +154,20 @@
         }
         if(this.isEdit){
           this.$api.addCase.getJudgeBriefCourt().then(res => {
-            // console.log(res)
-            this.options2 = res.briefList;
-            this.judgeList = res.judgeList;
-            this.clerkList = res.clerkList;
-            this.jurorList = res.jurorList;
+            const { briefList,judgeList,clerkList,jurorList } = res;
+            this.options2 = briefList;
+            this.judgeList = judgeList;
+            this.clerkList = clerkList;
+            this.jurorList = jurorList;
           })
         }
         
       },
       methods:{
         submit(){//提交案件信息或者修改案件信息
-          // console.log(this.lawCaseId)
           if(!this.isEdit){
-            this.$emit('listenToChildEvent',true);
+            this.$emit('listenToChildEvent',2);
             return;
-          }
-          if(this.filesList.length < 1){
-            this.$message.warning('请上传起诉状！');
-            return false;
           }
           this.$refs['form'].validate((valid) => {
             if (valid) {
@@ -184,35 +177,29 @@
                   arr.push(item.id)
                 }
               }
-              // console.log(this.form.juror);
-              const data = {
-                caseType:this.form.caseType,
-                briefId:this.form.caseReason,
-                trialType:this.form.courtType,
-                caseNo:this.form.caseNo,
-                judgeId:this.form.judge,
-                clerkId:this.form.clerk,
-                openDate:this.form.openTime,
-                lawCaseId:'',
-                jurorId:arr.join(',')
-              }
+              const { caseType,caseReason,courtType,caseNo,judge,clerk,openTime } = this.form;
+              const data = {caseType:caseType,briefId:caseReason,trialType:courtType,caseNo:caseNo,judgeId:judge,clerkId:clerk,openDate:openTime,lawCaseId:'',jurorId:arr.join(',')}
               if(!this.lawCaseId){
                 this.$api.addCase.addLawCase(data).then(res => {
                   if(res.state == 100){
                     this.lawCaseId = res.id;
                     this.$store.dispatch('setCaseId',res.id);
-                    const fileData = {
-                      file:this.filesList,
-                      name:'起诉状',
-                      type:2,
-                      lawCaseId: this.lawCaseId
-                    }
-                    this.$store.dispatch('setCaseType',this.form.caseType);
-                    this.$api.addCase.addIndictment(fileData).then(res => {
-                      if(res.state == 100){
-                        this.$emit('listenToChildEvent',true);
+                    if(this.filesList.length > 0){
+                      const fileData = {
+                        file:this.filesList,
+                        name:'起诉状',
+                        type:2,
+                        lawCaseId: this.lawCaseId
                       }
-                    })
+                      this.$store.dispatch('setCaseType',this.form.caseType);
+                      this.$api.addCase.addIndictment(fileData).then(res => {
+                        if(res.state == 100){
+                          this.goWhere();
+                        }
+                      })
+                      return;
+                    }
+                    this.goWhere();
                   }
                 })
               }else{
@@ -224,16 +211,35 @@
                     this.lawCaseId = res.id;
                     this.$store.dispatch('setCaseId',res.id);
                     this.$store.dispatch('setCaseType',this.form.caseType);
-                    const fileData = {
-                      file:this.filesList,
-                      evidenceId:this.indictmentId,
-                      lawCaseId: this.lawCaseId
-                    }
-                    this.$api.addCase.updateIndictment(fileData).then(res => {
-                      if(res.state == 100){
-                        this.$emit('listenToChildEvent',true);
+                    if(this.indictmentId){
+                      const fileData = {
+                        file:this.filesList,
+                        evidenceId:this.indictmentId,
+                        lawCaseId: this.lawCaseId
                       }
-                    })
+                      this.$api.addCase.updateIndictment(fileData).then(res => {
+                        if(res.state == 100){
+                          this.goWhere();
+                        }
+                      })
+                      return;
+                    }else{
+                      if(this.filesList.length > 0){
+                        const fileData = {
+                          file:this.filesList,
+                          name:'起诉状',
+                          type:2,
+                          lawCaseId: this.lawCaseId
+                        }
+                        this.$api.addCase.addIndictment(fileData).then(res => {
+                          if(res.state == 100){
+                            this.goWhere();
+                          }
+                        })
+                        return;
+                      }
+                    }
+                    this.goWhere();
                   }
                 })
               }
@@ -244,13 +250,11 @@
           });
         },
         upFile(){//获取文件按钮点击事件
-          // const button = document.getElementById('upFile');
           const button = this.$refs.upFile;
           button.value = '';
           button.click();
         },
         getFiles(e){//获取文件
-          // console.log(e.target.files[0]);
           this.filesList.push(e.target.files[0]);
         },
         delFile(index,id){//删除文件
@@ -272,7 +276,6 @@
             lawCaseId:this.lawCaseId
           }
           this.$api.caseList.getCaseDetail(data).then(res => {
-            // console.log(res)
             if(res.state == 100){
               this.form.caseType = res.lawCase.caesType;
               this.form.caseReason = this.isEdit ? res.lawCase.brief.id : res.lawCase.brief.name;
@@ -292,16 +295,23 @@
                   this.form.juror.push(item.name);
                 }
               }
-              if(res.indictment[0].filePaths.length > 0){
+              if(res.indictment.length > 0 && res.indictment[0].filePaths.length > 0){
                 this.filesList = res.indictment[0].filePaths;
+                this.indictmentId = res.indictment[0].id;
               }
-              this.indictmentId = res.indictment[0].id;
             }
           })
         },
         showFile(item){
           this.fileItem = item;
           this.$refs.toFile.showEvidence();
+        },
+        goWhere(){
+          if(this.nextStr == 'next'){
+            this.$emit('listenToChildEvent',2);
+          }else{
+            this.$emit('listenToChildEvent',4);
+          }
         },
       }
     }

@@ -39,14 +39,17 @@
             const params = {
                 adminId:this.user.userId
             }
+            const stream = await myRoom.subscribe(this.user.userId);
+            stream.play(domElement, false)
             this.$api.room.userDetail(params).then(res => {
                 console.log(res)
                 if(res.state == 100){
                     this.info = res.result;
+                    if(res.result.roleName == '法官'){
+                        this.fullScreen();
+                    }
                 }
             })
-            const stream = await myRoom.subscribe(this.user.userId);
-            stream.play(domElement[0], false)
         }
       },
       methods:{

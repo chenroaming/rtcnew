@@ -4,6 +4,7 @@ const caseInfo = {
         lawCaseId:'',//案件Id
         enterStatus:false,//进入状态
         caseType:'',
+        caseInfo:{},
     },
     mutations:{
         SET_CASEID:(state, id) => {
@@ -14,7 +15,10 @@ const caseInfo = {
         },
         SET_CASETYPE:(state,type) => {
             state.caseType = type
-        }
+        },
+        SET_CASEINFO:(state,info) => {
+            state.caseInfo = info
+        },
     },
     actions: {
         setCaseId({ commit },id){
@@ -25,7 +29,10 @@ const caseInfo = {
         },
         setCaseType({ commit },type){
             commit('SET_CASETYPE',type)
-        }
+        },
+        setCaseInfo({ commit },info){
+            commit('SET_CASEINFO',info)
+        },
     }
 }
 

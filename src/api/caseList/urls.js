@@ -7,4 +7,5 @@ export default {
   downRecord:baseUrl + '/court/case/downRecord.jhtml',//下载笔录
   changeIsFace:baseUrl + '/main/changeIsFace.jhtml',//面部识别开关
   delLawCase: baseUrl + '/court/case/delLawCase.jhtml',//删除案件
+  countTrial: baseUrl + '/court/case/countTrial.jhtml',//根据日期查询案件统计表格
 }

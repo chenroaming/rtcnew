@@ -206,7 +206,7 @@
   }
   .main-box {
     width: 100%;
-    height: 100%;
+    height: 650px;
     background-color: #fff;
   }
 </style>

@@ -18,6 +18,7 @@
             <span>{{time}}</span>
             <span>{{caseCount.total}}个案件</span>
         </div>
+        <countCase></countCase>
         <ul class="case-box">
             <p v-if="caseList.length == 0">暂无数据</p>
             <li v-for="(item,index) in caseList">
@@ -82,7 +83,7 @@
                     width: 10px;
                     height: 15px;
                     margin-right: 55px;
-                    cursor: pointer;position: absolute;top: 110px;" src="@/assets/img/arrow-down.png" class="icon_arrowDown" :class="{'icon_arrowUp':nowIndex == index && item.isShow,'icon_arrowDown':nowIndex == index && !item.isShow}" @click="item.isShow = !item.isShow;getRecord(item.caseId,item.isShow,index)" alt="">
+                    cursor: pointer;position: absolute;top: 125px;right: 0;" src="@/assets/img/arrow-down.png" class="icon_arrowDown" :class="{'icon_arrowUp':nowIndex == index && item.isShow,'icon_arrowDown':nowIndex == index && !item.isShow}" @click="item.isShow = !item.isShow;getRecord(item.caseId,item.isShow,index)" alt="">
                 </div>
                 <el-table
                     :data="tableData"
@@ -176,10 +177,12 @@
   
   <script>
     import Calendar from 'vue-calendar-component'
+    import countCase from '@/components/caseList/countCase.vue'
     export default {
     name: 'caseList',
     components: {
-        Calendar
+        Calendar,
+        countCase,
     },
       data(){
         return {
@@ -458,13 +461,15 @@
                 caseId:item.caseId,
                 type:0
             }
+            // this.$store.dispatch('setCaseInfo',item);
             this.$api.room.getRoomToken(params).then(res => {
                 if(res.state == 100){
                     this.$store.dispatch('setWebSocket');
                     this.$router.push({
                         name:'Room',
                         params:{
-                            roomToken:res
+                            roomToken:res,
+                            caseInfo:item
                         }
                     })
                 }else{
@@ -576,7 +581,7 @@
         float: left;
         padding: 0;
         width: 100%;
-        height: 400px;
+        height: 500px;
         overflow-y: scroll;
         li{
             width: 98%;

@@ -12,7 +12,10 @@ const app = {
         },
         SET_WSOBJ:(state, obj) => {
             state.websocketObj = obj
-        }
+        },
+        CLEAR_WS:(state) => {
+            state.websocketObj = null
+        },
     },
     actions: {
         setMenuList({ commit }){//根据用户类型设置菜单
@@ -41,6 +44,9 @@ const app = {
         setWebSocket({ commit }){//设置ws
             commit('SET_WSOBJ',{});
             commit('SET_WSOBJ',new WebSocket(wsurl));
+        },
+        clearWebSocket({ commit }){
+            commit('CLEAR_WS');
         },
     }
 }

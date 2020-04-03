@@ -9,13 +9,14 @@
         </el-steps>
       </div>
       <div>
-        <step1 ref="step1" v-if="nowActive == 1" v-on:listenToChildEvent="receive"></step1>
+        <step1 ref="step1" v-if="nowActive == 1" :nextStr="nextStr" v-on:listenToChildEvent="receive"></step1>
         <step2 ref="step2" v-if="nowActive == 2" v-on:listenToChildEvent="receive"></step2>
         <step3 ref="step3" v-if="nowActive == 3" v-on:listenToChildEvent="receive"></step3>
       </div>
       <div style="text-align: right;padding:0 80px;margin: 20px 0px;">
         <el-button type="warning" size="mini" @click="upStep" v-show="nowActive != 1">上一步</el-button>
-        <el-button type="primary" size="mini" @click="nextStep" v-show="nowActive != 3">下一步</el-button>
+        <el-button type="primary" size="mini" @click="nextStep('next')" v-show="nowActive != 3">下一步</el-button>
+        <el-button type="warning" size="mini" v-show="status && isEdit && nowActive == 1" @click="nextStep('back')">修改</el-button>
         <el-button type="primary" size="mini" @click="nextStep" v-show="nowActive == 3">完成</el-button>
       </div>
     </div>
@@ -38,6 +39,8 @@
           nowActive:1,
           courtType:1,
           status:false,
+          nextStr:'',
+          isEdit:false,
         }
       },
       computed:{
@@ -47,9 +50,7 @@
         
       },
       mounted(){
-        // console.log(this.$route.params.lawCaseId);
-        // this.lawCaseId = this.$route.params.lawCaseId;
-        
+        this.isEdit = this.$store.getters.getEditStatus;
         if(this.$store.getters.getCaseId){
           this.status = true;
         }else{
@@ -64,7 +65,7 @@
       methods:{
         receive(e){
           if(e){
-            this.nowActive ++;
+            this.nowActive  = e;
             if(this.nowActive > 3){
               this.$emit('getMessage',0);
               this.$router.push({
@@ -73,7 +74,8 @@
             }
           }
         },
-        nextStep(){
+        nextStep(status){
+          this.nextStr = status;
           if(this.nowActive == 1){
             this.$refs.step1.submit();
           }else if(this.nowActive == 2){

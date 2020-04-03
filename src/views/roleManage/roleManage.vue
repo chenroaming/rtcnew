@@ -153,7 +153,6 @@
         },
         changeRole(index){
           // console.log(index)
-
           if(index == this.nowRole) return;
           this.nowRole = index;
           const data = {

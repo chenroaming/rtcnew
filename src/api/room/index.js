@@ -14,4 +14,7 @@ export default {
     userDetail(params){
         return api.get(urls.userDetail, params, header)
     },
+    getLawCaseCourt(params){
+        return api.get(urls.getLawCaseCourt,params,header)
+    },
 }

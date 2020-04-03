@@ -63,9 +63,9 @@
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
                 <el-form-item prop="phone" label="手机号码" :label-width="formLabelWidth">
-                    <el-input v-model="form.phone"></el-input>
+                    <el-input v-model.number="form.phone"></el-input>
                 </el-form-item>
-                <el-form-item label="证件类型" prop="idCardType" :label-width="formLabelWidth">
+                <el-form-item v-show="form.litigationStatus == 0" label="证件类型" prop="idCardType" :label-width="formLabelWidth">
                     <el-select v-model="form.idCardType" filterable placeholder="请选择">
                         <el-option
                           v-for="(ite,ind) in idCardType"
@@ -76,7 +76,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="证件号码" prop="idCard" :label-width="formLabelWidth">
-                    <el-input v-model="form.idCard"></el-input>
+                    <el-input v-model.number="form.idCard"></el-input>
                 </el-form-item>
                 <el-form-item :label-width="formLabelWidth">
                     <el-button type="primary" @click="addLayer" v-show="form.layerList.length < 2"><i class="el-icon-circle-plus"></i>新增代理人</el-button>
@@ -112,16 +112,21 @@
         return {
             rules: {
                 litigationType: [
+                {required: true, message: '请选择诉讼地位', trigger: 'change'}
                 ],
                 litigationStatus: [
+                {required: true, message: '请选择诉讼类型', trigger: 'change'}
                 ],
                 name: [
+                {required: true, message: '请填写名称', trigger: 'change'}
                 ],
                 phone: [
+                {required: true, message: '请填写号码', trigger: 'change'},
                 ],
                 idCardType: [
                 ],
                 idCard: [
+                {required: true, message: '请填写证件号码', trigger: 'change'},
                 ]
             },
             lawCaseId:'',
@@ -173,16 +178,15 @@
       },
       methods:{
         submit(){
-            console.log(222);
             if(!this.isEdit){
-                this.$emit('listenToChildEvent',2);
+                this.$emit('listenToChildEvent',3);
                 return;
             }
             if(this.tableData.length < 1){
                 this.$message.warning('请添加诉讼参与人！');
                 return false;
             }
-            this.$emit('listenToChildEvent',2);
+            this.$emit('listenToChildEvent',3);
         },
         addLitigant(name){
             this.litigantId = '';
@@ -238,40 +242,45 @@
             }
         },
         submitLitigant(){//新增或修改当事人
-            const data = {
-                name:this.form.name,
-                idCard:this.form.idCard,
-                phone:this.form.phone,
-                litigantType:this.form.litigationStatus,
-                litigationStatus:this.form.litigationType,
-                idCardType:this.form.idCardType,
-                litigantId:'',
-                lawCaseId:this.lawCaseId,
-                lawyers:this.form.layerList
-            }
-            if(!this.litigantId){
-                this.$api.addCase.addTrialLitigant(data).then(res => {
-                    if(res.state == 100){
-                        this.dialogFormVisible = false;
-                        const data2= {
-                            lawCaseId:this.lawCaseId
+            this.$refs['form'].validate((valid) => {
+                if(!valid){
+                    return this.$message.warning('请确保选项填写完整正确！');
+                }
+                const data = {
+                    name:this.form.name,
+                    idCard:this.form.idCard,
+                    phone:this.form.phone,
+                    litigantType:this.form.litigationStatus,
+                    litigationStatus:this.form.litigationType,
+                    idCardType:this.form.idCardType,
+                    litigantId:'',
+                    lawCaseId:this.lawCaseId,
+                    lawyers:this.form.layerList
+                }
+                if(!this.litigantId){
+                    this.$api.addCase.addTrialLitigant(data).then(res => {
+                        if(res.state == 100){
+                            this.dialogFormVisible = false;
+                            const data2= {
+                                lawCaseId:this.lawCaseId
+                            }
+                            this.$api.caseList.getCaseDetail(data2).then(res => {
+                                this.tableData = res.litigants;
+                            })
+                            return;
                         }
-                        this.$api.caseList.getCaseDetail(data2).then(res => {
-                            this.tableData = res.litigants;
-                        })
-                        return;
-                    }
-                })
-            }else{
-                data.litigantId = this.litigantId;
-                this.$api.addCase.updateTrialLitigant(data).then(res => {
-                    if(res.state == 100){
-                        this.dialogFormVisible = false;
-                        this.getCaseDetail();
-                        return;
-                    }
-                })
-            }
+                    })
+                }else{
+                    data.litigantId = this.litigantId;
+                    this.$api.addCase.updateTrialLitigant(data).then(res => {
+                        if(res.state == 100){
+                            this.dialogFormVisible = false;
+                            this.getCaseDetail();
+                            return;
+                        }
+                    })
+                }
+            })
         },
         edit(item){
             if(

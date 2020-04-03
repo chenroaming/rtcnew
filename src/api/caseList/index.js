@@ -26,4 +26,7 @@ export default {
   delLawCase(params){
     return api.get(urls.delLawCase,params,header,true)
   },
+  countTrial(params){
+    return api.get(urls.countTrial,params,header,true)
+  }
 }

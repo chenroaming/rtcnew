@@ -1,29 +1,64 @@
 <template>
     <div class="room">
-        <el-container>
-            <el-header>
-                <el-button type="text" @click="outRoom">退出</el-button>
-                <chat></chat>
-            </el-header>
-            <el-main>
+        <header>
+            <div style="width: 100%;">
+                <el-row>
+                    <el-col :span="5">
+                        <span class="titile-text" style="font-weight: bold;font-size: 20px;">{{caseInfo.court}}</span>
+                    </el-col>
+                    <el-col :span="4">
+                        <span class="titile-text">{{caseInfo.caseNo}}</span>
+                    </el-col>
+                    <el-col :span="4">
+                        <span class="titile-text">当前主屏————{{caseInfo.name}}</span>
+                    </el-col>
+                    <el-col :span="4">
+                        <nowTime></nowTime>
+                    </el-col>
+                    <el-col :span="4">
+                        <chat v-on:showEvi="showEvi"></chat>
+                    </el-col>
+                    <el-col :span="3">
+                        <el-button type="text" @click="outRoom" class="titile-text">退出</el-button>
+                    </el-col>
+                </el-row>
+            </div>
+        </header>
+        <main>
+            <div class="main-box">
                 <video autoPlay muted ref="video" class="video"></video>
-                <div id="remote-box">
-                    <!-- 本地自己的视频流 -->
-                    <div class="video-box">
-                        <div class="titie">
-                            <span>{{roleName}}</span>
-                            <span>{{name}}</span>
-                            <span>{{address}}</span>
-                            <el-button type="text" @click="fullScreen">放大</el-button>
-                        </div>
-                        <div id="video-box"></div>
+            </div>
+            <div id="remote-box">
+                <div class="video-box">
+                    <div class="titie">
+                        <span>{{roleName}}</span>
+                        <span>{{name}}</span>
+                        <span>{{address}}</span>
+                        <el-button type="text" @click="fullScreen">放大</el-button>
                     </div>
-                    <!-- 订阅的视频流 -->
-                    <remotePlay v-on:srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
-                  </div>
-            </el-main>
-        </el-container>
-      <!-- <h1>庭审房间</h1> -->
+                    <div id="video-box" ref="videoBox"></div>
+                </div>
+                <remotePlay v-on:srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
+            </div>
+            <ul class="menu-list">
+                <li class="menu-content" @click="nowSelect = 0;isVisible=true;">审辅人员</li>
+                <li class="menu-content" @click="nowSelect = 1;isVisible=true;">起诉状</li>
+                <li class="menu-content" @click="nowSelect = 2;isVisible=true;">证据列表</li>
+                <li class="menu-content" @click="nowSelect = 3;isVisible=true;">庭审笔录</li>
+                <li class="menu-content" @click="nowSelect = 4;isVisible=true;">签名确认</li>
+            </ul>
+        </main>
+        <el-drawer
+            :visible.sync="isVisible"
+            direction="rtl"
+            size="550px">
+            <clerkInfo :caseId="caseId" v-if="nowSelect == 0"></clerkInfo>
+            <indictment :caseId="caseId" v-if="nowSelect == 1"></indictment>
+            <evidence :caseId="caseId" v-if="nowSelect == 2"></evidence>
+            <log :caseId="caseId" v-if="nowSelect == 3"></log>
+            <signature v-if="nowSelect == 4"></signature>
+        </el-drawer>
+        <showFile ref="toFile" :fileItem="fileItem"></showFile>
     </div>
   </template>
   
@@ -32,18 +67,44 @@
     import { deviceManager } from 'pili-rtc-web'
     import remotePlay from '@/components/room/remotePlay.vue'
     import chat from '@/components/room/chat.vue'
+    import clerkInfo from '@/components/room/clerkInfo.vue'
+    import evidence from '@/components/room/evidence.vue'
+    import indictment from '@/components/room/indictment.vue'
+    import log from '@/components/room/log.vue'
+    import signature from '@/components/room/signature.vue'
+    import showFile from '@/components/addCase/showFile.vue'
+    import nowTime from '@/components/room/nowTime.vue'
     export default {
         components:{
             remotePlay,
             chat,
+            clerkInfo,
+            evidence,
+            indictment,
+            log,
+            signature,
+            showFile,
+            nowTime,
         },
       data(){
         return {
+            titleArr:['审辅人员','起诉状','证据列表','庭审笔录','签名确认'],
+            nowSelect:0,
+            isVisible:false,
             stream:null,
             userList:[],
             roleName:'',
             name:'',
             address:'',
+            caseInfo:{
+                court:'',
+                caseNo:'',
+                name:'',
+                time:'测试时间',
+            },
+            caseId:'',
+            isEdit:false,
+            fileItem:{},
             // wsObj:null,
         }
       },
@@ -60,8 +121,17 @@
             })
             return;
         }
-        // this.websocketInit();
-
+        this.isEdit = this.$store.getters.getEditStatus;
+        this.caseId = this.$route.params.caseInfo.caseId;
+        const data = {
+            lawCaseId:this.caseId
+        }
+        this.$api.room.getLawCaseCourt(data).then(res => {
+            if(res.state == 100){
+                this.caseInfo.court = res.court;
+            }
+        })
+        this.caseInfo.caseNo = this.$route.params.caseInfo.caseNo;
         try {
             await myRoom.joinRoomWithToken(this.$route.params.roomToken.result);//加入房间
             console.log('加入房间成功！')
@@ -86,6 +156,9 @@
                         this.roleName = res.result.roleName;
                         this.name = res.result.name;
                         this.address = res.result.address;
+                        if(this.roleName == '法官'){
+                            this.fullScreen();
+                        }
                     }
                 })
             },500)
@@ -135,14 +208,20 @@
       },
       methods:{
         receive(e){//接收子组件消息后放大全屏
-            // const srcObj = document.getElementsByClassName('video');
             const srcObj = this.$refs.video;
-            srcObj[0].srcObject = e.src;
+            srcObj.srcObject = e.src;
+            this.caseInfo.name = e.info.roleName + ' ' + e.info.name;
+        },
+        showEvi(e){
+            const name = e.split('/');
+            this.fileItem = {
+                name:name[name.length-1],
+                addr:e
+            };
+            this.$refs.toFile.showEvidence();
         },
         outRoom(){
             this.$api.room.closeRoom();
-            // this.wsObj.close();
-            console.log(this.stream)
             if(this.stream){
                 this.stream.release();//释放采集流
             }
@@ -152,16 +231,36 @@
             })
         },
         fullScreen(){//放大全屏
-            const domElement = document.getElementById("video-box");
-            console.log(domElement.children[1].srcObject)
-            const srcObj = document.getElementsByClassName('video');
-            srcObj[0].srcObject = domElement.children[1].srcObject;
+            // const domElement = document.getElementById("videox");
+            const domElement = this.$refs.videoBox;
+            const srcObj = this.$refs.video;
+            srcObj.srcObject = domElement.children[1].srcObject;
+            this.caseInfo.name = this.roleName + ' ' + this.name;
         },
-      }
+      },
+      destroyed(){
+        this.$api.room.closeRoom();
+        if(this.stream){
+            this.stream.release();
+        }
+        myRoom.leaveRoom();
+      },
     }
   </script>
   
   <style lang="less" scoped>
+    header{
+        width: 100%;
+        height: 60px;
+        line-height: 60px;
+        background-color: #2367F6;
+    }
+    main{
+        height: calc(100% - 60px);
+    }
+    .titile-text {
+        color: #fff;
+    }
     .room {
         width: 100%;
         height: 100%;
@@ -178,13 +277,22 @@
     }
     #remote-box {
         width: 100%;
-        height: 220px;
+        height: 225px;
         position: absolute;
         bottom: 0;
+        overflow-x: scroll;
+    }
+    .main-box {
+        position: absolute;
+        top: 60px;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
     }
     .video{
         width: 100%;
         height: 100%;
+        object-fit: fill;
     }
     .titie {
         width: 100%;
@@ -197,5 +305,33 @@
         span{
             margin-right: 10px;
         }
+    }
+    .header-box {
+        width: 100%;
+        height: 60px;
+        line-height: 60px;
+    }
+    .menu-list {
+        width: 100px;
+        height: 300px;
+        position: fixed;
+        right: 0;
+        top: 100px;
+        z-index: 99;
+        padding: 0;
+        list-style: none;
+    }
+    .menu-content {
+        float: left;
+        width: 100%;
+        height: 50px;
+        line-height: 50px;
+        background-color: #40A9FF;
+        cursor: pointer;
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+        margin-top: 10px;
+        color: #fff;
+        font-weight: bold;
     }
   </style>

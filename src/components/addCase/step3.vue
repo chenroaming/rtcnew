@@ -23,8 +23,8 @@
             </el-table-column>
         </el-table>
         <el-dialog :close-on-click-modal="false" width="500px" :title="form.litigantId ? '编辑证据':'新增证据'" :visible.sync="dialogFormVisible">
-            <el-form :model="form" ref="form">
-                <el-form-item label="当事人" prop="litigationType" :label-width="formLabelWidth">
+            <el-form :model="form" ref="form" :rules="rules">
+                <el-form-item label="当事人" prop="litigantId" :label-width="formLabelWidth">
                     <el-select v-model="form.litigantId" placeholder="请选择当事人">
                         <el-option v-for="(item,index) in litigantList" :key="index" :label="item.name" :value="item.id"></el-option>
                     </el-select>
@@ -72,6 +72,20 @@
         },
       data(){
         return {
+            rules: {
+                litigantId:[
+                {required: true, message: '请选择当事人', trigger: 'change'}
+                ],
+                name: [
+                {required: true, message: '请填写证据名称', trigger: 'change'}
+                ],
+                prove: [
+                {required: true, message: '请填写证据对象', trigger: 'change'}
+                ],
+                source: [
+                {required: true, message: '请填写证据来源', trigger: 'change'}
+                ]
+            },
             fileItem:{},
             dialogFormVisible:false,
             formLabelWidth:'100px',
@@ -106,8 +120,7 @@
       },
       methods:{
         submit(){
-            console.log(333);
-            this.$emit('listenToChildEvent',3);
+            this.$emit('listenToChildEvent',4);
         },
         addEvi(name){
             this.form = {
@@ -119,6 +132,7 @@
                 eviList:[]
             };//清空表单函数偶尔失效，暂时先用赋值方式解决
             this.filesList = [];
+            this.fileList2 = [];
             this.evidenceId = '';
             // if (this.$refs[name] !== undefined) {
             //     this.$refs[name].resetFields();
@@ -127,44 +141,52 @@
             this.dialogFormVisible = true;
         },
         upEvi(){//上传证据
-            if(!this.evidenceId){
+            this.$refs['form'].validate((valid) => {
+                if(!valid){
+                    return this.$message.warning('请确保选项填写完整！');
+                }
+                if(this.fileList2.length < 1 && this.filesList.length < 1){
+                    return this.$message.warning('请上传证据文件！');
+                }
+                if(!this.evidenceId){
+                    const data = {
+                        name:this.form.name,
+                        prove:this.form.prove,
+                        source:this.form.source,
+                        lawCaseId:this.lawCaseId,
+                        litigantId:this.form.litigantId,
+                        file:this.fileList2
+                    }
+                    this.$api.addCase.addEvidence(data).then(res => {
+                        console.log(res)
+                        if(res.state == 100){
+                            this.dialogFormVisible = false;
+                            this.getCaseDetail();
+                        }
+                    })
+                    return;
+                }
+                console.log(this.form);
                 const data = {
                     name:this.form.name,
                     prove:this.form.prove,
                     source:this.form.source,
                     lawCaseId:this.lawCaseId,
                     litigantId:this.form.litigantId,
+                    evidenceId:this.evidenceId,
                     file:this.fileList2
                 }
-                this.$api.addCase.addEvidence(data).then(res => {
-                    console.log(res)
+                this.$api.addCase.updateEvidence(data).then(res => {
                     if(res.state == 100){
                         this.dialogFormVisible = false;
                         this.getCaseDetail();
                     }
                 })
-                return;
-            }
-            console.log(this.form);
-            const data = {
-                name:this.form.name,
-                prove:this.form.prove,
-                source:this.form.source,
-                lawCaseId:this.lawCaseId,
-                litigantId:this.form.litigantId,
-                evidenceId:this.evidenceId,
-                file:this.fileList2
-            }
-            this.$api.addCase.updateEvidence(data).then(res => {
-                if(res.state == 100){
-                    this.dialogFormVisible = false;
-                    this.getCaseDetail();
-                }
-            }) 
+            })
         },
         upFile(){
             // const button = document.getElementById('getFiles');
-            const button = this.$refs.getFiles;
+            const button = this.$refs.getFile;
             button.click();
             button.value = '';
         },

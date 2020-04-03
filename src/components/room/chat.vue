@@ -1,6 +1,7 @@
 <template>
     <div>
-        <el-button type="primary" @click="sendTest">{{status ? "休庭" : "开庭"}}</el-button>
+        <el-button type="primary" @click="sendTest" v-if="isEdit">{{status ? "休庭" : "开庭"}}</el-button>
+        <div v-if="!isEdit" style="width: 240px;height: 60px;"></div>
     </div>
 </template>
   
@@ -11,6 +12,7 @@
         name: 'chat',
       data(){
         return {
+            isEdit:false,
             rec:null,
             emptyData:true,
             emptyCheckCount:0,
@@ -18,6 +20,9 @@
             bufferCount:0,
             wsObj:null,
             status:false,
+            heartbeat:null,
+            timeOut:55000,
+            roleName:'',
         }
       },
       computed:{
@@ -36,6 +41,11 @@
       },
       async mounted(){
         await this.websocketInit();
+        this.heartbeat = setInterval(() => {
+            this.wsObj.send('');
+        },this.timeOut)
+        this.isEdit = this.$store.getters.getEditStatus;
+        this.roleName = this.$store.getters.getUserInfo.roleName;
         navigator.getUserMedia({ audio: true }, (stream) => {
             this.rec = new HZRecorder(stream, {})  //音频处理对象
             // console.log(this.rec)
@@ -63,10 +73,12 @@
                             this.emptyData = true
                             let blob = this.rec.audioData.encodeWAV() //获取音频数据
                             console.log(blob)
-                            this.wsObj.send(blob)
-                            this.rec.audioData.buffer = []
-                            this.rec.audioData.size = 0
-                            this.bufferCount = 0
+                            if(this.roleName != '开庭小助手'){
+                                this.wsObj.send(blob)
+                                this.rec.audioData.buffer = []
+                                this.rec.audioData.size = 0
+                                this.bufferCount = 0
+                            }
                             // if(that.userInfo.name != '开庭小助手'){
                             //     this.send(blob)
                             //     console.log(blob)
@@ -127,6 +139,7 @@
       methods:{
         websocketInit(){//ws初始化
             this.wsObj = this.$store.getters.getWebSocket;
+            console.log(this.wsObj);
             this.wsObj.onopen = () => {
                 console.log("WebSocket:已连接");
             }
@@ -136,12 +149,15 @@
                 if(getMsg.type == 11){
                     this.status = !this.status;
                 }
+                if(getMsg.type == 3){
+                    this.$emit('showEvi',getMsg.content);
+                }
             }
             this.wsObj.onerror = (e) => {
                 console.log("WebSocket:发生错误",e);
                 console.log(e);
             }
-            this.wsObj.onclose = (e) => {
+            this.wsObj.onclose = async (e) => {
                 console.log("WebSocket:已关闭",e);
             }
         },
@@ -204,9 +220,12 @@
             this.rec.clear()
         },
       },
-      destory(){
-          this.wsObj.close();
-          this.stop();
+      destroyed(){
+        clearInterval(this.heartbeat);
+        console.log(this.heartbeat)
+        this.wsObj.close();
+        this.$store.dispatch('clearWebSocket');
+        this.stop();
       }
     }
   </script>

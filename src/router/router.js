@@ -42,7 +42,7 @@ const routes = [
                 access:['法官','书记员'],
                 component: addCase,
                 meta:{
-                    title: '案件编辑',
+                    title: '案件添加/编辑',
                     imgSrc:require('../assets/img/left-icon2.png'),
                     access:['法官','当事人','代理人','书记员','开庭小助手'],
                 }

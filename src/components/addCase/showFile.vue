@@ -4,7 +4,8 @@
             title="查看证据"
             :visible.sync="centerDialogVisible"
             width="50%"
-            center>
+            center 
+            append-to-body>
             <div style="height: 350px;" v-if="showType == 1">
                 <img :src="picSrc" style="width: 100%;height: 100%;" alt="">
             </div>
@@ -27,10 +28,9 @@
         props:['fileItem'],
       data(){
         return {
-            nowItem:{},
-            centerDialogVisible:false,
-            picSrc:'',
-            showType:0,
+          centerDialogVisible:false,
+          picSrc:'',
+          showType:0,
         }
       },
       computed:{
@@ -45,6 +45,7 @@
       methods:{
         async showEvidence(){
             await this.fileItem;
+            console.log(this.fileItem)
             const it = this.fileItem;
             const picture = ['jpg','png','jpeg','bmp','gif'];
             const pdf = ['pdf'];
