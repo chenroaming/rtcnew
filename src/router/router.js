@@ -5,6 +5,7 @@ const caseList = () => import('../views/caseList/caseList.vue')
 const addCase = () => import('../views/addCase/addCase.vue')
 const roleManage = () => import('../views/roleManage/roleManage.vue')
 const Room = () => import('../views/room/room.vue')
+const ClerkRoom = () => import('../views/room/clerkRoom')
 const nopage = () => import('../views/noPage/noPage.vue')
 const routes = [
     {
@@ -68,6 +69,16 @@ const routes = [
         meta:{
             title:'庭审房间',
             access:['法官','当事人','书记员','代理人','开庭小助手'],
+        }
+    },
+    {
+        path: '/clerkRoom',
+        name: 'ClerkRoom',
+        component:ClerkRoom,
+        access:['书记员'],
+        meta:{
+            title:'庭审房间',
+            access:['书记员'],
         }
     },
     {

@@ -76,7 +76,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="证件号码" prop="idCard" :label-width="formLabelWidth">
-                    <el-input v-model.number="form.idCard"></el-input>
+                    <el-input v-model="form.idCard"></el-input>
                 </el-form-item>
                 <el-form-item :label-width="formLabelWidth">
                     <el-button type="primary" @click="addLayer" v-show="form.layerList.length < 2"><i class="el-icon-circle-plus"></i>新增代理人</el-button>

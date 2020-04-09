@@ -2,6 +2,24 @@
     <div>
         <el-button type="primary" @click="sendTest" v-if="isEdit">{{status ? "休庭" : "开庭"}}</el-button>
         <div v-if="!isEdit" style="width: 240px;height: 60px;"></div>
+        <transition name="el-zoom-in-center">
+            <div class="drawer" v-show="drawer">
+                <div class="close">
+                    <el-button type="text" @click="drawer = false;">关闭</el-button>
+                    <!-- <i class="el-icon-circle-close" style="color: #fff;cursor: pointer;" @click="drawer = false;"></i> -->
+                </div>
+                <div class="chat-box" ref="chatBox">
+                    <div v-for="(item,index) in chatItem" class="chatItem-content">
+                        <p>{{item.name}}</p>
+                        <p>{{item.content}}</p>
+                    </div>
+                </div>
+                <div class="text-box">
+                    <el-input type="textarea" :rows="5" placeholder="请输入文字" v-model="textarea"></el-input>
+                    <el-button @click="send" type="primary" style="margin-top: 10px;">发送</el-button>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
   
@@ -12,6 +30,10 @@
         name: 'chat',
       data(){
         return {
+            chatItem:[],
+            needModal:false,
+            textarea:'',
+            drawer:false,
             isEdit:false,
             rec:null,
             emptyData:true,
@@ -50,6 +72,7 @@
             this.rec = new HZRecorder(stream, {})  //音频处理对象
             // console.log(this.rec)
             // 监听语音输入 是否为空
+            this.status = this.$store.getters.getIsVoice;
             this.rec.recorder.onaudioprocess = (e) => {    //音频采集
                 let data = e.inputBuffer.getChannelData(0)
                 this.rec.audioData.input(data)  // 存录音到 HZRecorder 录音处理对象
@@ -72,25 +95,12 @@
                             this.emptydatacount = 0
                             this.emptyData = true
                             let blob = this.rec.audioData.encodeWAV() //获取音频数据
-                            console.log(blob)
                             if(this.roleName != '开庭小助手'){
                                 this.wsObj.send(blob)
-                                this.rec.audioData.buffer = []
-                                this.rec.audioData.size = 0
-                                this.bufferCount = 0
                             }
-                            // if(that.userInfo.name != '开庭小助手'){
-                            //     this.send(blob)
-                            //     console.log(blob)
-                            //     this.rec.audioData.buffer = []
-                            //     this.rec.audioData.size = 0
-                            //     this.bufferCount = 0
-                            // }else{
-                            //     console.log('不发送')
-                            //     this.rec.audioData.buffer = []
-                            //     this.rec.audioData.size = 0
-                            //     this.bufferCount = 0
-                            // }       
+                            this.rec.audioData.buffer = []
+                            this.rec.audioData.size = 0
+                            this.bufferCount = 0    
                         } 
                         else {
                             // console.log(this.bufferCount)
@@ -114,7 +124,7 @@
                 }
                 return
             }
-            // this.start()
+            this.start();
         }, (error) => {
             switch (error.name) {
             case 'PERMISSION_DENIED':
@@ -135,11 +145,12 @@
                 break
             }
         })
+        console.log(111)
       },
       methods:{
         websocketInit(){//ws初始化
             this.wsObj = this.$store.getters.getWebSocket;
-            console.log(this.wsObj);
+            // console.log(this.wsObj);
             this.wsObj.onopen = () => {
                 console.log("WebSocket:已连接");
             }
@@ -151,6 +162,14 @@
                 }
                 if(getMsg.type == 3){
                     this.$emit('showEvi',getMsg.content);
+                }
+                if(getMsg.type === 0 || getMsg.type === 1){
+                    const time = getMsg.createDate.split(' ')[3]
+                    const data = {
+                        name:getMsg.roleName + '  ' + getMsg.name + '  ' + time,
+                        content:getMsg.content
+                    }
+                    this.chatItem.push(data);
                 }
             }
             this.wsObj.onerror = (e) => {
@@ -207,7 +226,6 @@
                 console.log('setDefaultMergeStream')
                 this.wsObj.send(JSON.stringify(data));
                 this.wsObj.send(JSON.stringify(data2));
-                // this.start();
             }
         },
         start () {
@@ -219,6 +237,26 @@
             this.rec.stop()
             this.rec.clear()
         },
+        showChatWindow(){
+            this.drawer = !this.drawer;
+        },
+        send(){
+            const sendObj = { 'name': '', 'roleName': '', 'type': 1, 'wav': '', 'content': this.textarea, 'createDate': '' }
+            const sendJSON = JSON.stringify(sendObj)
+            this.wsObj.send(sendJSON)
+            this.textarea = '';
+        },
+        changeStatus(){
+            this.status = !this.status;
+        },
+        scrollToBottom(){
+            this.$nextTick(() =>{
+                this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
+            })
+        },
+      },
+      updated(){
+        this.scrollToBottom();
       },
       destroyed(){
         clearInterval(this.heartbeat);
@@ -229,7 +267,55 @@
       }
     }
   </script>
-  
+
   <style lang="less" scoped>
-    
+    .drawer {
+        width: 500px;
+        height: calc(100% - 60px);
+        position: fixed;
+        left: 0;
+        top: 60px;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 2;
+        .close{
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            top:10px;
+            right: 10px;
+        }
+    }
+    .chat-box{
+        width: 100%;
+        height: 500px;
+        /* overflow-y: scroll; */
+        overflow: auto;
+    }
+    .chatItem-content{
+        padding: 0 20px;
+        p:nth-child(1){
+            margin: 0;
+            height: 30px;
+            line-height: 30px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: bold;
+            color: #0684FF;
+        }
+        p:nth-child(2){
+            margin: 0;
+            height: auto;
+            text-align: left;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            word-break: break-all;
+            line-height: 30px;
+        }
+    }
+    .text-box{
+        text-align: center;
+        margin-top: 10px;
+        padding: 0 20px;
+    }
   </style>

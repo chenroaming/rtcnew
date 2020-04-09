@@ -4,7 +4,7 @@
             <span>{{info.roleName}}</span>
             <span>{{info.name}}</span>
             <span>{{info.address}}</span>
-            <el-button type="text" @click="fullScreen">放大</el-button>
+            <el-button v-if="roleName != '书记员'" type="text" @click="fullScreen">放大</el-button>
         </div>
         <div class="player" ref="player"></div>
     </div>
@@ -18,6 +18,7 @@
         props:['user'],
       data(){
         return {
+            roleName:'',
             info:{
                 roleName:'',
                 name:'',
@@ -32,7 +33,7 @@
         
       },
       async mounted(){
-        // const domElement = document.getElementsByClassName("player");
+        this.roleName = this.$store.getters.getUserInfo.roleName;
         const domElement = this.$refs.player;
         console.log(this.user.userId);
         if(this.user.userId){

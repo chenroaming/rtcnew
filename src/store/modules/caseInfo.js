@@ -5,6 +5,8 @@ const caseInfo = {
         enterStatus:false,//进入状态
         caseType:'',
         caseInfo:{},
+        clerkRoomList:[],
+        isVoice:false,
     },
     mutations:{
         SET_CASEID:(state, id) => {
@@ -19,6 +21,12 @@ const caseInfo = {
         SET_CASEINFO:(state,info) => {
             state.caseInfo = info
         },
+        SET_CLERKLIST:(state,list) => {
+            state.clerkRoomList = list
+        },
+        SET_VOICE:(state,status) => {
+            state.isVoice = status
+        },
     },
     actions: {
         setCaseId({ commit },id){
@@ -32,6 +40,12 @@ const caseInfo = {
         },
         setCaseInfo({ commit },info){
             commit('SET_CASEINFO',info)
+        },
+        setClerkRoom({ commit },list){
+            commit('SET_CLERKLIST',list)
+        },
+        setVoice({ commit },status){
+            commit('SET_VOICE',status)
         },
     }
 }

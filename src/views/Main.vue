@@ -147,6 +147,9 @@
 </script>
 
 <style lang="less" scoped>
+  .el-main{
+    overflow: hidden;
+  }
   .left-menu {
     width: 100%;
     list-style: none;

@@ -20,26 +20,21 @@
                     </el-col>
                     <el-col :span="3">
                         <el-button type="text" @click="outRoom" class="titile-text">退出</el-button>
-                        <el-button type="text" @click="openChat" class="titile-text">语音识别</el-button>
                     </el-col>
                 </el-row>
             </div>
         </header>
         <main>
-            <div class="main-box">
-                <video autoPlay muted ref="video" class="video"></video>
-            </div>
-            <div id="remote-box">
-                <div class="video-box">
-                    <div class="titie">
-                        <span>{{roleName}}</span>
-                        <span>{{name}}</span>
-                        <span>{{address}}</span>
-                        <el-button type="text" @click="fullScreen">放大</el-button>
-                    </div>
-                    <div id="video-box" ref="videoBox"></div>
+            <div class="big-box" style="width: calc(100% - 100px);height: calc(100vh - 60px);">
+                <div class="remote-box" style="width: 28%;">
+                    <clerkChat ref="clerkChat" v-on:changeStatus="changeStatus"></clerkChat>
                 </div>
-                <remotePlay v-on:srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
+                <div class="remote-box" style="width: 42%;">
+                    <note></note>
+                </div>
+                <div id="remote-box" class="remote-box" style="width: 30%;overflow-y: scroll;">
+                    <remotePlay v-on:srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
+                </div>
             </div>
             <ul class="menu-list">
                 <li class="menu-content" @click="nowSelect = 0;isVisible=true;">审辅人员</li>
@@ -78,6 +73,8 @@
     import signature from '@/components/room/signature.vue'
     import showFile from '@/components/addCase/showFile.vue'
     import nowTime from '@/components/room/nowTime.vue'
+    import note from '@/components/room/note.vue'
+    import clerkChat from '@/components/room/clerkChat.vue'
     export default {
         components:{
             remotePlay,
@@ -89,6 +86,8 @@
             signature,
             showFile,
             nowTime,
+            note,
+            clerkChat,
         },
       data(){
         return {
@@ -109,7 +108,6 @@
             caseId:'',
             isEdit:false,
             fileItem:{},
-            // wsObj:null,
         }
       },
       computed:{
@@ -127,6 +125,7 @@
         }
         this.isEdit = this.$store.getters.getEditStatus;
         this.caseId = this.$route.params.caseInfo.caseId;
+        const userId = this.$store.getters.getUserInfo.result.id;
         const data = {
             lawCaseId:this.caseId.includes(',') ? this.caseId.split(',')[0] : this.caseId
         }
@@ -143,54 +142,12 @@
         catch (e){
             console.log('加入失败！',e)
         }
-
-        try {
-            const stream = await deviceManager.getLocalStream({//本地采集
-                audio: { enabled: true },
-                video: { enabled: true, width: 1280, height: 720 },
-            });
-            console.log("get stream!", stream);
-            this.stream = stream;
-            setTimeout(()=> {//延迟后调用接口
-                const params = {
-                    adminId:stream.userId
-                }
-                this.$api.room.userDetail(params).then(res => {
-                    if(res.state == 100){
-                        this.roleName = res.result.roleName;
-                        this.name = res.result.name;
-                        this.address = res.result.address;
-                        if(this.roleName == '法官'){
-                            this.fullScreen();
-                        }
-                    }
-                })
-            },500)
-            const domElement = document.getElementById("video-box");
-                // 其中第二个参数代表是否开启 静音播放
-            stream.play(domElement, false);
-        }
-        catch(e){
-            console.log(e)
-            this.$message({
-                message:'请检查摄像头等设备否正常！',
-                type:'error'
-            })
-        }
-
-        try{
-            await myRoom.publish(this.stream);//本地推流至云端
-            console.log("publish sucess!");
-        }
-        catch(e){
-            console.log(e)
-        }
         const users = myRoom.users;
 
         for (const user of users) {
         // 每个用户当前是否发布
             if(user.published){
-                if(user.userId != this.stream.userId){//如果是自己则不订阅，否则会报错
+                if(user.userId != userId){//如果是自己则不订阅，否则会报错
                     this.userList.push(user);
                 }
             }
@@ -211,10 +168,12 @@
         });
       },
       methods:{
+        changeStatus(e){
+            if(e){
+                this.$refs.chat.changeStatus();
+            }
+        },
         receive(e){//接收子组件消息后放大全屏
-            const srcObj = this.$refs.video;
-            srcObj.srcObject = e.src;
-            this.caseInfo.name = e.info.roleName + ' ' + e.info.name;
         },
         showEvi(e){
             const name = e.split('/');
@@ -233,15 +192,6 @@
             this.$router.push({
                 name:'caseList'
             })
-        },
-        fullScreen(){//放大全屏
-            const domElement = this.$refs.videoBox;
-            const srcObj = this.$refs.video;
-            srcObj.srcObject = domElement.children[1].srcObject;
-            this.caseInfo.name = this.roleName + ' ' + this.name;
-        },
-        openChat(){
-            this.$refs.chat.showChatWindow();
         },
       },
       destroyed(){
@@ -281,12 +231,15 @@
         display: inline-block;
         position: relative;
     }
-    #remote-box {
-        width: 100%;
-        height: 225px;
-        position: absolute;
-        bottom: 0;
-        overflow-x: scroll;
+    .big-box{
+        width: calc(100% - 100px);
+        height: calc(100vh - 60px);
+        float: left;
+    }
+    .remote-box {
+        width: 33.333%;
+        height: 100%;
+        float: left;
     }
     .main-box {
         position: absolute;
@@ -347,7 +300,7 @@
         right: 0;
         top: 60px;
         background-color: rgba(0, 0, 0, 0.5);
-        z-index: 99;
+        z-index: 999;
         .close{
             width: 50px;
             height: 50px;

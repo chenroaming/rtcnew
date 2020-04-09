@@ -18,12 +18,12 @@
             <span>{{time}}</span>
             <span>{{caseCount.total}}个案件</span>
         </div>
-        <countCase></countCase>
+        <countCase v-if="canCount"></countCase>
         <ul class="case-box">
             <p v-if="caseList.length == 0">暂无数据</p>
             <li v-for="(item,index) in caseList">
-                <img src="@/assets/img/state-3.png" v-if="!item.isOpen" style="float:right;" alt="">
-                <img src="@/assets/img/state-2.png" v-if="item.isOpen" style="float:right;" alt="">
+                <img src="@/assets/img/state-3.png" v-if="!item.isOpen" class="isOpen" alt="">
+                <img src="@/assets/img/state-2.png" v-if="item.isOpen" class="isOpen" alt="">
                 <div style="text-align: left;padding: 0px 15px;">
                     <el-checkbox v-if="isShow" @change="selectItem($event,item)" v-model="item.isChecked">
                         <span style="font-size: 20px;font-weight: bold;color: #282828;">
@@ -33,8 +33,8 @@
                     <span v-else style="font-size: 20px;font-weight: bold;color: #282828;">
                         {{item.caseNo}}
                     </span>
-                    <el-button type="text" style="float: right;" @click="del(item)" v-if="isShow">删除</el-button>
-                    <el-button type="text" style="float: right;" @click="edit(item)">编辑</el-button>
+                    <el-button type="text" style="position: absolute;top: 20px;right: 100px;" @click="del(item)" v-if="isShow">删除</el-button>
+                    <el-button type="text" style="position: absolute;top: 20px;right: 139px;" @click="edit(item)">编辑</el-button>
                 </div>
                 <p class="title-box">
                     <span>开庭时间：{{item.openDate}}</span>
@@ -75,62 +75,64 @@
                         <img src="@/assets/img/down-icon.png" alt="">
                         <span>庭审录像</span>
                     </div>
-                    <div style="width:200px;">
-                        <el-button type="success" size="mini">测试房间</el-button>
-                        <el-button type="primary" size="mini" @click="intoRoom(item)">进入房间</el-button>
+                    <div style="width: 175px;" class="button-box">
+                        <el-button type="success" size="mini" @click="intoRoom(item,0)">测试房间</el-button>
+                        <el-button type="primary" size="mini" @click="intoRoom(item,1)">进入房间</el-button>
                     </div>
                     <img style="display: inline-block;
                     width: 10px;
                     height: 15px;
                     margin-right: 55px;
-                    cursor: pointer;position: absolute;top: 125px;right: 0;" src="@/assets/img/arrow-down.png" class="icon_arrowDown" :class="{'icon_arrowUp':nowIndex == index && item.isShow,'icon_arrowDown':nowIndex == index && !item.isShow}" @click="item.isShow = !item.isShow;getRecord(item.caseId,item.isShow,index)" alt="">
+                    cursor: pointer;position: absolute;top: 115px;right: 0;" src="@/assets/img/arrow-down.png" class="icon_arrowDown" :class="{'icon_arrowUp':nowIndex == index && item.isShow,'icon_arrowDown':nowIndex == index && !item.isShow}" @click="item.isShow = !item.isShow;getRecord(item.caseId,item.isShow,index)" alt="">
                 </div>
-                <el-table
-                    :data="tableData"
-                    stripe
-                    style="width: 100%"
-                    v-show="item.isShow && nowIndex == index">
-                    <el-table-column
-                    type="index"
-                    label="序号">
-                    </el-table-column>
-                    <el-table-column
-                    prop="litigant.litigationStatus.name"
-                    label="诉讼地位">
-                    </el-table-column>
-                    <el-table-column
-                    prop="litigant.litigantName"
-                    label="名称">
-                    </el-table-column>
-                    <el-table-column
-                    prop="litigant.identityCard"
-                    label="证件号码"
-                    width="180">
-                    </el-table-column>
-                    <el-table-column
-                    prop="litigant.litigantPhone"
-                    label="手机号码">
-                    </el-table-column>
-                    <el-table-column
-                    label="操作" width="50px" v-if="isShow">
-                        <template slot-scope="scope">
-                            <!-- <img style="cursor: pointer;" title="发送短信" src="@/assets/img/message-btn.png" @click="sendM(scope.row,item)" alt=""> -->
-                            <i class="el-icon-chat-line-square" style="cursor: pointer;" @click="sendM(scope.row,item)"></i>
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                    label="面部识别开关" width="120px" v-if="isShow">
-                        <template slot-scope="scope">
-                            <el-switch
-                            v-model="scope.row.litigant.faceCheck"
-                            widht="10"
-                            @change="changeIsFace(scope.row)"
-                            active-color="#13ce66"
-                            inactive-color="#ff4949">
-                            </el-switch>
-                        </template>
-                    </el-table-column>
-                </el-table>
+                <transition name="el-zoom-in-top">
+                    <el-table
+                        :data="tableData"
+                        stripe
+                        style="width: 100%"
+                        v-show="item.isShow && nowIndex == index">
+                        <el-table-column
+                        type="index"
+                        label="序号">
+                        </el-table-column>
+                        <el-table-column
+                        prop="litigant.litigationStatus.name"
+                        label="诉讼地位">
+                        </el-table-column>
+                        <el-table-column
+                        prop="litigant.litigantName"
+                        label="名称">
+                        </el-table-column>
+                        <el-table-column
+                        prop="litigant.identityCard"
+                        label="证件号码"
+                        width="180">
+                        </el-table-column>
+                        <el-table-column
+                        prop="litigant.litigantPhone"
+                        label="手机号码">
+                        </el-table-column>
+                        <el-table-column
+                        label="操作" width="50px" v-if="isShow">
+                            <template slot-scope="scope">
+                                <!-- <img style="cursor: pointer;" title="发送短信" src="@/assets/img/message-btn.png" @click="sendM(scope.row,item)" alt=""> -->
+                                <i class="el-icon-chat-line-square" style="cursor: pointer;" @click="sendM(scope.row,item)"></i>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                        label="面部识别开关" width="120px" v-if="isShow">
+                            <template slot-scope="scope">
+                                <el-switch
+                                v-model="scope.row.litigant.faceCheck"
+                                widht="10"
+                                @change="changeIsFace(scope.row)"
+                                active-color="#13ce66"
+                                inactive-color="#ff4949">
+                                </el-switch>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </transition>
             </li>
         </ul>
         <div class="right-footer">
@@ -207,6 +209,8 @@
             isShow:false,
             nowPage:1,
             startDate:'',
+            nowRole:'',
+            canCount:false,
         }
       },
       computed:{
@@ -216,10 +220,10 @@
         
       },
       mounted(){
-        const nowRole = this.$store.getters.getUserInfo.roleName;
-        console.log(nowRole)
+        this.nowRole = this.$store.getters.getUserInfo.roleName;
+        this.canCount = this.$store.getters.getUserInfo.result.name.includes('审管办');
         if(this.roleArr.some(res => {
-            return res == nowRole;
+            return res == this.nowRole;
         })){
             this.isShow = true;
         }
@@ -234,7 +238,6 @@
             pageNumber:1
         }
         this.search(params);
-        
       },
       methods:{
         selectItem(e,item){
@@ -254,7 +257,6 @@
             }else{
                 this.allSelect = false;
             }
-            console.log(this.selectList);
         },
         selectAll(e){
             if(e){
@@ -289,7 +291,20 @@
             }
         },
         openCourt(){
-
+            if(this.selectList.length < 1){
+                return this.$message.warning('请选择案件');
+            }
+            const caseIdArr = [];
+            const caseNoArr = [];
+            for(const item of this.selectList){
+                caseIdArr.push(item.caseId);
+                caseNoArr.push(item.caseNo);
+            }
+            const params = {
+                caseId:caseIdArr.join(','),
+                caseNo:caseNoArr.join(',')
+            }
+            this.intoRoom(params,1);
         },
         handleCurrentChange(val){
             this.nowPage = val;
@@ -330,8 +345,6 @@
                     }else{
                         this.$message.warning(res.message);
                     }
-                    // this.tableData = res.litigants;
-                    // console.log(this.tableData)
                 })
             }
         },
@@ -404,7 +417,6 @@
             })
         },
         del(item){
-            console.log(item)
             this.$confirm('确认删除该案件？', '提示', {
                 confirmButtonText: '确定',
                 type: 'warning'
@@ -456,15 +468,45 @@
                 }
             })
         },
-        intoRoom(item){
+        intoRoom(item,type){
             const params = {
                 caseId:item.caseId,
-                type:0
+                type:type,
+                caseNo:item.caseNo
             }
             // this.$store.dispatch('setCaseInfo',item);
             this.$api.room.getRoomToken(params).then(res => {
                 if(res.state == 100){
                     this.$store.dispatch('setWebSocket');
+                    this.$store.dispatch('setVoice',res.voice);
+                    if(this.nowRole == '书记员'){
+                        const arr = [];
+                        let caseId = [];
+                        let caseNo = [];
+                        if(params.caseId.includes(',')){
+                            caseId = params.caseId.split(',');
+                            caseNo = params.caseNo.split(',');
+                            for(let i = 0;i < caseId.length;i++){
+                                const newArr = {
+                                    caseId:caseId[i],
+                                    type:type,
+                                    caseNo:caseNo[i]
+                                }
+                                arr.push(newArr);
+                            }
+                        }else{
+                            arr.push(params);
+                        }
+                        this.$store.dispatch('setClerkRoom',arr);
+                        this.$router.push({
+                            name:'ClerkRoom',
+                            params:{
+                                roomToken:res,
+                                caseInfo:item
+                            }
+                        })
+                        return;
+                    }
                     this.$router.push({
                         name:'Room',
                         params:{
@@ -488,10 +530,9 @@
         },
       }
     }
-  </script>
-  
-  <style>
-      /* 更改日历组件样式 */
+</script>
+
+<style>
     .wh_content_all {
         background-color: #E6F4FF!important;
     }
@@ -511,9 +552,9 @@
         border-top: 2px solid #199CFA!important;
         border-right: 2px solid #199CFA!important;
     }
-  </style>
-  
-  <style lang="less" scoped>
+</style>
+
+<style lang="less" scoped> 
     .case-main{
         width: 100%;
         height: 100%;
@@ -524,7 +565,7 @@
         float: left;
         background-color: #E6F4FF;
         span{
-          color:#FE7175;
+        color:#FE7175;
         }
         p:nth-child(1){
             color: #199CFA;
@@ -555,7 +596,7 @@
             padding: 0;
         }
     }
-    
+
     .item-right {
         width: 69%;
         height: 100%;
@@ -592,6 +633,7 @@
             padding-top: 20px;
             margin-bottom: 10px;
             position: relative;
+            overflow: hidden;
             p:nth-child(2){
                 text-align: left;
                 padding: 0px 50px;
@@ -626,6 +668,13 @@
             }
         }
     }
+    .button-box {
+        text-align: left;
+        width: 175px;
+        height: 50px;
+        line-height: 39px;
+        margin-left: 10px;
+    }
     .download-box {
         width: 80px;
         height: 40px;
@@ -649,6 +698,11 @@
             margin-left: 30px;
         }
     }
+    .isOpen {
+        position: absolute;
+        top: -15px;
+        right: 0px;
+    }
     /* 上下箭头按钮 */
     .icon_arrowDown{
         transition: 0.8s;
@@ -660,4 +714,4 @@
         transform-origin:center center;
         transform: rotateZ(180deg);
     }
-  </style>
+</style>

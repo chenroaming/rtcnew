@@ -67,12 +67,11 @@ service.interceptors.response.use(
         }
         let { data } = response//对象解构，直接获取回复消息中的data
         if(showTips) {//是否需要弹窗提示
-            // console.log(data)
             if(data.state == 100){
                 Message.success(data.message)
-            }else{
-                Message.warning(data.message)
+                return data
             }
+            Message.warning(data.message)
         }
         return data
     },
@@ -91,12 +90,12 @@ service.interceptors.response.use(
                 msg: 'Network Error'
             }
         } else {
-            // 此处整理错误信息格式
-            // info = {
-            //     code: status,
-            //     data: data,
-            //     msg: statusText
-            // }
+            //此处整理错误信息格式
+            info = {
+                code: status,
+                data: data,
+                msg: statusText
+            }
         }
     }
 )

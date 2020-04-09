@@ -32,4 +32,8 @@ export default {
         header = {'Content-Type': 'multipart/form-data'}//文件传输时更改请求头为form-data类型
         return api.post(urls.uploadEvi,data,header,'',true)
     },
+    getTrialRecord(params){
+        header = {}
+        return api.get(urls.getTrialRecord,params,header)
+    },
 }

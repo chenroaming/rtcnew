@@ -33,6 +33,9 @@
   </script>
   
   <style lang="less" scoped>
+    h1{
+      color: #fff;
+    }
     .tabs-box {
       width: 95%;
       margin: 0 auto;

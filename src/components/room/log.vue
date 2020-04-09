@@ -4,7 +4,7 @@
         <el-button type="primary" @click="downLog">下载庭审笔录</el-button>
         <el-button type="primary" @click="upLog" v-if="isEdit">上传庭审笔录</el-button>
         <input type="file" style="display: none;" ref="upFile" @change="getFile">
-        <a :href="downSrc" download ref="downLoad"></a>
+        <!-- <a :href="downSrc" download ref="downLoad"></a> -->
     </div>
 </template>
   
@@ -16,7 +16,6 @@
       data(){
         return {
           isEdit:false,
-          downSrc:'',
           fileArr:[],
         }
       },
@@ -36,8 +35,10 @@
           }
           this.$api.roomItem.saveTrialRecord(params).then(res => {
             if(res.state == 100){
-              this.downSrc = res.result[0];
-              this.$refs.downLoad.click();
+              const a = document.createElement('a');
+              a.href = res.result[0]
+              a.download = '';
+              a.click();
             }
           })
         },
@@ -60,6 +61,9 @@
   </script>
   
   <style lang="less" scoped>
+    h1{
+      color: #fff;
+    }
     .tabs-box {
       width: 95%;
       margin: 0 auto;

@@ -4,54 +4,62 @@
         <div class="tabs-box">
           <el-tabs v-model="activeName" type="border-card" stretch @tab-click="handleClick">
             <el-tab-pane label="原告" name="first">
-              <el-table
-                :data="plaintiff"
-                style="width: 100%"
-                height="350">
-                <el-table-column prop="name" label="证据名称" width="100"></el-table-column>
-                <el-table-column prop="prove" label="证明对象" width="100"></el-table-column>
-                <el-table-column prop="source" label="证据来源" width="100"></el-table-column>
-                <el-table-column label="证据文件" width="100">
-                  <template slot-scope="scope">
-                      <p v-for="(item,index) in scope.row.file">
-                        {{item.fileName}}
-                        <el-button type="text" @click="showFile(item)">查看</el-button>
-                      </p>
-                  </template>
-                </el-table-column>
-                <el-table-column label="操作" width="100">
-                  <template slot-scope="scope">
-                    <span v-if="scope.row.exmType == -1">已驳回</span>
-                    <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,1)">通过</el-button>
-                    <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,-1)">驳回</el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
+              <el-collapse v-model="activeNames">
+                <el-collapse-item v-for="(item,index) in plaintiff" :key="index" :title="item.caseNo" :name="item.caseNo">
+                  <el-table
+                    :data="item.evidenceList"
+                    style="width: 100%"
+                    height="350">
+                    <el-table-column prop="name" label="证据名称" width="100"></el-table-column>
+                    <el-table-column prop="prove" label="证明对象" width="100"></el-table-column>
+                    <el-table-column prop="source" label="证据来源" width="100"></el-table-column>
+                    <el-table-column label="证据文件" width="100">
+                      <template slot-scope="scope">
+                          <p v-for="(item2,index) in scope.row.file">
+                            {{item2.fileName}}
+                            <el-button type="text" @click="showFile(item2)">查看</el-button>
+                          </p>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="100">
+                      <template slot-scope="scope">
+                        <span v-if="scope.row.exmType == -1">已驳回</span>
+                        <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,1)">通过</el-button>
+                        <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,-1)">驳回</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </el-collapse-item>
+              </el-collapse>
             </el-tab-pane>
             <el-tab-pane label="被告" name="second">
-              <el-table
-                :data="defendant"
-                style="width: 100%"
-                height="350">
-                <el-table-column prop="name" label="证据名称" width="100"></el-table-column>
-                <el-table-column prop="prove" label="证明对象" width="100"></el-table-column>
-                <el-table-column prop="source" label="证据来源" width="100"></el-table-column>
-                <el-table-column label="证据文件" width="100">
-                  <template slot-scope="scope">
-                      <p v-for="(item,index) in scope.row.file">
-                        {{item.fileName}}
-                        <el-button type="text" @click="showFile(item)">查看</el-button>
-                      </p>
-                  </template>
-              </el-table-column>
-              <el-table-column label="操作" width="100">
-                <template slot-scope="scope" v-if="scope.row.exmType === 0 && isEdit">
-                  <span v-if="scope.row.exmType == -1">已驳回</span>
-                  <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,1)">通过</el-button>
-                  <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,-1)">驳回</el-button>
-                </template>
-              </el-table-column>
-              </el-table>
+              <el-collapse v-model="activeNames">
+                <el-collapse-item v-for="(item,index) in defendant" :key="index" :title="item.caseNo" :name="item.caseNo">
+                  <el-table
+                    :data="item.evidenceList"
+                    style="width: 100%"
+                    height="350">
+                    <el-table-column prop="name" label="证据名称" width="100"></el-table-column>
+                    <el-table-column prop="prove" label="证明对象" width="100"></el-table-column>
+                    <el-table-column prop="source" label="证据来源" width="100"></el-table-column>
+                    <el-table-column label="证据文件" width="100">
+                      <template slot-scope="scope">
+                          <p v-for="(item2,index) in scope.row.file">
+                            {{item2.fileName}}
+                            <el-button type="text" @click="showFile(item2)">查看</el-button>
+                          </p>
+                      </template>
+                  </el-table-column>
+                  <el-table-column label="操作" width="100">
+                    <template slot-scope="scope" v-if="scope.row.exmType === 0 && isEdit">
+                      <span v-if="scope.row.exmType == -1">已驳回</span>
+                      <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,1)">通过</el-button>
+                      <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,-1)">驳回</el-button>
+                    </template>
+                  </el-table-column>
+                  </el-table>
+                </el-collapse-item>
+              </el-collapse>
             </el-tab-pane>
           </el-tabs>
           <el-button type="primary" @click="openEviBox" v-if="!isEdit">点击选择证据上传</el-button>
@@ -98,7 +106,8 @@
       data(){
         return {
           isEdit:false,
-          activeName: 'first',
+          activeName:'first',
+          activeNames:[],
           fileItem:{},
           wsObj:'',
           plaintiff:[],
@@ -132,14 +141,6 @@
             this.getEviByCaseIds();
           }
         }
-        this.wsObj.onclose = async (e) => {
-          console.log("WebSocket:已关闭",e);
-          if(e.code == 1006){
-            // await this.$store.dispatch('setWebSocket');
-            // this.wsObj = await this.$store.getters.getWebSocket;
-            this.wsObj.onopen();
-          }
-        }
       },
       methods:{
         getEviByCaseIds(){
@@ -150,21 +151,32 @@
           this.defendant = [];
           this.$api.roomItem.getEviByCaseIds(params).then(res => {
             if(res.state == 100){
-              console.log(res)
-              if(res.result[0].evidence.length > 0){
-                for(const item of res.result[0].evidence){
-                  if(item.dsrStatus == '原告'){
-                    this.plaintiff.push(item);
-                  }else if(item.dsrStatus == '被告'){
-                    this.defendant.push(item);
+              if(res.result.length > 0){
+                for(const item of res.result){
+                  const plaintiff = {
+                    caseNo:item.caseNo,
+                    evidenceList:[]
                   }
+                  const defendant = {
+                    caseNo:item.caseNo,
+                    evidenceList:[]
+                  }
+                  for(const item2 of item.evidence){
+                    if(item2.dsrStatus == '原告'){
+                      plaintiff.evidenceList.push(item2);
+                    }else if(item2.dsrStatus == '被告'){
+                      defendant.evidenceList.push(item2)
+                    }
+                  }
+                  this.plaintiff.push(plaintiff);
+                  this.defendant.push(defendant);
                 }
               }
             }
           })
         },
         handleClick(tab, event) {
-          // console.log(tab, event);
+
         },
         showFile(item){
           const {fileName,fileAddr} = item;
@@ -227,6 +239,9 @@
   </script>
   
   <style lang="less" scoped>
+    h1{
+      color: #fff;
+    }
     .tabs-box {
       width: 95%;
       margin: 0 auto;

@@ -8,6 +8,8 @@ const getters = {
     getWebSocket:state => state.app.websocketObj,//获取ws
     getEditStatus:state => state.user.canEdit,//获取编辑状态
     getCaseInfo:state => state.caseInfo.caseInfo,//获取案件整体信息
+    getClerkRoomList:state => state.caseInfo.clerkRoomList,//书记员获取开庭房间信息
+    getIsVoice:state => state.caseInfo.isVoice,//获取开庭状态
 }
 
 export default getters
