@@ -1,9 +1,7 @@
 <template>
   <div class="about">
-    <!-- <input type="file" id="getFile" @change="fileChange" multiple style="display: none;"> -->
     <el-container>
       <el-header>
-        <!-- <el-button type="warning" @click="logout">登出</el-button> -->
         <div class="logo-box">
           <img src="../assets/img/logo-2.png" alt="">
         </div>
@@ -72,12 +70,10 @@
     },
     watch:{
       getMenuList(curval,oldVal){
-        console.log(curval)
         this.menuList = curval;
       }
     },
     mounted(){
-      console.log(this.$store.getters.getUserInfo)
       this.$store.dispatch('setMenuList');
     },
     methods:{
@@ -133,12 +129,9 @@
       logout(){
         this.$store.dispatch('logout').then(res => {
           if(res.state == 100){
-            // this.$Message.success(res.message)
             this.$router.push({
               name:'Home'
             })
-          }else{
-            // this.$Message.warning(res.message)
           }
         });
       }

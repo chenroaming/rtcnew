@@ -1,5 +1,5 @@
 import Home from '../views/Home.vue'
-
+//以下为路由引入页面
 const Main = () => import('../views/Main.vue')
 const caseList = () => import('../views/caseList/caseList.vue')
 const addCase = () => import('../views/addCase/addCase.vue')
@@ -13,7 +13,7 @@ const routes = [
         name: 'Home',
         component: Home,
         meta:{
-            access:['法官','当事人','代理人','书记员','开庭小助手'],
+            access:['法官','当事人','代理人','书记员','开庭小助手'],//允许哪些角色访问该页面
             title:'全在线庭审平台',
         }
     },

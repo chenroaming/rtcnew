@@ -13,15 +13,14 @@ const options = {
 }
 let loadingInstance
 let loadingCount = 0//全局加载效果计数器
-let showTips = false//是否需要弹窗提示开关
+let showTips = false//消息提示开关
 service.defaults.headers.post['Content-Type'] = 'application/json'
 service.defaults.headers.put['Content-Type'] = 'application/json'
 // 添加请求拦截器
 service.interceptors.request.use(
     (config) => {
         if(loadingCount == 0){
-            loadingInstance = Loading.service(options);//全局添加请求时的加载效果
-            // console.log('isOpen')
+            loadingInstance = Loading.service(options);//全局添加请求时的加载效果=
         }
         loadingCount ++
         if (config.method === 'post' || config.method === 'put') {
@@ -30,8 +29,6 @@ service.interceptors.request.use(
         }
         if(config.showTips){
             showTips = true;
-        }else{
-            showTips = false;
         }
         // 请求发送前进行处理,判断是否使用form-data进行文件传输
         if(config.headers['Content-Type'] == 'multipart/form-data'){
@@ -65,13 +62,15 @@ service.interceptors.response.use(
         if(loadingCount == 0){
             loadingInstance.close();//收到回复后隐藏加载效果
         }
-        let { data } = response//对象解构，直接获取回复消息中的data
-        if(showTips) {//是否需要弹窗提示
+        const { data } = response//对象解构，直接获取回复消息中的data
+        if(showTips){//是否需要弹出消息提示
             if(data.state == 100){
                 Message.success(data.message)
+                showTips = false
                 return data
             }
             Message.warning(data.message)
+            showTips = false
         }
         return data
     },

@@ -157,9 +157,7 @@
       },
       watch:{
         getCaseId(curval,oldVal){//当前值和原来的值
-            // this.lawCaseId = curval;//监听变化改变页面数据
             console.log(curval);
-            // this.lawCaseId = '27b61df5a49941c4b20f6ad704d08c8f';
         }
       },
       mounted(){
@@ -177,7 +175,7 @@
         })
       },
       methods:{
-        submit(){
+        submit(){//进入下一步
             if(!this.isEdit){
                 this.$emit('listenToChildEvent',3);
                 return;
@@ -188,7 +186,7 @@
             }
             this.$emit('listenToChildEvent',3);
         },
-        addLitigant(name){
+        addLitigant(name){//添加当事人
             this.litigantId = '';
             this.form = {
                 litigationType:'',
@@ -205,7 +203,7 @@
             // }
             this.dialogFormVisible = true;
         },
-        addLayer(){
+        addLayer(){//添加代理人
             const data = {
                 name:'',
                 phone:'',
@@ -216,7 +214,7 @@
             }
             this.form.layerList.push(data);
         },
-        delLayer(index,item){
+        delLayer(index,item){//删除代理人
             // console.log(item);
             if(item.id){
                 this.$confirm('确认删除该代理人？', '提示', {
@@ -282,7 +280,7 @@
                 }
             })
         },
-        edit(item){
+        edit(item){//编辑当事人
             if(
                 this.litigationStatusArr.some(res => {
                     return res.id == item.litigant.litigationStatus.id
@@ -312,7 +310,7 @@
             }
             this.dialogFormVisible = true;
         },
-        del(item){
+        del(item){//删除当事人
             this.$confirm('确认删除该当事人？', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -330,7 +328,7 @@
                   
             });
         },
-        getCaseDetail(){
+        getCaseDetail(){//获取诉讼参与人信息
             const data= {
                 lawCaseId:this.lawCaseId
             }

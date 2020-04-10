@@ -21,11 +21,16 @@
                           </p>
                       </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="100">
+                    <el-table-column v-if="isEdit" label="操作" width="100">
                       <template slot-scope="scope">
                         <span v-if="scope.row.exmType == -1">已驳回</span>
                         <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,1)">通过</el-button>
                         <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,-1)">驳回</el-button>
+                      </template>
+                    </el-table-column>
+                    <el-table-column v-if="!isEdit" label="状态" width="100">
+                      <template slot-scope="scope">
+                        <span v-if="scope.row.exmType == -1">已驳回</span>
                       </template>
                     </el-table-column>
                   </el-table>
@@ -50,11 +55,16 @@
                           </p>
                       </template>
                   </el-table-column>
-                  <el-table-column label="操作" width="100">
+                  <el-table-column v-if="isEdit" label="操作" width="100">
                     <template slot-scope="scope" v-if="scope.row.exmType === 0 && isEdit">
                       <span v-if="scope.row.exmType == -1">已驳回</span>
                       <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,1)">通过</el-button>
                       <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,-1)">驳回</el-button>
+                    </template>
+                  </el-table-column>
+                  <el-table-column v-if="!isEdit" label="状态" width="100">
+                    <template slot-scope="scope">
+                      <span v-if="scope.row.exmType == -1">已驳回</span>
                     </template>
                   </el-table-column>
                   </el-table>
@@ -62,7 +72,7 @@
               </el-collapse>
             </el-tab-pane>
           </el-tabs>
-          <el-button type="primary" @click="openEviBox" v-if="!isEdit">点击选择证据上传</el-button>
+          <el-button type="primary" @click="openEviBox" v-if="!isEdit" style="margin-top: 15px;">点击选择证据上传</el-button>
         </div>
         <el-dialog append-to-body :close-on-click-modal="false" width="500px" title="添加证据" :visible.sync="dialogFormVisible">
           <el-form :model="form" ref="form">
@@ -143,7 +153,7 @@
         }
       },
       methods:{
-        getEviByCaseIds(){
+        getEviByCaseIds(){//获取证据
           const params = {
             lawCaseId:this.caseId
           }
@@ -178,7 +188,7 @@
         handleClick(tab, event) {
 
         },
-        showFile(item){
+        showFile(item){//查看证据
           const {fileName,fileAddr} = item;
           const sendObj = { 'name': '', 'roleName': '', 'type': 3, 'wav': '', 'content': fileAddr, 'createDate': '' };
           this.wsObj.send(JSON.stringify(sendObj));//发送证据同步投屏
@@ -188,16 +198,12 @@
           };
           this.$refs.toFile.showEvidence();
         },
-        examineEvi(id,isPass){
+        examineEvi(id,isPass){//法官审核证据
           const params = {
             evidenceId:id,
             exm:isPass
           }
-          this.$api.roomItem.examineEvi(params).then(res => {
-            if(res.state == 100){
-              this.getEviByCaseIds();
-            }
-          })
+          this.$api.roomItem.examineEvi(params).then(res => {})
         },
         upFile(){
           const button = this.$refs.getFile;
@@ -218,11 +224,11 @@
           }
           this.$api.roomItem.uploadEvi(data).then(res => {
             if(res.state == 100){
-              this.getEviByCaseIds();
+              this.dialogFormVisible = false;
             }
           });
         },
-        openEviBox(){
+        openEviBox(){//当事人打开上传证据表单
           this.dialogFormVisible = true;
           this.filesList = [];
           this.form = {

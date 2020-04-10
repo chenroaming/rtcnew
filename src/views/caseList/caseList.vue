@@ -9,8 +9,8 @@
             v-on:choseDay="clickDay"
         ></Calendar>
         <p>共{{caseCount.total}}件案件</p>
-        <p>未开庭<span>{{caseCount.un}}</span>件</p>
-        <p>已开庭<span>{{caseCount.ed}}</span>件</p>
+        <!-- <p>未开庭<span>{{caseCount.un}}</span>件</p>
+        <p>已开庭<span>{{caseCount.ed}}</span>件</p> -->
       </div>
       <div class="item-right">
         <div class="time-box">
@@ -58,11 +58,11 @@
                         </div>
                     </div>
                     
-                    <div class="feature-content">
+                    <div class="feature-content" style="width: 115px;">
                         <img src="@/assets/img/role-icon3.png" alt="">
-                        <div>
+                        <div style="width: 78px;">
                             <p style="margin: 0;">人民陪审员</p>
-                            <p style="padding: 0;margin: 0;">默认陪审员</p>
+                            <p style="padding: 0;margin: 0;">{{item.juror}}</p>
                         </div>
                     </div>
                     
@@ -454,6 +454,7 @@
                             openDate:item.openDate,
                             judge:item.judge,
                             clerk:item.clerk,
+                            juror:item.juror.length > 0 ? item.juror[0] : '暂无',
                             isShow:false,
                             caseId:item.caseId,
                             isOpen:item.isOpen,

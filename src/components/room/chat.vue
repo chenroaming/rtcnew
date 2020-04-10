@@ -1,6 +1,10 @@
 <template>
     <div>
-        <el-button type="primary" @click="sendTest" v-if="isEdit">{{status ? "休庭" : "开庭"}}</el-button>
+        <el-radio-group v-model="radio" style="margin-right: 5px;" @change="changeAiType">
+            <el-radio :label="1">阿里</el-radio>
+            <el-radio :label="2">讯飞</el-radio>
+        </el-radio-group>
+        <el-button :type="buttonType" @click="sendTest" v-if="isEdit">{{status ? "休庭" : "开庭"}}</el-button>
         <div v-if="!isEdit" style="width: 240px;height: 60px;"></div>
         <transition name="el-zoom-in-center">
             <div class="drawer" v-show="drawer">
@@ -30,6 +34,8 @@
         name: 'chat',
       data(){
         return {
+            radio:1,
+            buttonType:'primary',
             chatItem:[],
             needModal:false,
             textarea:'',
@@ -55,8 +61,10 @@
       watch:{
         getStatus(curval,oldval){
             if(curval){
+                this.buttonType = 'warning';
                 this.start();
             }else{
+                this.buttonType = 'primary';
                 this.stop();
             }
         }
@@ -145,7 +153,6 @@
                 break
             }
         })
-        console.log(111)
       },
       methods:{
         websocketInit(){//ws初始化
@@ -171,6 +178,15 @@
                     }
                     this.chatItem.push(data);
                 }
+                if(getMsg.type == 12){
+                    if(this.roleName == '法官'){
+                        this.$notify({
+                            title: '提示',
+                            message: getMsg.content,
+                            type: 'success'
+                        });
+                    }
+                }
             }
             this.wsObj.onerror = (e) => {
                 console.log("WebSocket:发生错误",e);
@@ -182,60 +198,43 @@
         },
         async sendTest(status){
             if(this.status){
-                this.status = !this.status;
-                const data = {
-                    'name': '',
-                    'roleName': '',
-                    'type': 11,
-                    'wav': '',
-                    'content': 0,
-                    'createDate': ''
-                }
-                const data2 = {
-                    'name': '',
-                    'roleName': '',
-                    'type': 6,
-                    'wav': '',
-                    'content': 0,
-                    'createDate': ''
-                }
-                await myRoom.stopMergeStream()
-                console.log('stopMergeStream')
-                this.wsObj.send(JSON.stringify(data));
-                this.wsObj.send(JSON.stringify(data2));
-                // this.stop();
+                this.$confirm('确定结束庭审？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(async () => {
+                    this.status = !this.status;
+                    const data = {'name': '','roleName': '','type': 11,'wav': '','content': 0,'createDate': ''}
+                    const data2 = {'name': '','roleName': '','type': 6,'wav': '','content': 0,'createDate': ''}
+                    await myRoom.stopMergeStream()
+                    console.log('stopMergeStream')
+                    this.wsObj.send(JSON.stringify(data));
+                    this.wsObj.send(JSON.stringify(data2));
+                }).catch(() => {
+                    
+                });
             }else{
                 this.status = !this.status;
-                const data = {
-                    'name': '',
-                    'roleName': '',
-                    'type': 11,
-                    'wav': '',
-                    'content': 1,
-                    'createDate': ''
-                }
-                const data2 = {
-                    'name': '',
-                    'roleName': '',
-                    'type': 6,
-                    'wav': '',
-                    'content': 1,
-                    'createDate': ''
-                }
+                const data = {'name': '','roleName': '','type': 11,'wav': '','content': 1,'createDate': ''}
+                const data2 = {'name': '','roleName': '','type': 6,'wav': '','content': 1,'createDate': ''}
                 await myRoom.setDefaultMergeStream(1280, 720)
                 console.log('setDefaultMergeStream')
                 this.wsObj.send(JSON.stringify(data));
                 this.wsObj.send(JSON.stringify(data2));
             }
         },
-        start () {
+        start () {//开始语音识别
             console.log('start')
-            this.rec.start()
+            if(this.rec){
+                this.rec.start()
+            }
         },
-        stop () {
+        stop () {//停止语音识别
             console.log('stop')
-            this.rec.stop()
-            this.rec.clear()
+            if(this.rec){
+                this.rec.stop()
+                this.rec.clear()
+            }
         },
         showChatWindow(){
             this.drawer = !this.drawer;
@@ -246,7 +245,7 @@
             this.wsObj.send(sendJSON)
             this.textarea = '';
         },
-        changeStatus(){
+        changeStatus(){//改变开庭休庭状态
             this.status = !this.status;
         },
         scrollToBottom(){
@@ -254,9 +253,14 @@
                 this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
             })
         },
+        changeAiType(e){//改变语音识别类型
+            const sendObj = { 'name': '', 'roleName': '', 'type': 8, 'wav': '', 'content': e, 'createDate': '' }
+            const sendJSON = JSON.stringify(sendObj)
+            this.wsObj.send(sendJSON)
+        },
       },
       updated(){
-        this.scrollToBottom();
+        this.scrollToBottom();//总是下拉显示最新的消息
       },
       destroyed(){
         clearInterval(this.heartbeat);
@@ -276,7 +280,7 @@
         left: 0;
         top: 60px;
         background-color: rgba(0, 0, 0, 0.5);
-        z-index: 2;
+        z-index: 9999;
         .close{
             width: 50px;
             height: 50px;

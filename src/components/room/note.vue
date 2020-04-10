@@ -36,7 +36,7 @@
         this.getHtml(this.nowCase);
       },
       methods:{
-        saveFile(){
+        saveFile(){//保存文本
             const iframe = document.getElementById("iframe");
             const iWindow = iframe.contentWindow;
             let obj = {
@@ -77,7 +77,7 @@
             }
             iWindow.postMessage(obj , "*");
         },
-        getHtml(caseid){
+        getHtml(caseid){//获取初始文本
             const params = {
                 caseId:caseid
             }

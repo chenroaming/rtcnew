@@ -55,7 +55,7 @@
         })
       },
       methods:{
-        showInd(item){
+        showInd(item){//查看起诉状
           console.log(item.filePaths[0])
           this.fileItem = item.filePaths[0];
           this.$refs.toFile.showEvidence();

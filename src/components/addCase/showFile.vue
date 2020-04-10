@@ -51,7 +51,7 @@
             const pdf = ['pdf'];
             const word = ['doc','docx'];
             const fileType = it.name.split('.')[1].toLowerCase();
-            if(picture.some(res => {
+            if(picture.some(res => {//文件类型判断
             return res == fileType;
             })){
             // this.picSrc = 'https://trialtest.olcourt.cn' + it.addr;

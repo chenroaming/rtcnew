@@ -72,7 +72,7 @@
         },
       data(){
         return {
-            rules: {
+            rules: {//表单验证规则
                 litigantId:[
                 {required: true, message: '请选择当事人', trigger: 'change'}
                 ],
@@ -119,10 +119,10 @@
         this.getCaseDetail();
       },
       methods:{
-        submit(){
+        submit(){//点击完成跳转至案件列表页
             this.$emit('listenToChildEvent',4);
         },
-        addEvi(name){
+        addEvi(name){//增加证据
             this.form = {
                 litigantId:'',
                 name:'',
@@ -166,7 +166,7 @@
                     })
                     return;
                 }
-                console.log(this.form);
+                // console.log(this.form);
                 const data = {
                     name:this.form.name,
                     prove:this.form.prove,
@@ -220,7 +220,7 @@
             }
             this.fileList2.splice(index,1);
         },
-        edit(item){
+        edit(item){//编辑证据文件
             console.log(item)
             this.fileList2 = [];
             this.evidenceId = item.id;
@@ -290,7 +290,7 @@
                             item2.litigantName = item.litigant.litigantName;
                             if(
                                 this.litigantId.some(unit => {
-                                    return unit == item2.litigantId
+                                    return unit == item2.litigantId//判断登录账号是否可编辑该证据
                                 })
                             ){
                                 item2.canChange = true;
@@ -301,10 +301,9 @@
                         }
                     }
                 }
-                console.log(this.tableData)
             })
         },
-        showFile(item){
+        showFile(item){//查看证据文件
           this.fileItem = item;
           this.$refs.toFile.showEvidence();
         },

@@ -306,7 +306,7 @@
           this.fileItem = item;
           this.$refs.toFile.showEvidence();
         },
-        goWhere(){
+        goWhere(){//判断是否进行下一步还是直接返回案件列表页
           if(this.nextStr == 'next'){
             this.$emit('listenToChildEvent',2);
           }else{

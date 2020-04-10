@@ -7,5 +7,5 @@ export default {
     uploadRecordFile:baseUrl + '/online/uploadRecordFile.jhtml',//上传起诉状文件
     examineEvi: baseUrl + '/qtw/out/evi/examineEvi.jhtml',//是否通过证据
     uploadEvi: baseUrl + '/qtw/out/evi/editEvi.jhtml',//庭审房间中上传证据
-    getTrialRecord: baseUrl + 'online/getTrialRecord.jhtml',
+    getTrialRecord: baseUrl + 'online/getTrialRecord.jhtml',//庭审房间获取庭审笔录
 }
