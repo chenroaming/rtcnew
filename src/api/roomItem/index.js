@@ -18,7 +18,7 @@ export default {
     },
     saveTrialRecord(params){
         header = {}
-        return api.get(urls.saveTrialRecord,params,header,true)
+        return api.get(urls.saveTrialRecord,params,header)
     },
     uploadRecordFile(data){
         header = {'Content-Type': 'multipart/form-data'}//文件传输时更改请求头为form-data类型

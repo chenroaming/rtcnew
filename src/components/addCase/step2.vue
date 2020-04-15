@@ -142,7 +142,7 @@
                 layerList:[]
             },
             formLabelWidth:'100px',
-            idCardType:[{name:'大陆身份证',id:1},{name:'其他',id:2}],
+            idCardType:[{name:'大陆身份证',id:1},{name:'其他(港澳通行证、护照号等)',id:2}],
             litigationStatusArr:[],
             caseType:'',
             litigantId:'',
@@ -295,7 +295,7 @@
             this.form.idCard = item.litigant.identityCard;
             this.form.phone = item.litigant.litigantPhone;
             this.form.litigationStatus = item.litigant.litigantType;
-            this.form.idCardType = '';
+            this.form.idCardType = item.litigant.idCardType;
             this.form.layerList = [];
             if(item.litigant.lawyer.length > 0){
                 for(const item of item.litigant.lawyer){

@@ -2,7 +2,10 @@
     <div>
       <h1>审辅人员</h1>
       <div>
-        <img :src="clerk.imagePath" alt="">
+        <el-image
+          :src="clerk.imagePath"
+          fit="fill">
+        </el-image>
         <p>书记员：{{clerk.name}}</p>
       </div>
     </div>

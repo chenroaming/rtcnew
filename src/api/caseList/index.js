@@ -28,5 +28,8 @@ export default {
   },
   countTrial(params){
     return api.get(urls.countTrial,params,header,true)
+  },
+  downVideo(params){
+    return api.get(urls.downVideo,params,header)
   }
 }

@@ -190,8 +190,10 @@
         },
         showFile(item){//查看证据
           const {fileName,fileAddr} = item;
-          const sendObj = { 'name': '', 'roleName': '', 'type': 3, 'wav': '', 'content': fileAddr, 'createDate': '' };
-          this.wsObj.send(JSON.stringify(sendObj));//发送证据同步投屏
+          if(this.isEdit){
+            const sendObj = { 'name': '', 'roleName': '', 'type': 3, 'wav': '', 'content': fileAddr, 'createDate': '' };
+            this.wsObj.send(JSON.stringify(sendObj));//发送证据同步投屏
+          }
           this.fileItem = {
             name:fileName,
             addr:fileAddr

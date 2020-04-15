@@ -1,13 +1,17 @@
 <template>
     <div>
         <el-dialog
-            title="查看证据"
+            title="查看"
             :visible.sync="centerDialogVisible"
             width="50%"
             center 
             append-to-body>
             <div style="height: 350px;" v-if="showType == 1">
-                <img :src="picSrc" style="width: 100%;height: 100%;" alt="">
+              <el-image
+                style="width: 100%;height: 100%;"
+                :src="picSrc"
+                fit="fill">
+              </el-image>
             </div>
             <div style="height: 350px;"  v-if="showType == 2">
             <iframe :src="picSrc" width="100%" height="100%" frameborder="0" style="object-fit: fill;"></iframe>
@@ -54,25 +58,26 @@
             if(picture.some(res => {//文件类型判断
             return res == fileType;
             })){
-            // this.picSrc = 'https://trialtest.olcourt.cn' + it.addr;
-            this.picSrc = it.addr;
-            this.showType = 1;
-            this.centerDialogVisible = true;
+              this.picSrc = it.addr;
+              this.showType = 1;
+              this.centerDialogVisible = true;
             }
             if(pdf.some(res => {
             return res == fileType;
             })){
-            // this.picSrc = 'https://trialtest.olcourt.cn' + it.addr;
-            this.picSrc = it.addr;
-            this.showType = 2;
-            this.centerDialogVisible = true;
+              this.picSrc = it.addr;
+              this.showType = 2;
+              this.centerDialogVisible = true;
             }
             if(word.some(res => {
             return res == fileType;
             })){
-            this.picSrc = 'https://view.officeapps.live.com/op/view.aspx?src=' + location.origin + it.addr;
-            this.showType = 3;
-            this.centerDialogVisible = true;
+              this.picSrc = location.origin.includes('trialtest') ? 
+              'https://ow365.cn/?i=21049&ssl=1&furl='+ location.origin + it.addr : 
+              'https://ow365.cn/?i=21037&ssl=1&furl=' + location.origin + it.addr;
+              // this.picSrc = 'https://view.officeapps.live.com/op/view.aspx?src=' + location.origin + it.addr;
+              this.showType = 3;
+              this.centerDialogVisible = true;
             }
         },
       }

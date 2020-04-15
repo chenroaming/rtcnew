@@ -1,12 +1,13 @@
 {
-  "name": "vue-cli3test",
-  "version": "0.1.0",
+  "name": "rtc-new",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "test": "vue-cli-service build --mode test",
     "production": "vue-cli-service build --mode production",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "modern":"vue-cli-service build --modern"
   },
   "dependencies": {
     "core-js": "^3.6.4",

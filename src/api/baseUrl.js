@@ -7,6 +7,9 @@ switch (process.env.NODE_ENV) {
     case 'production':
         baseUrl = "/api"   //生产环境url
         break
+    case 'development':
+        baseUrl = '/api'   //开发环境url
+        break
     default:
         baseUrl = '/api'   //'/api'为vue.config.js配置
 }

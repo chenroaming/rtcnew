@@ -66,12 +66,12 @@
                         </div>
                     </div>
                     
-                    <div class="download-box" @click="downRecord(item)">
+                    <div class="download-box" @click="downRecord(item)" v-if="isShow">
                         <img src="@/assets/img/down-icon.png" alt="">
                         <span>庭审笔录</span>
                     </div>
                     
-                    <div class="download-box">
+                    <div class="download-box" @click="downVideo(item)" v-if="isShow">
                         <img src="@/assets/img/down-icon.png" alt="">
                         <span>庭审录像</span>
                     </div>
@@ -125,7 +125,7 @@
                                 <el-switch
                                 v-model="scope.row.litigant.faceCheck"
                                 widht="10"
-                                @change="changeIsFace(scope.row)"
+                                @change="changeIsFace(scope.row,scope.$index)"
                                 active-color="#13ce66"
                                 inactive-color="#ff4949">
                                 </el-switch>
@@ -174,17 +174,20 @@
             <el-button type="primary" @click="openCourt">批量开庭</el-button>
         </div>
     </el-dialog>
+    <videoList ref="videos" :videoList="videoList"></videoList>
     </div>
   </template>
   
   <script>
     import Calendar from 'vue-calendar-component'
     import countCase from '@/components/caseList/countCase.vue'
+    import videoList from '@/components/caseList/videoList.vue'
     export default {
     name: 'caseList',
     components: {
         Calendar,
         countCase,
+        videoList,
     },
       data(){
         return {
@@ -211,6 +214,7 @@
             startDate:'',
             nowRole:'',
             canCount:false,
+            videoList:[],
         }
       },
       computed:{
@@ -399,6 +403,31 @@
                 }
             })
         },
+        downVideo(item){
+            const params= {
+                lawCaseId:item.caseId
+            }
+            this.$api.caseList.downVideo(params).then(res => {
+                if(res.state == 100){
+                    if(res.videos.length > 0){
+                        this.videoList = [];
+                        for(const item of res.videos){
+                            const data = {
+                                name:item.split('/')[item.split('/').length - 1],
+                                addr:item
+                            }
+                            this.videoList.push(data);
+                        }
+                        console.log(this.videoList);
+                        this.$refs.videos.showBox();
+                        return;
+                    }
+                    this.$message.warning('暂无庭审录像！');
+                }else{
+                    this.$message.error(res.message);
+                }
+            })
+        },
         clickDay(data) { //选中某天
             const choiceDay = data.split('/');
             this.time = choiceDay[0] + '年' + choiceDay[1] + '月' + choiceDay[2] + '日';
@@ -520,14 +549,18 @@
                 }
             })
         },
-        changeIsFace(item){
+        changeIsFace(item,index){
             const params = {
                 idCard:item.litigant.identityCard,
                 check:item.litigant.faceCheck ? 1 : 0,
                 litigantId:item.litigant.litigationStatus.name == '代理人' ? '' : item.litigant.id,
                 lawyerId:item.litigant.litigationStatus.name == '代理人' ? item.litigant.id : '',
             }
-            this.$api.caseList.changeIsFace(params);
+            this.$api.caseList.changeIsFace(params).then(res => {
+                if(res.state != 100){
+                    this.tableData[index].litigant.faceCheck = !this.tableData[index].litigant.faceCheck;
+                }
+            });
         },
       }
     }
