@@ -1,5 +1,11 @@
 <template>
     <div class="room">
+        <ws ref="ws" v-on:showEvi="showEvi"
+            v-on:newChat="newChat"
+            v-on:getEviByCaseIds="getEviByCaseIds"
+            v-on:changeLook="changeLook"
+            v-on:changeStatus="changeStatus"
+            v-on:tips="tips"></ws>
         <header>
             <div style="width: 100%;">
                 <el-row>
@@ -16,7 +22,7 @@
                         <nowTime></nowTime>
                     </el-col>
                     <el-col :span="4">
-                        <chat ref="chat" v-on:showEvi="showEvi"></chat>
+                        <chat ref="chat" v-on:send="send"></chat>
                     </el-col>
                     <el-col :span="3">
                         <el-button type="text" @click="outRoom" class="titile-text">退出</el-button>
@@ -27,13 +33,13 @@
         <main>
             <div class="big-box" style="width: calc(100% - 100px);height: calc(100vh - 60px);">
                 <div class="remote-box" style="width: 28%;">
-                    <clerkChat ref="clerkChat" v-on:changeStatus="changeStatus"></clerkChat>
+                    <clerkChat ref="clerkChat" v-on:send="send"></clerkChat>
                 </div>
                 <div class="remote-box" style="width: 42%;">
                     <note></note>
                 </div>
                 <div id="remote-box" class="remote-box" style="width: 30%;overflow-y: scroll;">
-                    <remotePlay v-on:srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
+                    <remotePlay ref="remotePlay" v-on:srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
                 </div>
             </div>
             <ul class="menu-list">
@@ -52,7 +58,7 @@
                 </div>
                 <clerkInfo :caseId="caseId" v-if="nowSelect == 0"></clerkInfo>
                 <indictment :caseId="caseId" v-if="nowSelect == 1"></indictment>
-                <evidence :caseId="caseId" v-if="nowSelect == 2"></evidence>
+                <evidence ref="evidence" :caseId="caseId" v-if="nowSelect == 2"></evidence>
                 <log :caseId="caseId" v-if="nowSelect == 3"></log>
                 <signature v-if="nowSelect == 4"></signature>
             </div>
@@ -65,6 +71,7 @@
     import myRoom from '@/utils/pili.js'
     import { deviceManager } from 'pili-rtc-web'
     import remotePlay from '@/components/room/remotePlay.vue'
+    import ws from '@/components/room/ws.vue'
     import chat from '@/components/room/chat.vue'
     import clerkInfo from '@/components/room/clerkInfo.vue'
     import evidence from '@/components/room/evidence.vue'
@@ -78,6 +85,7 @@
     export default {
         components:{
             remotePlay,
+            ws,
             chat,
             clerkInfo,
             evidence,
@@ -168,20 +176,33 @@
         });
       },
       methods:{
-        changeStatus(e){
-            if(e){
-                this.$refs.chat.changeStatus();
-            }
-        },
         receive(e){//接收子组件消息后放大全屏
         },
-        showEvi(e){
+        showEvi(e){//查看证据
             const name = e.split('/');
             this.fileItem = {
                 name:name[name.length-1],
                 addr:e
             };
             this.$refs.toFile.showEvidence();
+        },
+        getEviByCaseIds(e){//更新证据列表
+            this.$refs.evidence.getEviByCaseIds();
+        },
+        changeLook(e){//显示当事人查看证据中
+            this.$refs.remotePlay.changeLook(e);
+        },
+        changeStatus(e){//改变开庭休庭状态
+            this.$refs.chat.changeStatus();
+        },
+        newChat(e){
+            this.$refs.clerkChat.chatItemPush(e);
+        },
+        send(e){//发送websocket消息
+            this.$refs.ws.sendMsg(e);
+        },
+        tips(e){//当事人已签名消息
+            this.$refs.chat.showNewTips(e);
         },
         outRoom(){
             this.$api.room.closeRoom();

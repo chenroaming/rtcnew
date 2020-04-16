@@ -30,34 +30,38 @@
         
       },
       mounted(){
-        this.wsObj = this.$store.getters.getWebSocket;
-        this.wsObj.onmessage = (e) => {
-            const getMsg = JSON.parse(e.data);
-            console.log(JSON.parse(e.data))
-            if(getMsg.type == 11){
-                this.$emit('changeStatus',11)
-            }
+        // this.wsObj = this.$store.getters.getWebSocket;
+        // this.wsObj.onmessage = (e) => {
+        //     const getMsg = JSON.parse(e.data);
+        //     console.log(JSON.parse(e.data))
+        //     if(getMsg.type == 11){
+        //         this.$emit('changeStatus',11)
+        //     }
 
-            if(getMsg.type == 3){
-                this.$emit('showEvi',getMsg.content);
-            }
+        //     if(getMsg.type == 3){
+        //         this.$emit('showEvi',getMsg.content);
+        //     }
 
-            if(getMsg.type === 0 || getMsg.type === 1){
-                const time = getMsg.createDate.split(' ')[3]
-                const data = {
-                    name:getMsg.roleName + '  ' + getMsg.name + '  ' + time,
-                    content:getMsg.content
-                }
-                this.chatItem.push(data);
-            }
-        }
+        //     if(getMsg.type === 0 || getMsg.type === 1){
+        //         const time = getMsg.createDate.split(' ')[3]
+        //         const data = {
+        //             name:getMsg.roleName + '  ' + getMsg.name + '  ' + time,
+        //             content:getMsg.content
+        //         }
+        //         this.chatItem.push(data);
+        //     }
+        // }
       },
       methods:{
         send(){
             const sendObj = { 'name': '', 'roleName': '', 'type': 1, 'wav': '', 'content': this.textarea, 'createDate': '' }
             const sendJSON = JSON.stringify(sendObj)
-            this.wsObj.send(sendJSON)
+            this.$emit('send',sendJSON);
+            // this.wsObj.send(sendJSON)
             this.textarea = '';
+        },
+        chatItemPush(msg){//新消息推送
+            this.chatItem.push(msg);
         },
         scrollToBottom(){
             this.$nextTick(() =>{
