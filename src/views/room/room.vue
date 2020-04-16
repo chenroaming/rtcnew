@@ -1,5 +1,11 @@
 <template>
     <div class="room">
+        <ws ref="ws" v-on:showEvi="showEvi"
+            v-on:newChat="newChat"
+            v-on:getEviByCaseIds="getEviByCaseIds"
+            v-on:changeLook="changeLook"
+            v-on:changeStatus="changeStatus"
+            v-on:tips="tips"></ws>
         <header>
             <div style="width: 100%;">
                 <el-row>
@@ -16,7 +22,7 @@
                         <nowTime></nowTime>
                     </el-col>
                     <el-col :span="4">
-                        <chat ref="chat" v-on:showEvi="showEvi" v-on:getEviByCaseIds="getEviByCaseIds" v-on:changeLook="changeLook"></chat>
+                        <chat ref="chat" v-on:send="send"></chat>
                     </el-col>
                     <el-col :span="3">
                         <el-button type="text" @click="outRoom" class="titile-text">退出</el-button>
@@ -70,6 +76,7 @@
     import myRoom from '@/utils/pili.js'
     import { deviceManager } from 'pili-rtc-web'
     import remotePlay from '@/components/room/remotePlay.vue'
+    import ws from '@/components/room/ws.vue'
     import chat from '@/components/room/chat.vue'
     import clerkInfo from '@/components/room/clerkInfo.vue'
     import evidence from '@/components/room/evidence.vue'
@@ -81,6 +88,7 @@
     export default {
         components:{
             remotePlay,
+            ws,
             chat,
             clerkInfo,
             evidence,
@@ -227,11 +235,20 @@
         getEviByCaseIds(e){//更新证据列表
             this.$refs.evidence.getEviByCaseIds();
         },
-        changeLook(e){
+        changeLook(e){//显示当事人查看证据重
             this.$refs.remotePlay.changeLook(e);
         },
-        send(e){
-            this.$refs.chat.sendMsg(e);
+        changeStatus(e){//改变开庭休庭状态
+            this.$refs.chat.changeStatus();
+        },
+        newChat(e){
+            this.$refs.chat.chatItemPush(e);
+        },
+        send(e){//发送websocket消息
+            this.$refs.ws.sendMsg(e);
+        },
+        tips(e){//当事人已签名消息
+            this.$refs.chat.showNewTips(e);
         },
         outRoom(){//退出房间
             this.$api.room.closeRoom();

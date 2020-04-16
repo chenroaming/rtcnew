@@ -70,10 +70,10 @@
         }
       },
       async mounted(){
-        await this.websocketInit();
-        this.heartbeat = setInterval(() => {
-            this.wsObj.send('');
-        },this.timeOut)
+        // await this.websocketInit();
+        // this.heartbeat = setInterval(() => {
+        //     this.wsObj.send('');
+        // },this.timeOut)
         this.isEdit = this.$store.getters.getEditStatus;
         this.roleName = this.$store.getters.getUserInfo.roleName;
         navigator.getUserMedia({ audio: true }, (stream) => {
@@ -104,7 +104,8 @@
                             this.emptyData = true
                             let blob = this.rec.audioData.encodeWAV() //获取音频数据
                             if(this.roleName != '开庭小助手'){
-                                this.wsObj.send(blob)
+                                // this.wsObj.send(blob)
+                                // this.$emit('send',blob);
                             }
                             this.rec.audioData.buffer = []
                             this.rec.audioData.size = 0
@@ -155,53 +156,53 @@
         })
       },
       methods:{
-        websocketInit(){//ws初始化
-            this.wsObj = this.$store.getters.getWebSocket;
-            // console.log(this.wsObj);
-            this.wsObj.onopen = () => {
-                console.log("WebSocket:已连接");
-            }
-            this.wsObj.onmessage = (e) => {
-                const getMsg = JSON.parse(e.data);
-                console.log(JSON.parse(e.data))
-                if(getMsg.type == 11){
-                    this.status = !this.status;
-                }
-                if(getMsg.type == 2){
-                    this.$emit('getEviByCaseIds');
-                }
-                if(getMsg.type == 3){
-                    this.$emit('showEvi',getMsg.content);
-                }
-                if(getMsg.type === 0 || getMsg.type === 1){
-                    const time = getMsg.createDate.split(' ')[3]
-                    const data = {
-                        name:getMsg.roleName + '  ' + getMsg.name + '  ' + time,
-                        content:getMsg.content
-                    }
-                    this.chatItem.push(data);
-                }
-                if(getMsg.type === 10){
-                    this.$emit('changeLook',getMsg.content)
-                }
-                if(getMsg.type == 12){
-                    if(this.roleName == '法官'){
-                        this.$notify({
-                            title: '提示',
-                            message: getMsg.content,
-                            type: 'success'
-                        });
-                    }
-                }
-            }
-            this.wsObj.onerror = (e) => {
-                console.log("WebSocket:发生错误",e);
-                console.log(e);
-            }
-            this.wsObj.onclose = async (e) => {
-                console.log("WebSocket:已关闭",e);
-            }
-        },
+        // websocketInit(){//ws初始化
+        //     this.wsObj = this.$store.getters.getWebSocket;
+        //     // console.log(this.wsObj);
+        //     this.wsObj.onopen = () => {
+        //         console.log("WebSocket:已连接");
+        //     }
+        //     this.wsObj.onmessage = (e) => {
+        //         const getMsg = JSON.parse(e.data);
+        //         console.log(JSON.parse(e.data))
+        //         if(getMsg.type == 11){
+        //             this.status = !this.status;
+        //         }
+        //         if(getMsg.type == 2){
+        //             this.$emit('getEviByCaseIds');
+        //         }
+        //         if(getMsg.type == 3){
+        //             this.$emit('showEvi',getMsg.content);
+        //         }
+        //         if(getMsg.type === 0 || getMsg.type === 1){
+        //             const time = getMsg.createDate.split(' ')[3]
+        //             const data = {
+        //                 name:getMsg.roleName + '  ' + getMsg.name + '  ' + time,
+        //                 content:getMsg.content
+        //             }
+        //             this.chatItem.push(data);
+        //         }
+        //         if(getMsg.type === 10){
+        //             this.$emit('changeLook',getMsg.content)
+        //         }
+        //         if(getMsg.type == 12){
+        //             if(this.roleName == '法官'){
+        //                 this.$notify({
+        //                     title: '提示',
+        //                     message: getMsg.content,
+        //                     type: 'success'
+        //                 });
+        //             }
+        //         }
+        //     }
+        //     this.wsObj.onerror = (e) => {
+        //         console.log("WebSocket:发生错误",e);
+        //         console.log(e);
+        //     }
+        //     this.wsObj.onclose = async (e) => {
+        //         console.log("WebSocket:已关闭",e);
+        //     }
+        // },
         async sendTest(status){
             if(this.status){
                 this.$confirm('确定结束庭审？', '提示', {
@@ -214,8 +215,10 @@
                     const data2 = {'name': '','roleName': '','type': 6,'wav': '','content': 0,'createDate': ''}
                     await myRoom.stopMergeStream()
                     console.log('stopMergeStream')
-                    this.wsObj.send(JSON.stringify(data));
-                    this.wsObj.send(JSON.stringify(data2));
+                    // this.wsObj.send(JSON.stringify(data));
+                    // this.wsObj.send(JSON.stringify(data2));
+                    this.$emit('send',JSON.stringify(data));
+                    this.$emit('send',JSON.stringify(data2));
                 }).catch(() => {
                     
                 });
@@ -225,8 +228,10 @@
                 const data2 = {'name': '','roleName': '','type': 6,'wav': '','content': 1,'createDate': ''}
                 await myRoom.setDefaultMergeStream(1280, 720)
                 console.log('setDefaultMergeStream')
-                this.wsObj.send(JSON.stringify(data));
-                this.wsObj.send(JSON.stringify(data2));
+                // this.wsObj.send(JSON.stringify(data));
+                // this.wsObj.send(JSON.stringify(data2));
+                this.$emit('send',JSON.stringify(data));
+                this.$emit('send',JSON.stringify(data2));
             }
         },
         start () {//开始语音识别
@@ -247,15 +252,28 @@
         },
         send(){
             const sendObj = { 'name': '', 'roleName': '', 'type': 1, 'wav': '', 'content': this.textarea, 'createDate': '' }
-            const sendJSON = JSON.stringify(sendObj)
-            this.wsObj.send(sendJSON)
+            const sendJSON = JSON.stringify(sendObj);
+            this.$emit('send',sendJSON);
+            // this.wsObj.send(sendJSON)
             this.textarea = '';
         },
-        sendMsg(e){
-            this.wsObj.send(e);
-        },
+        // sendMsg(e){
+        //     this.wsObj.send(e);
+        // },
         changeStatus(){//改变开庭休庭状态
             this.status = !this.status;
+        },
+        chatItemPush(msg){//新消息推送
+            this.chatItem.push(msg);
+        },
+        showNewTips(msg){//当事人签名消息推送
+            if(this.roleName == '法官'){
+                this.$notify({
+                    title: '提示',
+                    message: msg,
+                    type: 'success'
+                });
+            }
         },
         scrollToBottom(){
             this.$nextTick(() =>{
@@ -264,18 +282,19 @@
         },
         changeAiType(e){//改变语音识别类型
             const sendObj = { 'name': '', 'roleName': '', 'type': 8, 'wav': '', 'content': e, 'createDate': '' }
-            const sendJSON = JSON.stringify(sendObj)
-            this.wsObj.send(sendJSON)
+            // const sendJSON = JSON.stringify(sendObj)
+            // this.wsObj.send(sendJSON)
+            this.$emit('send',JSON.stringify(sendObj))
         },
       },
       updated(){
         this.scrollToBottom();//总是下拉显示最新的消息
       },
       destroyed(){
-        clearInterval(this.heartbeat);
-        console.log(this.heartbeat)
-        this.wsObj.close();
-        this.$store.dispatch('clearWebSocket');
+        // clearInterval(this.heartbeat);
+        // console.log(this.heartbeat)
+        // this.wsObj.close();
+        // this.$store.dispatch('clearWebSocket');
         this.stop();
       }
     }
