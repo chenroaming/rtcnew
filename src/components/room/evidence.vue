@@ -119,7 +119,7 @@
           activeName:'first',
           activeNames:[],
           fileItem:{},
-          wsObj:'',
+          // wsObj:'',
           plaintiff:[],
           defendant:[],
           dialogFormVisible:false,
@@ -143,14 +143,14 @@
       },
       mounted(){
         this.isEdit = this.$store.getters.getEditStatus;
-        this.wsObj = this.$store.getters.getWebSocket;
+        // this.wsObj = this.$store.getters.getWebSocket;
         this.getEviByCaseIds();
-        this.wsObj.onmessage = (e) => {
-          const getMsg = JSON.parse(e.data);
-          if(getMsg.type == 2){
-            this.getEviByCaseIds();
-          }
-        }
+        // this.wsObj.onmessage = (e) => {
+        //   const getMsg = JSON.parse(e.data);
+        //   if(getMsg.type == 2){
+        //     this.getEviByCaseIds();
+        //   }
+        // }
       },
       methods:{
         getEviByCaseIds(){//获取证据
@@ -191,8 +191,10 @@
         showFile(item){//查看证据
           const {fileName,fileAddr} = item;
           if(this.isEdit){
+            console.log(this.wsObj)
             const sendObj = { 'name': '', 'roleName': '', 'type': 3, 'wav': '', 'content': fileAddr, 'createDate': '' };
-            this.wsObj.send(JSON.stringify(sendObj));//发送证据同步投屏
+            // this.wsObj.send(JSON.stringify(sendObj));//发送证据同步投屏
+            this.$emit('send',JSON.stringify(sendObj))
           }
           this.fileItem = {
             name:fileName,

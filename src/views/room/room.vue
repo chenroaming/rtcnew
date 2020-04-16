@@ -16,7 +16,7 @@
                         <nowTime></nowTime>
                     </el-col>
                     <el-col :span="4">
-                        <chat ref="chat" v-on:showEvi="showEvi"></chat>
+                        <chat ref="chat" v-on:showEvi="showEvi" v-on:getEviByCaseIds="getEviByCaseIds" v-on:changeLook="changeLook"></chat>
                     </el-col>
                     <el-col :span="3">
                         <el-button type="text" @click="outRoom" class="titile-text">退出</el-button>
@@ -39,7 +39,7 @@
                     </div>
                     <div id="video-box" ref="videoBox"></div>
                 </div>
-                <remotePlay v-on:srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
+                <remotePlay v-on:srcObj="receive" ref="remotePlay" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
             </div>
             <ul class="menu-list">
                 <li class="menu-content" @click="nowSelect = 0;isVisible=true;">审辅人员</li>
@@ -57,8 +57,8 @@
                 </div>
                 <clerkInfo :caseId="caseId" v-if="nowSelect == 0"></clerkInfo>
                 <indictment :caseId="caseId" v-if="nowSelect == 1"></indictment>
-                <evidence :caseId="caseId" v-if="nowSelect == 2"></evidence>
-                <log :caseId="caseId" v-if="nowSelect == 3"></log>
+                <evidence ref="evidence" v-on:send="send" :caseId="caseId" v-if="nowSelect == 2"></evidence>
+                <log :caseId="caseId" v-on:send="send" v-if="nowSelect == 3"></log>
                 <signature v-if="nowSelect == 4"></signature>
             </div>
         </transition>
@@ -216,7 +216,7 @@
             srcObj.srcObject = e.src;
             this.caseInfo.name = e.info.roleName + ' ' + e.info.name;
         },
-        showEvi(e){
+        showEvi(e){//查看证据
             const name = e.split('/');
             this.fileItem = {
                 name:name[name.length-1],
@@ -224,7 +224,16 @@
             };
             this.$refs.toFile.showEvidence();
         },
-        outRoom(){
+        getEviByCaseIds(e){//更新证据列表
+            this.$refs.evidence.getEviByCaseIds();
+        },
+        changeLook(e){
+            this.$refs.remotePlay.changeLook(e);
+        },
+        send(e){
+            this.$refs.chat.sendMsg(e);
+        },
+        outRoom(){//退出房间
             this.$api.room.closeRoom();
             if(this.stream){
                 this.stream.release();//释放采集流
@@ -240,7 +249,7 @@
             srcObj.srcObject = domElement.children[1].srcObject;
             this.caseInfo.name = this.roleName + ' ' + this.name;
         },
-        openChat(){
+        openChat(){//打开语音识别窗口
             this.$refs.chat.showChatWindow();
         },
       },

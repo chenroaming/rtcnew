@@ -167,6 +167,9 @@
                 if(getMsg.type == 11){
                     this.status = !this.status;
                 }
+                if(getMsg.type == 2){
+                    this.$emit('getEviByCaseIds');
+                }
                 if(getMsg.type == 3){
                     this.$emit('showEvi',getMsg.content);
                 }
@@ -177,6 +180,9 @@
                         content:getMsg.content
                     }
                     this.chatItem.push(data);
+                }
+                if(getMsg.type === 10){
+                    this.$emit('changeLook',getMsg.content)
                 }
                 if(getMsg.type == 12){
                     if(this.roleName == '法官'){
@@ -244,6 +250,9 @@
             const sendJSON = JSON.stringify(sendObj)
             this.wsObj.send(sendJSON)
             this.textarea = '';
+        },
+        sendMsg(e){
+            this.wsObj.send(e);
         },
         changeStatus(){//改变开庭休庭状态
             this.status = !this.status;

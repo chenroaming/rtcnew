@@ -56,8 +56,9 @@
               if(this.isEdit){
                 const sendObj = { 'name': '', 'roleName': '', 'type': 3, 'wav': '', 'content': res.result[0], 'createDate': '' }
                 const sendJSON = JSON.stringify(sendObj)
-                console.log(sendJSON)
-                this.wsObj.send(sendJSON)
+                // console.log(sendJSON)
+                // this.wsObj.send(sendJSON)
+                this.$emit('send',sendJSON);
               }
             }else{
               this.$message.warning(res.message);

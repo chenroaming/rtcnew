@@ -18,7 +18,7 @@
         props:['user'],
       data(){
         return {
-            wsObj:null,
+            // wsObj:null,
             isLook:false,
             roleName:'',
             info:{
@@ -35,7 +35,7 @@
         
       },
       async mounted(){
-        this.wsObj = this.$store.getters.getWebSocket;
+        // this.wsObj = this.$store.getters.getWebSocket;
         this.roleName = this.$store.getters.getUserInfo.roleName;
         const domElement = this.$refs.player;
         if(this.user.userId){
@@ -53,14 +53,14 @@
                 }
             })
         }
-        this.wsObj.onmessage = (e) => {
-            const getMsg = JSON.parse(e.data);
-            if(getMsg.type == 10){//微信小程序是否正在查看证据
-                if(this.user.userId == getMsg.content){
-                    this.isLook = !this.isLook;
-                }
-            }
-        }
+        // this.wsObj.onmessage = (e) => {
+        //     const getMsg = JSON.parse(e.data);
+        //     if(getMsg.type == 10){//微信小程序是否正在查看证据
+        //         if(this.user.userId == getMsg.content){
+        //             this.isLook = !this.isLook;
+        //         }
+        //     }
+        // }
       },
       methods:{
         fullScreen(){//向父组件传递视频信息
@@ -70,6 +70,11 @@
                 info:this.info
             }
             this.$emit('srcObj',obj);
+        },
+        changeLook(userId){
+            if(this.user.userId == userId){
+                this.isLook = !this.isLook;
+            }
         },
       }
     }
