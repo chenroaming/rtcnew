@@ -2,7 +2,7 @@
     <div>
         <h1>证据列表</h1>
         <div class="tabs-box">
-          <el-tabs v-model="activeName" type="border-card" stretch @tab-click="handleClick">
+          <el-tabs v-model="activeName" type="border-card" stretch>
             <el-tab-pane label="原告" name="first">
               <el-collapse v-model="activeNames">
                 <el-collapse-item v-for="(item,index) in plaintiff" :key="index" :title="item.caseNo" :name="item.caseNo">
@@ -143,14 +143,7 @@
       },
       mounted(){
         this.isEdit = this.$store.getters.getEditStatus;
-        // this.wsObj = this.$store.getters.getWebSocket;
         this.getEviByCaseIds();
-        // this.wsObj.onmessage = (e) => {
-        //   const getMsg = JSON.parse(e.data);
-        //   if(getMsg.type == 2){
-        //     this.getEviByCaseIds();
-        //   }
-        // }
       },
       methods:{
         getEviByCaseIds(){//获取证据
@@ -185,13 +178,9 @@
             }
           })
         },
-        handleClick(tab, event) {
-
-        },
         showFile(item){//查看证据
           const {fileName,fileAddr} = item;
           if(this.isEdit){
-            console.log(this.wsObj)
             const sendObj = { 'name': '', 'roleName': '', 'type': 3, 'wav': '', 'content': fileAddr, 'createDate': '' };
             // this.wsObj.send(JSON.stringify(sendObj));//发送证据同步投屏
             this.$emit('send',JSON.stringify(sendObj))

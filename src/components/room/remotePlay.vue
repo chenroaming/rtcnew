@@ -1,6 +1,6 @@
 <template>
     <div class="video-box">
-        <div class="titie">
+        <div class="title">
             <span>{{info.roleName}}</span>
             <span>{{info.name}}</span>
             <span>{{info.address}}</span>
@@ -35,7 +35,6 @@
         
       },
       async mounted(){
-        // this.wsObj = this.$store.getters.getWebSocket;
         this.roleName = this.$store.getters.getUserInfo.roleName;
         const domElement = this.$refs.player;
         if(this.user.userId){
@@ -53,14 +52,6 @@
                 }
             })
         }
-        // this.wsObj.onmessage = (e) => {
-        //     const getMsg = JSON.parse(e.data);
-        //     if(getMsg.type == 10){//微信小程序是否正在查看证据
-        //         if(this.user.userId == getMsg.content){
-        //             this.isLook = !this.isLook;
-        //         }
-        //     }
-        // }
       },
       methods:{
         fullScreen(){//向父组件传递视频信息
@@ -99,14 +90,16 @@
         color: #fff;
         bottom: 35%;
     }
-    .titie {
-        width: 100%;
-        height: 35px;
+    .title {
+        width: 267px;
+        height: auto;
         position: absolute;
+        left: 17px;
         color: #fff;
         font-weight: bold;
         background-color: rgba(0,0,0,0.7);
         z-index: 999;
+        font-size: 14px;
         span{
             margin-right: 10px;
         }

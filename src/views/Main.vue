@@ -19,7 +19,7 @@
           <div class="item-left">
             <ul class="left-menu">
               <li></li>
-              <li v-for="(item,index) in menuList" :class="{'isSelect':nowSelect == index}" @click="go(index,item.name)">
+              <li v-for="(item,index) in getMenuList" :class="{'isSelect':nowSelect == index}" @click="go(index,item.name)">
                 <img :src="item.meta.imgSrc" alt="">
                 <p>{{item.meta.title}}</p>
               </li>
@@ -65,12 +65,8 @@
     },
     computed:{
       getMenuList(){
-        return this.$store.getters.getMenuList
-      }
-    },
-    watch:{
-      getMenuList(curval,oldVal){
-        this.menuList = curval;
+        this.menuList = this.$store.getters.getMenuList;
+        return this.menuList;
       }
     },
     mounted(){

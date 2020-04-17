@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-dialog title="录像列表" :visible.sync="dialogTableVisible" center width="500px">
-            <el-table :data="gridData">
+            <el-table :data="updateList">
               <el-table-column prop="name" label="文件名"></el-table-column>
               <el-table-column label="操作">
                 <template slot-scope="scope">
@@ -29,20 +29,15 @@
       data(){
         return {
             dialogTableVisible:false,
-            // dialogTableVisible2:false,
             gridData:[],
             videoSrc:'',
         }
       },
       computed:{
         updateList(){
-            return this.videoList;
+          this.gridData = this.videoList;
+          return this.gridData;
         },
-      },
-      watch:{
-        updateList(curVal,oldVal){
-            this.gridData = curVal;
-        }
       },
       mounted(){
         

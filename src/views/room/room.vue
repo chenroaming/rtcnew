@@ -10,13 +10,13 @@
             <div style="width: 100%;">
                 <el-row>
                     <el-col :span="5">
-                        <span class="titile-text" style="font-weight: bold;font-size: 20px;">{{caseInfo.court}}</span>
+                        <span class="title-text" style="font-weight: bold;font-size: 20px;">{{caseInfo.court}}</span>
                     </el-col>
                     <el-col :span="4">
-                        <span class="titile-text">{{caseInfo.caseNo}}</span>
+                        <span class="title-text">{{caseInfo.caseNo}}</span>
                     </el-col>
                     <el-col :span="4">
-                        <span class="titile-text">当前主屏————{{caseInfo.name}}</span>
+                        <mainName :mainInfo="this.caseInfo.name"></mainName>
                     </el-col>
                     <el-col :span="4">
                         <nowTime></nowTime>
@@ -25,8 +25,8 @@
                         <chat ref="chat" v-on:send="send"></chat>
                     </el-col>
                     <el-col :span="3">
-                        <el-button type="text" @click="outRoom" class="titile-text">退出</el-button>
-                        <el-button type="text" @click="openChat" class="titile-text">语音识别</el-button>
+                        <el-button type="text" @click="outRoom" class="title-text">退出</el-button>
+                        <el-button type="text" @click="openChat" class="title-text">语音识别</el-button>
                     </el-col>
                 </el-row>
             </div>
@@ -37,7 +37,7 @@
             </div>
             <div id="remote-box">
                 <div class="video-box">
-                    <div class="titie">
+                    <div class="title">
                         <span>{{roleName}}</span>
                         <span>{{name}}</span>
                         <span>{{address}}</span>
@@ -85,6 +85,7 @@
     import signature from '@/components/room/signature.vue'
     import showFile from '@/components/addCase/showFile.vue'
     import nowTime from '@/components/room/nowTime.vue'
+    import mainName from '@/components/room/mainName.vue'
     export default {
         components:{
             remotePlay,
@@ -97,6 +98,7 @@
             signature,
             showFile,
             nowTime,
+            mainName,
         },
       data(){
         return {
@@ -117,14 +119,7 @@
             caseId:'',
             isEdit:false,
             fileItem:{},
-            // wsObj:null,
         }
-      },
-      computed:{
-        
-      },
-      watch:{
-        
       },
       async mounted(){
         if(!this.$route.params.roomToken){
@@ -180,10 +175,7 @@
         }
         catch(e){
             console.log(e)
-            this.$message({
-                message:'请检查摄像头等设备否正常！',
-                type:'error'
-            })
+            this.$message({message:'请检查摄像头等设备否正常！',type:'error'})
         }
 
         try{
@@ -222,7 +214,8 @@
         receive(e){//接收子组件消息后放大全屏
             const srcObj = this.$refs.video;
             srcObj.srcObject = e.src;
-            this.caseInfo.name = e.info.roleName + ' ' + e.info.name;
+            // this.caseInfo.name = e.info.roleName + ' ' + e.info.name;
+            this.caseInfo.name = `${e.info.roleName}${e.info.name}`;
         },
         showEvi(e){//查看证据
             const name = e.split('/');
@@ -235,10 +228,11 @@
         getEviByCaseIds(e){//更新证据列表
             this.$refs.evidence.getEviByCaseIds();
         },
-        changeLook(e){//显示当事人查看证据重
+        changeLook(e){//显示当事人查看证据中
             this.$refs.remotePlay.changeLook(e);
         },
         changeStatus(e){//改变开庭休庭状态
+            
             this.$refs.chat.changeStatus();
         },
         newChat(e){
@@ -264,7 +258,8 @@
             const domElement = this.$refs.videoBox;
             const srcObj = this.$refs.video;
             srcObj.srcObject = domElement.children[1].srcObject;
-            this.caseInfo.name = this.roleName + ' ' + this.name;
+            // this.caseInfo.name = this.roleName + ' ' + this.name;
+            this.caseInfo.name = `${this.roleName}${this.name}`;
         },
         openChat(){//打开语音识别窗口
             this.$refs.chat.showChatWindow();
@@ -290,8 +285,12 @@
     main{
         height: calc(100% - 60px);
     }
-    .titile-text {
+    .title-text {
+        display: inline-block;
+        width: auto;
         color: #fff;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     .room {
         width: 100%;
@@ -304,6 +303,7 @@
     .video-box {
         width: 300px;
         height: 200px;
+        margin-right: 20px;
         display: inline-block;
         position: relative;
     }
@@ -326,14 +326,16 @@
         height: 100%;
         object-fit: fill;
     }
-    .titie {
-        width: 100%;
-        height: 35px;
+    .title {
+        width: 267px;
+        height: auto;
         position: absolute;
+        left: 17px;
         color: #fff;
         font-weight: bold;
         background-color: rgba(0,0,0,0.7);
         z-index: 999;
+        font-size: 14px;
         span{
             margin-right: 10px;
         }

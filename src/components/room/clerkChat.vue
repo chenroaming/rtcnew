@@ -54,11 +54,15 @@
       },
       methods:{
         send(){
-            const sendObj = { 'name': '', 'roleName': '', 'type': 1, 'wav': '', 'content': this.textarea, 'createDate': '' }
-            const sendJSON = JSON.stringify(sendObj)
-            this.$emit('send',sendJSON);
-            // this.wsObj.send(sendJSON)
-            this.textarea = '';
+            if(this.textarea){
+                const sendObj = { 'name': '', 'roleName': '', 'type': 1, 'wav': '', 'content': this.textarea, 'createDate': '' }
+                const sendJSON = JSON.stringify(sendObj)
+                this.$emit('send',sendJSON);
+                // this.wsObj.send(sendJSON)
+                this.textarea = '';
+                return;
+            }
+            this.$message.warning('发送内容为空！');
         },
         chatItemPush(msg){//新消息推送
             this.chatItem.push(msg);

@@ -32,7 +32,7 @@
                 if(getMsg.type === 0 || getMsg.type === 1){
                     const time = getMsg.createDate.split(' ')[3]
                     const data = {
-                        name:getMsg.roleName + '  ' + getMsg.name + '  ' + time,
+                        name:`${getMsg.roleName}${getMsg.name}  ${time}`,
                         content:getMsg.content
                     }
                     this.$emit('newChat',data);
@@ -62,7 +62,6 @@
             }
             this.wsObj.onerror = (e) => {
                 console.log("WebSocket:发生错误",e);
-                console.log(e);
             }
             this.wsObj.onclose = (e) => {
                 console.log("WebSocket:已关闭",e);

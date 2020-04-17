@@ -205,7 +205,8 @@
               }else{
                 data.lawCaseId = this.lawCaseId;
                 const exchange = new Date(data.openDate);
-                data.openDate = exchange.getFullYear()+'-'+(exchange.getMonth()+1)+'-'+exchange.getDate()+' '+exchange.getHours()+':'+exchange.getMinutes();
+                // data.openDate = exchange.getFullYear()+'-'+(exchange.getMonth()+1)+'-'+exchange.getDate()+' '+exchange.getHours()+':'+exchange.getMinutes();
+                data.openDate = `${exchange.getFullYear()}-${(exchange.getMonth()+1)}-${exchange.getDate()} ${exchange.getHours()}:${exchange.getMinutes()}`;
                 this.$api.addCase.updateLawCase(data).then(res => {
                   if(res.state == 100){
                     this.lawCaseId = res.id;
