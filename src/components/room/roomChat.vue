@@ -30,7 +30,7 @@
     import HZRecorder from '@/utils/recorder-worker.js'
     import myRoom from '@/utils/pili.js'
     export default {
-        name: 'chat',
+        name: 'roomChat',
       data(){
         return {
             radio:1,
@@ -170,17 +170,17 @@
             }
         },
         start () {//开始语音识别
-            console.log('start')
             if(this.rec){
                 this.rec.start()
             }
+            console.log('start')
         },
         stop () {//停止语音识别
-            console.log('stop')
             if(this.rec){
                 this.rec.stop()
                 this.rec.clear()
             }
+            console.log('stop')
         },
         showChatWindow(){
             this.drawer = !this.drawer;
@@ -190,7 +190,6 @@
                 const sendObj = { 'name': '', 'roleName': '', 'type': 1, 'wav': '', 'content': this.textarea, 'createDate': '' }
                 const sendJSON = JSON.stringify(sendObj);
                 this.$emit('send',sendJSON);
-                // this.wsObj.send(sendJSON)
                 this.textarea = '';
                 return;
             }

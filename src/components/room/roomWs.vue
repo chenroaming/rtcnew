@@ -6,7 +6,7 @@
   
   <script>
     export default {
-        name: 'ws',
+        name: 'roomWs',
       data(){
         return {
             wsObj:null,
@@ -29,36 +29,7 @@
             this.wsObj.onmessage = (e) => {
                 const getMsg = JSON.parse(e.data);
                 console.log(JSON.parse(e.data))
-                if(getMsg.type === 0 || getMsg.type === 1){
-                    const time = getMsg.createDate.split(' ')[3]
-                    const data = {
-                        name:`${getMsg.roleName}${getMsg.name}  ${time}`,
-                        content:getMsg.content
-                    }
-                    this.$emit('newChat',data);
-                }
-
-                if(getMsg.type === 2){
-                    this.$emit('getEviByCaseIds');
-                }
-
-                if(getMsg.type === 3){
-                    
-                    this.$emit('showEvi',getMsg.content);
-                }
-
-                if(getMsg.type === 10){
-                    this.$emit('changeLook',getMsg.content)
-                }
-
-                if(getMsg.type === 11){
-                    this.$emit('changeStatus');
-                }
-
-                if(getMsg.type == 12){
-                    this.$emit('tips',getMsg.content)
-                }
-
+                this.msgType(getMsg.type,getMsg)
             }
             this.wsObj.onerror = (e) => {
                 console.log("WebSocket:发生错误",e);
@@ -70,6 +41,40 @@
         sendMsg(e){
             this.wsObj.send(e);
         },
+        msgType(MsgType,content){
+            const sendChat = () => {
+                const time = content.createDate.split(' ')[3]
+                const data = {
+                    name:`${content.roleName}${content.name}  ${time}`,
+                    content:content.content
+                }
+                this.$emit('newChat',data)
+            }
+            const actions = new Map([
+                [0,() => {
+                    sendChat();
+                }],
+                [1,() => {
+                    sendChat();
+                }],
+                [2,() => {
+                    this.$emit('getEviByCaseIds')
+                }],
+                [3,() => {
+                    this.$emit('showEvi',content.content)
+                }],
+                [10,() => {
+                    this.$emit('changeLook',content.content)
+                }],
+                [11,() => {
+                    this.$emit('changeStatus')
+                }],
+                [12,() => {
+                    this.$emit('tips',content.content)
+                }]
+            ])
+            return actions.get(MsgType)();
+        }
       },
       destroyed(){
         clearInterval(this.heartbeat);

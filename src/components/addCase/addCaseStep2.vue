@@ -107,7 +107,7 @@
   
   <script>
     export default {
-        name: 'step2',
+        name: 'addCaseStep2',
       data(){
         return {
             rules: {

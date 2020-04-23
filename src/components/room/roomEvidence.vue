@@ -108,7 +108,7 @@
   <script>
     import showFile from '@/components/addCase/showFile.vue'
     export default {
-        name: 'evidence',
+        name: 'roomEvidence',
         props:['caseId'],
         components: {
           showFile

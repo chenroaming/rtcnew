@@ -8,7 +8,7 @@
   
   <script>
     export default {
-      name: 'mainName',
+      name: 'roomMainName',
       props:['mainInfo'],
       data(){
         return {
@@ -35,16 +35,12 @@
           let lrSw = false;//左右滚动开关
           this.scrollAuto = setInterval(() => {
             if(Math.abs(this.dynamic) <= difference && !lrSw){
-                if(Math.abs(this.dynamic) == difference){
-                  lrSw = true;
-                }
-                this.dynamic --;
+              Math.abs(this.dynamic) == difference && (lrSw = true);
+              this.dynamic --;
             }
             if(lrSw){
-                if(Math.abs(this.dynamic) == 0){
-                  lrSw = false;
-                }
-                this.dynamic ++;
+              Math.abs(this.dynamic) == 0 && (lrSw = false);
+              this.dynamic ++;
             }
           },100)
         },

@@ -11,7 +11,7 @@
   
   <script>
     export default {
-        name: 'signature',
+        name: 'roomSignature',
       data(){
         return {
           codeSrc:'',

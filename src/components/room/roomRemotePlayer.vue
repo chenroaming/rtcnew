@@ -14,7 +14,7 @@
   <script>
     import myRoom from '@/utils/pili.js'
     export default {
-        name: 'remotePlay',
+        name: 'roomRemotePlayer',
         props:['user'],
       data(){
         return {

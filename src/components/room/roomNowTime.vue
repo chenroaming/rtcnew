@@ -6,7 +6,7 @@
   
   <script>
     export default {
-        name: 'nowTime',
+        name: 'roomNowTime',
       data(){
         return {
           nowTime:'',

@@ -12,7 +12,7 @@
       <div class="select-box-right">
         <el-button type="primary" @click="newRole"><i class="el-icon-circle-plus"></i>新增角色</el-button>
       </div>
-      <roleTable :data="data" v-on:listenToChild="receive" v-on:getPage="getPage"></roleTable>
+      <roleManageTable :data="data" v-on:listenToChild="receive" v-on:getPage="getPage"></roleManageTable>
       <div class="page-box">
         <el-pagination
           @current-change="handleCurrentChange"
@@ -47,15 +47,15 @@
   </template>
   
   <script>
-    import roleTable from '@/components/roleManage/roleTable.vue'
+    import roleManageTable from '@/components/roleManage/roleManageTable.vue'
     export default {
-        name: 'rolyManage',
+        name: 'roleManage',
         components:{
-          roleTable
+          roleManageTable
         },
       data(){
         return {
-          data:null,
+          data:[],
           dialogFormVisible:false,
           formLabelWidth:'100px',
           form:{
@@ -64,7 +64,7 @@
             phone:'',
             id:'',
           },
-          totalPage:5,
+          totalPage:1,
           currentPage:1,
           noChoice:false,
           nowRole:3,
@@ -78,6 +78,7 @@
       },
       mounted(){        
         this.$emit('getMessage',2);
+        this.getJudgeList();
       },
       methods:{
         getPage(e){
@@ -102,7 +103,6 @@
           this.dialogFormVisible = true;
         },
         submit(){
-          // console.log(this.form)
           if(this.form.id){
             const data = {
               name:this.form.name,
@@ -123,51 +123,36 @@
             phone:this.form.phone
           }
           this.$api.role.addJudge(data).then(res => {
-            // console.log(res)
             if(res.state == 100){
               this.dialogFormVisible = false;
               this.changeRole(3);
             }
           })
-          // this.data = data;
         },
         handleCurrentChange(e){
           if(this.nowRole === 3){
             const data = {
               pageNumber:e
             }
-            this.$api.role.getJudges(data).then(res => {
-              this.data = res.judgeList;
-              this.totalPage = res.total;
-            })
+            this.getJudgeList(data);
             return;
           }
           const data = {
             pageNumber:e,
             type:this.nowRole
           }
-          this.$api.role.getJudges(data).then(res => {
-            this.data = res.judgeList;
-            this.totalPage = res.total;
-          })
+          this.getJudgeList(data);
         },
         changeRole(index){
-          // console.log(index)
           if(index == this.nowRole) return;
           this.nowRole = index;
           const data = {
             type:this.nowRole
           }
           if(index === 3){
-            this.$api.role.getJudges().then(res => {
-              this.data = res.judgeList;
-              this.totalPage = res.total;
-            })
+            this.getJudgeList();
           }else{
-            this.$api.role.getJudges(data).then(res => {
-              this.data = res.judgeList;
-              this.totalPage = res.total;
-            })
+            this.getJudgeList(data);
           }
           this.currentPage = 1;
         },
@@ -176,6 +161,12 @@
           this.$router.push({
             name:'caseList',
             params:params
+          })
+        },
+        getJudgeList(params){
+          this.$api.role.getJudges(params).then(res => {
+            this.data = res.judgeList;
+            this.totalPage = res.total;
           })
         },
       }

@@ -18,10 +18,10 @@
             <span>{{time}}</span>
             <span>{{caseCount.total}}个案件</span>
         </div>
-        <countCase v-if="canCount"></countCase>
+        <caseListCount v-if="canCount"></caseListCount>
         <ul class="case-box">
             <p v-if="caseList.length == 0">暂无数据</p>
-            <li v-for="(item,index) in caseList">
+            <li class="animated fadeInUp" v-for="(item,index) in caseList">
                 <img src="@/assets/img/state-3.png" v-if="!item.isOpen" class="isOpen" alt="">
                 <img src="@/assets/img/state-2.png" v-if="item.isOpen" class="isOpen" alt="">
                 <div style="text-align: left;padding: 0px 15px;">
@@ -174,20 +174,20 @@
             <el-button type="primary" @click="openCourt">批量开庭</el-button>
         </div>
     </el-dialog>
-    <videoList ref="videos" :videoList="videoList"></videoList>
+    <caseListVideo ref="videos" :videoList="videoList"></caseListVideo>
     </div>
   </template>
   
   <script>
     import Calendar from 'vue-calendar-component'
-    import countCase from '@/components/caseList/countCase.vue'
-    import videoList from '@/components/caseList/videoList.vue'
+    import caseListCount from '@/components/caseList/caseListCount.vue'
+    import caseListVideo from '@/components/caseList/caseListVideo.vue'
     export default {
     name: 'caseList',
     components: {
         Calendar,
-        countCase,
-        videoList,
+        caseListCount,
+        caseListVideo,
     },
       data(){
         return {

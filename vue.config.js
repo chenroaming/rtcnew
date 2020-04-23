@@ -21,6 +21,13 @@ module.exports = {
                 '^/api': '/'  // 替换target中的请求地址，也就是说，在请求的时候，
                               // url用'/api'代替'https://trialtest.olcourt.cn/api/'
             }
+        },
+        '/upload': {
+          target: 'https://trialtest.olcourt.cn/upload',
+          changeOrigin: true,
+          pathRewrite: {
+              '^/upload': '/'
+          }
         }
     },  // 配置多个代理
   },

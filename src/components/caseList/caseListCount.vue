@@ -15,7 +15,7 @@
   
   <script>
     export default {
-        name: 'countCase',
+        name: 'caseListCount',
       data(){
         return {
             countDate:null,

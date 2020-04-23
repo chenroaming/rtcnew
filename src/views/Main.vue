@@ -23,18 +23,6 @@
                 <img :src="item.meta.imgSrc" alt="">
                 <p>{{item.meta.title}}</p>
               </li>
-              <!-- <li :class="{'isSelect':nowSelect == 1}" @click="go(1)">
-                <img src="../assets/img/left-icon1.png" alt="">
-                <p>案件管理</p>
-              </li>
-              <li :class="{'isSelect':nowSelect == 2}" @click="go(2)">
-                <img src="../assets/img/left-icon2.png" alt="">
-                <p>案件编辑</p>
-              </li>
-              <li :class="{'isSelect':nowSelect == 3}" @click="go(3)">
-                <img src="../assets/img/left-icon3.png" alt="">
-                <p>角色管理</p>
-              </li> -->
             </ul>
             <div>
               <img style="cursor: pointer;" @click="logout" src="../assets/img/out.png" alt="">
@@ -85,25 +73,6 @@
           this.$store.dispatch('setCaseId','');
           this.$store.dispatch('setStatus',true);
         }
-        // switch(index){
-        //   case 1:
-        //     this.$router.push({
-        //       name:'caseList'
-        //     })
-        //     break;
-        //   case 2:
-        //   this.$store.dispatch('setCaseId','');
-        //   this.$store.dispatch('setStatus',true);
-        //     this.$router.push({
-        //       name:'addCase'
-        //     })
-        //     break;
-        //   case 3:
-        //     this.$router.push({
-        //       name:'roleManage'
-        //     })
-        //     break;
-        // }
       },
       searchCase(){
         const params = {
@@ -112,15 +81,6 @@
         }
         this.$refs['caseList'].search(params)
         this.nowSelect = 0;
-        // this.$api.caseList.caseList(params).then(res => {
-        //   console.log(res)
-        //   this.$router.push({
-        //     name:'caseList',
-        //     params:{
-        //       caseList:res
-        //     }
-        //   })
-        // })
       },
       logout(){
         this.$store.dispatch('logout').then(res => {

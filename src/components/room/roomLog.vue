@@ -23,7 +23,7 @@
   <script>
     // import * as QNRTC from "pili-rtc-web";
     export default {
-        name: 'log',
+        name: 'roomLog',
         props:['caseId'],
       data(){
         return {

@@ -9,9 +9,9 @@
         </el-steps>
       </div>
       <div>
-        <step1 ref="step1" v-if="nowActive == 1" :nextStr="nextStr" v-on:listenToChildEvent="receive"></step1>
-        <step2 ref="step2" v-if="nowActive == 2" v-on:listenToChildEvent="receive"></step2>
-        <step3 ref="step3" v-if="nowActive == 3" v-on:listenToChildEvent="receive"></step3>
+        <addCaseStep1 ref="step1" v-if="nowActive == 1" :nextStr="nextStr" v-on:listenToChildEvent="receive"></addCaseStep1>
+        <addCaseStep2 ref="step2" v-if="nowActive == 2" v-on:listenToChildEvent="receive"></addCaseStep2>
+        <addCaseStep3 ref="step3" v-if="nowActive == 3" v-on:listenToChildEvent="receive"></addCaseStep3>
       </div>
       <div style="text-align: right;padding:0 80px;margin: 20px 0px;">
         <el-button type="warning" size="mini" @click="upStep" v-show="nowActive != 1">上一步</el-button>
@@ -23,16 +23,16 @@
   </template>
   
   <script>
-    import step1 from '@/components/addCase/step1.vue'
-    import step2 from '@/components/addCase/step2.vue'
-    import step3 from '@/components/addCase/step3.vue'
+    import addCaseStep1 from '@/components/addCase/addCaseStep1.vue'
+    import addCaseStep2 from '@/components/addCase/addCaseStep2.vue'
+    import addCaseStep3 from '@/components/addCase/addCaseStep3.vue'
 
     export default {
         name: 'addCase',
         components:{
-          step1,
-          step2,
-          step3,
+          addCaseStep1,
+          addCaseStep2,
+          addCaseStep3,
         },
       data(){
         return {

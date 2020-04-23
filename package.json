@@ -7,11 +7,12 @@
     "test": "vue-cli-service build --mode test",
     "production": "vue-cli-service build --mode production",
     "build": "vue-cli-service build",
-    "modern":"vue-cli-service build --modern"
+    "modern": "vue-cli-service build --modern"
   },
   "dependencies": {
+    "animate.css": "^3.7.2",
     "core-js": "^3.6.4",
-    "element-ui": "^2.13.0",
+    "element-ui": "^2.13.1",
     "md5": "^2.2.1",
     "pili-rtc-web": "^2.2.5",
     "register-service-worker": "^1.6.2",

@@ -13,7 +13,7 @@
   
   <script>
     export default {
-        name: 'clerkInfo',
+        name: 'roomClerkInfo',
         props:['caseId'],
       data(){
         return {

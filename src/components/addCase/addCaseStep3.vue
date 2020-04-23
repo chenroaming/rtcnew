@@ -66,7 +66,7 @@
   <script>
     import showFile from '@/components/addCase/showFile.vue'
     export default {
-        name: 'step3',
+        name: 'addCaseStep1',
         components: {
           showFile
         },

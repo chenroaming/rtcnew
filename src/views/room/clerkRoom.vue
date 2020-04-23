@@ -1,11 +1,11 @@
 <template>
     <div class="room">
-        <ws ref="ws" v-on:showEvi="showEvi"
+        <roomWs ref="ws" v-on:showEvi="showEvi"
             v-on:newChat="newChat"
             v-on:getEviByCaseIds="getEviByCaseIds"
             v-on:changeLook="changeLook"
             v-on:changeStatus="changeStatus"
-            v-on:tips="tips"></ws>
+            v-on:tips="tips"></roomWs>
         <header>
             <div style="width: 100%;">
                 <el-row>
@@ -22,7 +22,7 @@
                         <nowTime></nowTime>
                     </el-col>
                     <el-col :span="4">
-                        <chat ref="chat" v-on:send="send"></chat>
+                        <roomChat ref="chat" v-on:send="send"></roomChat>
                     </el-col>
                     <el-col :span="3">
                         <el-button type="text" @click="outRoom" class="titile-text">退出</el-button>
@@ -33,10 +33,10 @@
         <main>
             <div class="big-box" style="width: calc(100% - 100px);height: calc(100vh - 60px);">
                 <div class="remote-box" style="width: 28%;">
-                    <clerkChat ref="clerkChat" v-on:send="send"></clerkChat>
+                    <clerkRoomChat ref="clerkChat" v-on:send="send"></clerkRoomChat>
                 </div>
                 <div class="remote-box" style="width: 42%;">
-                    <note></note>
+                    <clerkRoomNote></clerkRoomNote>
                 </div>
                 <div id="remote-box" class="remote-box" style="width: 30%;overflow-y: scroll;">
                     <remotePlay ref="remotePlay" v-on:srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
@@ -56,11 +56,11 @@
                     <el-button type="text" @click="isVisible = false;">关闭</el-button>
                     <!-- <i class="el-icon-circle-close" style="color: #fff;cursor: pointer;" @click="isVisible = false;"></i> -->
                 </div>
-                <clerkInfo :caseId="caseId" v-if="nowSelect == 0"></clerkInfo>
-                <indictment :caseId="caseId" v-if="nowSelect == 1"></indictment>
-                <evidence ref="evidence" :caseId="caseId" v-if="nowSelect == 2"></evidence>
-                <log :caseId="caseId" v-if="nowSelect == 3"></log>
-                <signature v-if="nowSelect == 4"></signature>
+                <roomClerkInfo :caseId="caseId" v-if="nowSelect == 0"></roomClerkInfo>
+                <roomIndictment :caseId="caseId" v-if="nowSelect == 1"></roomIndictment>
+                <roomEvidence ref="evidence" :caseId="caseId" v-if="nowSelect == 2"></roomEvidence>
+                <roomLog :caseId="caseId" v-if="nowSelect == 3"></roomLog>
+                <roomSignature v-if="nowSelect == 4"></roomSignature>
             </div>
         </transition>
         <showFile ref="toFile" :fileItem="fileItem"></showFile>
@@ -70,32 +70,32 @@
   <script>
     import myRoom from '@/utils/pili.js'
     import { deviceManager } from 'pili-rtc-web'
-    import remotePlay from '@/components/room/remotePlay.vue'
-    import ws from '@/components/room/ws.vue'
-    import chat from '@/components/room/chat.vue'
-    import clerkInfo from '@/components/room/clerkInfo.vue'
-    import evidence from '@/components/room/evidence.vue'
-    import indictment from '@/components/room/indictment.vue'
-    import log from '@/components/room/log.vue'
-    import signature from '@/components/room/signature.vue'
+    import roomRemotePlayer from '@/components/room/roomRemotePlayer.vue'
+    import roomWs from '@/components/room/roomWs.vue'
+    import roomChat from '@/components/room/roomChat.vue'
+    import roomClerkInfo from '@/components/room/roomClerkInfo.vue'
+    import roomEvidence from '@/components/room/roomEvidence.vue'
+    import roomIndictment from '@/components/room/roomIndictment.vue'
+    import roomLog from '@/components/room/roomLog.vue'
+    import roomSignature from '@/components/room/roomSignature.vue'
     import showFile from '@/components/addCase/showFile.vue'
-    import nowTime from '@/components/room/nowTime.vue'
-    import note from '@/components/room/note.vue'
-    import clerkChat from '@/components/room/clerkChat.vue'
+    import roomNowTime from '@/components/room/roomNowTime.vue'
+    import clerkRoomNote from '@/components/clerkRoom/clerkRoomNote.vue'
+    import clerkRoomChat from '@/components/clerkRoom/clerkRoomChat.vue'
     export default {
         components:{
-            remotePlay,
-            ws,
-            chat,
-            clerkInfo,
-            evidence,
-            indictment,
-            log,
-            signature,
+            roomRemotePlayer,
+            roomWs,
+            roomChat,
+            roomClerkInfo,
+            roomEvidence,
+            roomIndictment,
+            roomLog,
+            roomSignature,
             showFile,
-            nowTime,
-            note,
-            clerkChat,
+            roomNowTime,
+            clerkRoomNote,
+            clerkRoomChat,
         },
       data(){
         return {

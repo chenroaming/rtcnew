@@ -13,7 +13,7 @@
   
   <script>
     export default {
-        name: 'note',
+        name: 'clerkRoomNote',
       data(){
         return {
             nowCase:'',

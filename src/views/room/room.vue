@@ -1,11 +1,11 @@
 <template>
     <div class="room">
-        <ws ref="ws" v-on:showEvi="showEvi"
+        <roomWs ref="ws" v-on:showEvi="showEvi"
             v-on:newChat="newChat"
             v-on:getEviByCaseIds="getEviByCaseIds"
             v-on:changeLook="changeLook"
             v-on:changeStatus="changeStatus"
-            v-on:tips="tips"></ws>
+            v-on:tips="tips"></roomWs>
         <header>
             <div style="width: 100%;">
                 <el-row>
@@ -16,15 +16,16 @@
                         <span class="title-text">{{caseInfo.caseNo}}</span>
                     </el-col>
                     <el-col :span="4">
-                        <mainName :mainInfo="this.caseInfo.name"></mainName>
+                        <roomMainName :mainInfo="caseInfo.name"></roomMainName>
                     </el-col>
                     <el-col :span="4">
-                        <nowTime></nowTime>
+                        <roomNowTime></roomNowTime>
                     </el-col>
                     <el-col :span="4">
-                        <chat ref="chat" v-on:send="send"></chat>
+                        <roomChat ref="chat" v-on:send="send"></roomChat>
                     </el-col>
                     <el-col :span="3">
+                        <!-- <el-button @click="mute" type="text">禁言</el-button> -->
                         <el-button type="text" @click="outRoom" class="title-text">退出</el-button>
                         <el-button type="text" @click="openChat" class="title-text">语音识别</el-button>
                     </el-col>
@@ -45,7 +46,7 @@
                     </div>
                     <div id="video-box" ref="videoBox"></div>
                 </div>
-                <remotePlay v-on:srcObj="receive" ref="remotePlay" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
+                <roomRemotePlayer v-on:srcObj="receive" ref="remotePlay" v-for="(item,index) in userList" :key="index" :user="item"></roomRemotePlayer>
             </div>
             <ul class="menu-list">
                 <li class="menu-content" @click="nowSelect = 0;isVisible=true;">审辅人员</li>
@@ -61,11 +62,11 @@
                     <el-button type="text" @click="isVisible = false;">关闭</el-button>
                     <!-- <i class="el-icon-circle-close" style="color: #fff;cursor: pointer;" @click="isVisible = false;"></i> -->
                 </div>
-                <clerkInfo :caseId="caseId" v-if="nowSelect == 0"></clerkInfo>
-                <indictment :caseId="caseId" v-if="nowSelect == 1"></indictment>
-                <evidence ref="evidence" v-on:send="send" :caseId="caseId" v-if="nowSelect == 2"></evidence>
-                <log :caseId="caseId" v-on:send="send" v-if="nowSelect == 3"></log>
-                <signature v-if="nowSelect == 4"></signature>
+                <roomClerkInfo :caseId="caseId" v-if="nowSelect == 0"></roomClerkInfo>
+                <roomIndictment :caseId="caseId" v-if="nowSelect == 1"></roomIndictment>
+                <roomEvidence ref="evidence" v-on:send="send" :caseId="caseId" v-if="nowSelect == 2"></roomEvidence>
+                <roomLog :caseId="caseId" v-on:send="send" v-if="nowSelect == 3"></roomLog>
+                <roomSignature v-if="nowSelect == 4"></roomSignature>
             </div>
         </transition>
         <showFile ref="toFile" :fileItem="fileItem"></showFile>
@@ -75,30 +76,30 @@
   <script>
     import myRoom from '@/utils/pili.js'
     import { deviceManager } from 'pili-rtc-web'
-    import remotePlay from '@/components/room/remotePlay.vue'
-    import ws from '@/components/room/ws.vue'
-    import chat from '@/components/room/chat.vue'
-    import clerkInfo from '@/components/room/clerkInfo.vue'
-    import evidence from '@/components/room/evidence.vue'
-    import indictment from '@/components/room/indictment.vue'
-    import log from '@/components/room/log.vue'
-    import signature from '@/components/room/signature.vue'
+    import roomRemotePlayer from '@/components/room/roomRemotePlayer.vue'
+    import roomWs from '@/components/room/roomWs.vue'
+    import roomChat from '@/components/room/roomChat.vue'
+    import roomClerkInfo from '@/components/room/roomClerkInfo.vue'
+    import roomEvidence from '@/components/room/roomEvidence.vue'
+    import roomIndictment from '@/components/room/roomIndictment.vue'
+    import roomLog from '@/components/room/roomLog.vue'
+    import roomSignature from '@/components/room/roomSignature.vue'
     import showFile from '@/components/addCase/showFile.vue'
-    import nowTime from '@/components/room/nowTime.vue'
-    import mainName from '@/components/room/mainName.vue'
+    import roomNowTime from '@/components/room/roomNowTime.vue'
+    import roomMainName from '@/components/room/roomMainName.vue'
     export default {
         components:{
-            remotePlay,
-            ws,
-            chat,
-            clerkInfo,
-            evidence,
-            indictment,
-            log,
-            signature,
+            roomRemotePlayer,
+            roomWs,
+            roomChat,
+            roomClerkInfo,
+            roomEvidence,
+            roomIndictment,
+            roomLog,
+            roomSignature,
             showFile,
-            nowTime,
-            mainName,
+            roomNowTime,
+            roomMainName,
         },
       data(){
         return {
@@ -163,9 +164,7 @@
                         this.roleName = res.result.roleName;
                         this.name = res.result.name;
                         this.address = res.result.address;
-                        if(this.roleName == '法官'){
-                            this.fullScreen();
-                        }
+                        this.roleName == '法官' && this.fullScreen();
                     }
                 })
             },500)
@@ -195,6 +194,9 @@
                 }
             }
         }
+        myRoom.on("user-mute", user => {
+            console.log("user", user.userId, "mute", user.muteAudio, user.muteVideo);
+        })
         myRoom.on("user-publish", user => {
             // 房间里有新的用户发布
             console.log(user.userId, "publish");
@@ -211,6 +213,12 @@
         });
       },
       methods:{
+        mute(){
+            myRoom.mute(true,false);
+            console.log(`'禁言id:'${this.stream.userId}`)
+            console.log(myRoom.users)
+            console.log(myRoom)
+        },
         receive(e){//接收子组件消息后放大全屏
             const srcObj = this.$refs.video;
             srcObj.srcObject = e.src;
@@ -232,7 +240,6 @@
             this.$refs.remotePlay.changeLook(e);
         },
         changeStatus(e){//改变开庭休庭状态
-            
             this.$refs.chat.changeStatus();
         },
         newChat(e){
@@ -258,7 +265,6 @@
             const domElement = this.$refs.videoBox;
             const srcObj = this.$refs.video;
             srcObj.srcObject = domElement.children[1].srcObject;
-            // this.caseInfo.name = this.roleName + ' ' + this.name;
             this.caseInfo.name = `${this.roleName}${this.name}`;
         },
         openChat(){//打开语音识别窗口
