@@ -9,7 +9,9 @@
   <script>
     export default {
       name: 'roomMainName',
-      props:['mainInfo'],
+      props:{
+        mainInfo:String
+      },
       data(){
         return {
           dynamic:0,

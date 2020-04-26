@@ -24,7 +24,9 @@
     // import * as QNRTC from "pili-rtc-web";
     export default {
         name: 'roomLog',
-        props:['caseId'],
+        props:{
+          caseId:String,
+        },
       data(){
         return {
           wsObj:null,

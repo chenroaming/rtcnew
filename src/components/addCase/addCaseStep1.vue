@@ -93,7 +93,9 @@
     import showFile from '@/components/addCase/showFile.vue'
     export default {
         name: 'addCaseStep1',
-        props:['nextStr'],
+        props:{
+          nextStr:String,
+        },
         components: {
           showFile
         },

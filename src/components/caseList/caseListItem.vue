@@ -2,11 +2,11 @@
     <div>
         <ul class="case-box">
             <p v-if="caseList.length == 0">暂无数据</p>
-            <li v-for="(item,index) in caseList">
+            <li class="animated fadeInUp" v-for="(item,index) in getCaseList">
                 <img src="@/assets/img/state-3.png" v-if="!item.isOpen" class="isOpen" alt="">
                 <img src="@/assets/img/state-2.png" v-if="item.isOpen" class="isOpen" alt="">
                 <div style="text-align: left;padding: 0px 15px;">
-                    <el-checkbox v-if="isShow" @change="selectItem($event,item)" v-model="item.isChecked">
+                    <el-checkbox v-if="isShow" @change="selectItem2($event,item)" v-model="item.isChecked">
                         <span style="font-size: 20px;font-weight: bold;color: #282828;">
                             {{item.caseNo}}
                         </span>
@@ -39,20 +39,20 @@
                         </div>
                     </div>
                     
-                    <div class="feature-content">
+                    <div class="feature-content" style="width: 115px;">
                         <img src="@/assets/img/role-icon3.png" alt="">
-                        <div>
+                        <div style="width: 78px;">
                             <p style="margin: 0;">人民陪审员</p>
-                            <p style="padding: 0;margin: 0;">默认陪审员</p>
+                            <p style="padding: 0;margin: 0;">{{item.juror}}</p>
                         </div>
                     </div>
                     
-                    <div class="download-box" @click="downRecord(item)">
+                    <div class="download-box" @click="downRecord(item)" v-if="isShow">
                         <img src="@/assets/img/down-icon.png" alt="">
                         <span>庭审笔录</span>
                     </div>
                     
-                    <div class="download-box">
+                    <div class="download-box" @click="downVideo(item)" v-if="isShow">
                         <img src="@/assets/img/down-icon.png" alt="">
                         <span>庭审录像</span>
                     </div>
@@ -106,7 +106,7 @@
                                 <el-switch
                                 v-model="scope.row.litigant.faceCheck"
                                 widht="10"
-                                @change="changeIsFace(scope.row)"
+                                @change="changeIsFace(scope.row,scope.$index)"
                                 active-color="#13ce66"
                                 inactive-color="#ff4949">
                                 </el-switch>
@@ -121,16 +121,23 @@
   
   <script>
     export default {
-        name: 'listItem',
+        name: 'caseListItem',
+        props:{
+            nowPage:Number,
+            nowRole:String,
+            isShow:Boolean,
+        },
       data(){
         return {
             caseList:[],
-            isShow:false,
-
+            tableData:[],
+            nowIndex:null,
         }
       },
       computed:{
-
+        getCaseList(){
+            return this.caseList;
+        }
       },
       watch:{
 
@@ -139,22 +146,30 @@
 
       },
       methods:{
-        selectItem(e,item){
-            if(e){
-                this.selectList.push(item);
-                this.isSelect ++;
-            }else{
-                this.isSelect --;
-                for(let i = 0;i < this.selectList.length;i++){
-                    if(item.caseNo == this.selectList[i].caseNo){
-                        this.selectList.splice(i,1);
-                    }
+        selectItem2(e,item){
+            const data = {
+                isChoice:e,
+                item:item,
+                length:this.caseList.length
+            }
+            this.$emit('selectItem',data);
+        },
+        cancelItem(item){
+            for(let i in this.caseList){
+                if(item.caseNo == this.caseList[i].caseNo){
+                    this.caseList[i].isChecked = false;
                 }
             }
-            if(this.isSelect == this.caseList.length){
-                this.allSelect = true;
-            }else{
-                this.allSelect = false;
+        },
+        selectAll(){
+            this.$emit('submitAll',this.caseList);
+            for(let i in this.caseList){
+                this.caseList[i].isChecked = true;
+            }
+        },
+        cancelAll(){
+            for(let i in this.caseList){
+                this.caseList[i].isChecked = false;
             }
         },
         edit(item){
@@ -237,14 +252,18 @@
                 }
             })
         },
-        changeIsFace(item){
+        changeIsFace(item,index){
             const params = {
                 idCard:item.litigant.identityCard,
                 check:item.litigant.faceCheck ? 1 : 0,
                 litigantId:item.litigant.litigationStatus.name == '代理人' ? '' : item.litigant.id,
                 lawyerId:item.litigant.litigationStatus.name == '代理人' ? item.litigant.id : '',
             }
-            this.$api.caseList.changeIsFace(params);
+            this.$api.caseList.changeIsFace(params).then(res => {
+                if(res.state != 100){
+                    this.tableData[index].litigant.faceCheck = !this.tableData[index].litigant.faceCheck;
+                }
+            });
         },
         getRecord(id,isShow,index){//获取案件详情
             if(isShow){
@@ -255,11 +274,11 @@
                 this.$api.caseList.getCaseDetail(params).then(res => {
                     if(res.state == 100){
                         this.tableData = [];
-                        for(const item of res.litigants){
-                            this.tableData.push(item)
+                        res.litigants.map(item => {
+                            this.tableData.push(item);
                             if(item.litigant.lawyer.length > 0){
-                                for(const item2 of item.litigant.lawyer){
-                                    const data = {
+                                const lawyerItem = item.litigant.lawyer.map(item2 => {
+                                    return {
                                         litigant:{
                                             litigationStatus:{name:'代理人'},
                                             litigantName:item2.agentName,
@@ -269,10 +288,10 @@
                                             id:item2.id,
                                         }
                                     }
-                                    this.tableData.push(data);
-                                }
+                                })
+                                this.tableData.push(...lawyerItem);
                             }
-                        }
+                        });
                     }else{
                         this.$message.warning(res.message);
                     }
@@ -327,6 +346,56 @@
                     document.body.removeChild(link);
                 }else{
                     this.$message.error(res.message);
+                }
+            })
+        },
+        downVideo(item){
+            const params= {
+                lawCaseId:item.caseId
+            }
+            this.$api.caseList.downVideo(params).then(res => {
+                if(res.state == 100){
+                    if(res.videos.length > 0){
+                        this.videoList = [];
+                        for(const item of res.videos){
+                            const data = {
+                                name:item.split('/')[item.split('/').length - 1],
+                                addr:item
+                            }
+                            this.videoList.push(data);
+                        }
+                        this.$refs.videos.showBox();
+                        return;
+                    }
+                    this.$message.warning('暂无庭审录像！');
+                }else{
+                    this.$message.error(res.message);
+                }
+            })
+        },
+        search(params){
+            this.$api.caseList.caseList(params).then(res => {
+                if(res.state == 100){
+                    this.caseList = [];
+                    if(res.result.length > 0){
+                        for(const item of res.result){
+                            const params = {
+                                caseNo:item.caseNo,
+                                openDate:item.openDate,
+                                judge:item.judge,
+                                clerk:item.clerk,
+                                juror:item.juror.length > 0 ? item.juror[0] : '暂无',
+                                isShow:false,
+                                isChecked:false,
+                                caseId:item.caseId,
+                                isOpen:item.isOpen,
+                                trialType:item.trialType,
+                                caseType:item.caseType,
+                            }
+                            this.caseList.push(params);
+                        } 
+                    }
+                    this.$emit('rePage',res.total);
                 }
             })
         },

@@ -25,7 +25,6 @@
                         <roomChat ref="chat" v-on:send="send"></roomChat>
                     </el-col>
                     <el-col :span="3">
-                        <!-- <el-button @click="mute" type="text">禁言</el-button> -->
                         <el-button type="text" @click="outRoom" class="title-text">退出</el-button>
                         <el-button type="text" @click="openChat" class="title-text">语音识别</el-button>
                     </el-col>
@@ -194,9 +193,6 @@
                 }
             }
         }
-        myRoom.on("user-mute", user => {
-            console.log("user", user.userId, "mute", user.muteAudio, user.muteVideo);
-        })
         myRoom.on("user-publish", user => {
             // 房间里有新的用户发布
             console.log(user.userId, "publish");
@@ -213,12 +209,6 @@
         });
       },
       methods:{
-        mute(){
-            myRoom.mute(true,false);
-            console.log(`'禁言id:'${this.stream.userId}`)
-            console.log(myRoom.users)
-            console.log(myRoom)
-        },
         receive(e){//接收子组件消息后放大全屏
             const srcObj = this.$refs.video;
             srcObj.srcObject = e.src;

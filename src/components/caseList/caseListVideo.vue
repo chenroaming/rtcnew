@@ -24,7 +24,9 @@
   <script>
     export default {
         name: 'caseListVideo',
-        props:['videoList'],
+        props:{
+          videoList:Array,
+        },
       data(){
         return {
           dialogTableVisible:false,

@@ -29,7 +29,9 @@
   <script>
     export default {
         name: 'showFile',
-        props:['fileItem'],
+        props:{
+          fileItem:Object,
+        },
       data(){
         return {
           centerDialogVisible:false,

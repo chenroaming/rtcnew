@@ -14,7 +14,9 @@
   <script>
     export default {
         name: 'roomClerkInfo',
-        props:['caseId'],
+        props:{
+          caseId:String,
+        },
       data(){
         return {
           clerk:{

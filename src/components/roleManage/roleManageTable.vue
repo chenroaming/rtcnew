@@ -29,7 +29,9 @@
   <script>
     export default {
         name: 'roleManageTable',
-        props:['data'],
+        props:{
+            data:Array,
+        },
       data(){
         return {
             tableData:[],

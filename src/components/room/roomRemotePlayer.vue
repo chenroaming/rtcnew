@@ -15,7 +15,9 @@
     import myRoom from '@/utils/pili.js'
     export default {
         name: 'roomRemotePlayer',
-        props:['user'],
+        props:{
+            user:Object
+        },
       data(){
         return {
             // wsObj:null,
