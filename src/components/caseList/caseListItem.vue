@@ -155,21 +155,22 @@
             this.$emit('selectItem',data);
         },
         cancelItem(item){
-            for(let i in this.caseList){
-                if(item.caseNo == this.caseList[i].caseNo){
-                    this.caseList[i].isChecked = false;
+            for (const item2 of this.caseList){
+                if(item.caseNo == item2.caseNo){
+                    item2.isChecked = false
+                    break;
                 }
             }
         },
         selectAll(){
             this.$emit('submitAll',this.caseList);
-            for(let i in this.caseList){
-                this.caseList[i].isChecked = true;
+            for (const item of this.caseList){
+                item.isChecked = true;
             }
         },
         cancelAll(){
-            for(let i in this.caseList){
-                this.caseList[i].isChecked = false;
+            for (const item of this.caseList){
+                item.isChecked = false;
             }
         },
         edit(item){
@@ -219,13 +220,13 @@
                         if(params.caseId.includes(',')){
                             caseId = params.caseId.split(',');
                             caseNo = params.caseNo.split(',');
-                            for(let i = 0;i < caseId.length;i++){
-                                const newArr = {
+                            for(let i in caseId){
+                                const newItem = {
                                     caseId:caseId[i],
                                     type:type,
                                     caseNo:caseNo[i]
                                 }
-                                arr.push(newArr);
+                                arr.push(newItem);
                             }
                         }else{
                             arr.push(params);

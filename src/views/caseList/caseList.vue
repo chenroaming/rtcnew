@@ -6,7 +6,7 @@
             <el-button type="text" @click="searchAll">查询全部</el-button>
         </p>
         <Calendar
-            v-on:choseDay="clickDay"
+            @choseDay="clickDay"
         ></Calendar>
         <p>共{{caseCount.total}}件案件</p>
         <!-- <p>未开庭<span>{{caseCount.un}}</span>件</p>
@@ -19,7 +19,7 @@
             <span>{{caseCount.total}}个案件</span>
         </div>
         <caseListCount v-if="canCount"></caseListCount>
-        <caseListItem ref="caseListItem" v-on:rePage="rePage" v-on:getMessage="getMessage" v-on:selectItem="selectItem" v-on:submitAll="submitAll" :isShow="isShow" :nowPage="nowPage" :nowRole="nowRole"></caseListItem>
+        <caseListItem ref="caseListItem" @rePage="rePage" @getMessage="getMessage" @selectItem="selectItem" @submitAll="submitAll" :isShow="isShow" :nowPage="nowPage" :nowRole="nowRole"></caseListItem>
         <div class="right-footer">
             <div style="width: 200px;float: left;" v-if="isShow">
                 <el-checkbox v-model="allSelect" @change="selectAll($event)" style="margin-right: 10px;">
@@ -119,14 +119,14 @@
         const today = new Date();
         this.time = today.getFullYear() + '年' + (today.getMonth()+1) + '月' + today.getDate() + '日';
         if(this.$route.params){
-            this.$refs.caseListItem.search(params);
+            this.search(params);
             return;
         }
         const params = {
             caseNo:'',
             pageNumber:1
         }
-        this.$refs.caseListItem.search(params);
+        this.search(params);
       },
       methods:{
         getMessage(e){
@@ -149,10 +149,8 @@
             this.allSelect = this.isSelect == e.length ? true : false;
         },
         submitAll(e){
-            this.selectList = [];
-            for(const item of e){
-                this.selectList.push(item);
-            }
+            this.selectList = [...e];//不会影响
+            // this.selectList = e;//会影响
         },
         selectAll(e){
             if(e){
@@ -186,7 +184,7 @@
                 caseId:caseIdArr.join(','),
                 caseNo:caseNoArr.join(',')
             }
-            this.intoRoom(params,1);
+            this.$refs.caseListItem.intoRoom(params,1);
         },
         handleCurrentChange(val){
             this.nowPage = val;
@@ -195,7 +193,7 @@
                 pageNumber:val,
                 startDate:this.startDate
             }
-            this.$refs.caseListItem.search(params);
+            this.search(params);
         },
         clickDay(data) { //选中某天
             const choiceDay = data.split('/');
@@ -205,12 +203,15 @@
             const startDate = {
                 startDate:this.startDate
             }
-            this.$refs.caseListItem.search(startDate);
+            this.search(startDate);
+        },
+        search(params){
+            this.$refs.caseListItem.search(params);
         },
         searchAll(){
             this.startDate = '';
             this.currentPage = 1;
-            this.$refs.caseListItem.search();
+            this.search();
         },
       }
     }

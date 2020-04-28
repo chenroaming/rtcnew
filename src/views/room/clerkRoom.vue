@@ -1,11 +1,11 @@
 <template>
     <div class="room">
-        <roomWs ref="ws" v-on:showEvi="showEvi"
-            v-on:newChat="newChat"
-            v-on:getEviByCaseIds="getEviByCaseIds"
-            v-on:changeLook="changeLook"
-            v-on:changeStatus="changeStatus"
-            v-on:tips="tips"></roomWs>
+        <roomWs ref="ws" @showEvi="showEvi"
+            @newChat="newChat"
+            @getEviByCaseIds="getEviByCaseIds"
+            @changeLook="changeLook"
+            @changeStatus="changeStatus"
+            @tips="tips"></roomWs>
         <header>
             <div style="width: 100%;">
                 <el-row>
@@ -22,7 +22,7 @@
                         <nowTime></nowTime>
                     </el-col>
                     <el-col :span="4">
-                        <roomChat ref="chat" v-on:send="send"></roomChat>
+                        <roomChat ref="chat" @send="send"></roomChat>
                     </el-col>
                     <el-col :span="3">
                         <el-button type="text" @click="outRoom" class="titile-text">退出</el-button>
@@ -33,13 +33,13 @@
         <main>
             <div class="big-box" style="width: calc(100% - 100px);height: calc(100vh - 60px);">
                 <div class="remote-box" style="width: 28%;">
-                    <clerkRoomChat ref="clerkChat" v-on:send="send"></clerkRoomChat>
+                    <clerkRoomChat ref="clerkChat" @send="send"></clerkRoomChat>
                 </div>
                 <div class="remote-box" style="width: 42%;">
                     <clerkRoomNote></clerkRoomNote>
                 </div>
                 <div id="remote-box" class="remote-box" style="width: 30%;overflow-y: scroll;">
-                    <remotePlay ref="remotePlay" v-on:srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
+                    <remotePlay ref="remotePlay" @srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
                 </div>
             </div>
             <ul class="menu-list">

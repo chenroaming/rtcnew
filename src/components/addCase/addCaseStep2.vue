@@ -46,26 +46,26 @@
             </el-table-column>
         </el-table>
         <el-dialog :close-on-click-modal="false" width="500px" title="新增诉讼参与人" :visible.sync="dialogFormVisible">
-            <el-form :rules="rules" :model="form" ref="form">
-                <el-form-item label="诉讼地位" prop="litigationType" :label-width="formLabelWidth">
-                    <el-select v-model="form.litigationType" placeholder="请选择诉讼地位">
+            <el-form ref="form" :rules="rules" :model="form">
+                <el-form-item label="诉讼地位" prop="litigationStatus" :label-width="formLabelWidth">
+                    <el-select v-model="form.litigationStatus" placeholder="请选择诉讼地位">
                         <el-option v-for="(item,index) in litigationStatusArr" :key="index" :label="item.name" :value="item.id"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="类型" prop="litigationStatus" :label-width="formLabelWidth">
-                    <el-radio-group v-model="form.litigationStatus">
+                <el-form-item label="类型" prop="litigantType" :label-width="formLabelWidth">
+                    <el-radio-group v-model="form.litigantType">
                         <el-radio :label="0">自然人</el-radio>
                         <el-radio :label="1">法人</el-radio>
                         <el-radio :label="2">非法人组织</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="名称" prop="name" :label-width="formLabelWidth">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="名称" prop="litigantName" :label-width="formLabelWidth">
+                    <el-input v-model="form.litigantName"></el-input>
                 </el-form-item>
-                <el-form-item prop="phone" label="手机号码" :label-width="formLabelWidth">
-                    <el-input v-model.number="form.phone"></el-input>
+                <el-form-item prop="litigantPhone" label="手机号码" :label-width="formLabelWidth">
+                    <el-input v-model.number="form.litigantPhone"></el-input>
                 </el-form-item>
-                <el-form-item v-show="form.litigationStatus == 0" label="证件类型" prop="idCardType" :label-width="formLabelWidth">
+                <el-form-item v-show="form.litigantType == 0" label="证件类型" prop="idCardType" :label-width="formLabelWidth">
                     <el-select v-model="form.idCardType" filterable placeholder="请选择">
                         <el-option
                           v-for="(ite,ind) in idCardType"
@@ -75,8 +75,8 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="证件号码" prop="idCard" :label-width="formLabelWidth">
-                    <el-input v-model="form.idCard"></el-input>
+                <el-form-item label="证件号码" prop="identityCard" :label-width="formLabelWidth">
+                    <el-input v-model="form.identityCard"></el-input>
                 </el-form-item>
                 <el-form-item :label-width="formLabelWidth">
                     <el-button type="primary" @click="addLayer" v-show="form.layerList.length < 2"><i class="el-icon-circle-plus"></i>新增代理人</el-button>
@@ -117,15 +117,13 @@
                 litigationStatus: [
                 {required: true, message: '请选择诉讼类型', trigger: 'change'}
                 ],
-                name: [
+                litigantName: [
                 {required: true, message: '请填写名称', trigger: 'change'}
                 ],
-                phone: [
+                litigantPhone: [
                 {required: true, message: '请填写号码', trigger: 'change'},
                 ],
-                idCardType: [
-                ],
-                idCard: [
+                identityCard: [
                 {required: true, message: '请填写证件号码', trigger: 'change'},
                 ]
             },
@@ -133,12 +131,12 @@
             tableData:[],
             dialogFormVisible:false,
             form:{
-                litigationType:'',
-                name:'',
+                litigantType:'',
+                litigantName:'',
                 litigationStatus:'',
-                phone:'',
+                litigantPhone:'',
                 idCardType:'',
-                idCard:'',
+                identityCard:'',
                 layerList:[]
             },
             formLabelWidth:'100px',
@@ -148,16 +146,6 @@
             litigantId:'',
             visible2:false,
             isEdit:false,
-        }
-      },
-      computed:{
-        getCaseId(){
-            return this.$store.getters.getCaseId//通过计算属性返回vuex中的状态值
-        }
-      },
-      watch:{
-        getCaseId(curval,oldVal){//当前值和原来的值
-            console.log(curval);
         }
       },
       mounted(){
@@ -197,11 +185,14 @@
                 idCard:'',
                 layerList:[]
             };//清空表单函数偶尔失效，暂时先用赋值方式解决
-            // if (this.$refs[name] !== undefined) {
-            //     this.$refs[name].resetFields();
-            //     this.form.layerList = [];
-            // }
             this.dialogFormVisible = true;
+            // this.$nextTick(() => {
+            //     console.log(name)
+            //     if(this.$refs[name]){
+            //         this.$refs[name].resetFields();
+            //     }
+            //     this.form.layerList = [];
+            // })
         },
         addLayer(){//添加代理人
             const data = {
@@ -245,11 +236,11 @@
                     return this.$message.warning('请确保选项填写完整正确！');
                 }
                 const data = {
-                    name:this.form.name,
-                    idCard:this.form.idCard,
-                    phone:this.form.phone,
-                    litigantType:this.form.litigationStatus,
-                    litigationStatus:this.form.litigationType,
+                    name:this.form.litigantName,
+                    idCard:this.form.identityCard,
+                    phone:this.form.litigantPhone,
+                    litigantType:this.form.litigantType,
+                    litigationStatus:this.form.litigationStatus,
                     idCardType:this.form.idCardType,
                     litigantId:'',
                     lawCaseId:this.lawCaseId,
@@ -281,22 +272,15 @@
             })
         },
         edit(item){//编辑当事人
+            this.litigantId = item.litigant.id;
+            this.form = {litigationStatus:'',layerList:[],...item.litigant};
             if(
                 this.litigationStatusArr.some(res => {
                     return res.id == item.litigant.litigationStatus.id
                 })
             ){
-                this.form.litigationType = item.litigant.litigationStatus.id;
-            }else{
-                this.form.litigationType = '';
+                this.form.litigationStatus = item.litigant.litigationStatus.id;
             }
-            this.litigantId = item.litigant.id;
-            this.form.name = item.litigant.litigantName;
-            this.form.idCard = item.litigant.identityCard;
-            this.form.phone = item.litigant.litigantPhone;
-            this.form.litigationStatus = item.litigant.litigantType;
-            this.form.idCardType = item.litigant.idCardType;
-            this.form.layerList = [];
             if(item.litigant.lawyer.length > 0){
                 for(const item of item.litigant.lawyer){
                     const data = {

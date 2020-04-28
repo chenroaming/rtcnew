@@ -12,7 +12,7 @@
       <div class="select-box-right">
         <el-button type="primary" @click="newRole"><i class="el-icon-circle-plus"></i>新增角色</el-button>
       </div>
-      <roleManageTable :data="data" v-on:listenToChild="receive" v-on:getPage="getPage"></roleManageTable>
+      <roleManageTable :data="data" @listenToChild="receive" @getPage="getPage"></roleManageTable>
       <div class="page-box">
         <el-pagination
           @current-change="handleCurrentChange"

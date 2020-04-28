@@ -1,9 +1,6 @@
 let baseUrl = "";   //这里是一个默认的url，可以没有
 switch (process.env.NODE_ENV) { 
         // => 根据NODE_ENV来判断当前环境
-    case 'test':
-        baseUrl = "https://trialtest.olcourt.cn/api/"  //测试服务器的请求url
-        break
     case 'production':
         baseUrl = "/api"   //生产环境url
         break

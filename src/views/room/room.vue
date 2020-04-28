@@ -1,11 +1,11 @@
 <template>
     <div class="room">
-        <roomWs ref="ws" v-on:showEvi="showEvi"
-            v-on:newChat="newChat"
-            v-on:getEviByCaseIds="getEviByCaseIds"
-            v-on:changeLook="changeLook"
-            v-on:changeStatus="changeStatus"
-            v-on:tips="tips"></roomWs>
+        <roomWs ref="ws" @showEvi="showEvi"
+            @newChat="newChat"
+            @getEviByCaseIds="getEviByCaseIds"
+            @changeLook="changeLook"
+            @changeStatus="changeStatus"
+            @tips="tips"></roomWs>
         <header>
             <div style="width: 100%;">
                 <el-row>
@@ -22,7 +22,7 @@
                         <roomNowTime></roomNowTime>
                     </el-col>
                     <el-col :span="4">
-                        <roomChat ref="chat" v-on:send="send"></roomChat>
+                        <roomChat ref="chat" @send="send"></roomChat>
                     </el-col>
                     <el-col :span="3">
                         <el-button type="text" @click="outRoom" class="title-text">退出</el-button>
@@ -45,7 +45,7 @@
                     </div>
                     <div id="video-box" ref="videoBox"></div>
                 </div>
-                <roomRemotePlayer v-on:srcObj="receive" ref="remotePlay" v-for="(item,index) in userList" :key="index" :user="item"></roomRemotePlayer>
+                <roomRemotePlayer @srcObj="receive" ref="remotePlay" v-for="(item,index) in userList" :key="index" :user="item"></roomRemotePlayer>
             </div>
             <ul class="menu-list">
                 <li class="menu-content" @click="nowSelect = 0;isVisible=true;">审辅人员</li>
@@ -63,8 +63,8 @@
                 </div>
                 <roomClerkInfo :caseId="caseId" v-if="nowSelect == 0"></roomClerkInfo>
                 <roomIndictment :caseId="caseId" v-if="nowSelect == 1"></roomIndictment>
-                <roomEvidence ref="evidence" v-on:send="send" :caseId="caseId" v-if="nowSelect == 2"></roomEvidence>
-                <roomLog :caseId="caseId" v-on:send="send" v-if="nowSelect == 3"></roomLog>
+                <roomEvidence ref="evidence" @send="send" :caseId="caseId" v-if="nowSelect == 2"></roomEvidence>
+                <roomLog :caseId="caseId" @send="send" v-if="nowSelect == 3"></roomLog>
                 <roomSignature v-if="nowSelect == 4"></roomSignature>
             </div>
         </transition>

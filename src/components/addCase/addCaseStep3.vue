@@ -150,12 +150,9 @@
                 }
                 if(!this.evidenceId){
                     const data = {
-                        name:this.form.name,
-                        prove:this.form.prove,
-                        source:this.form.source,
+                        ...this.form,
                         lawCaseId:this.lawCaseId,
-                        litigantId:this.form.litigantId,
-                        file:this.fileList2
+                        file:this.fileList2,
                     }
                     this.$api.addCase.addEvidence(data).then(res => {
                         console.log(res)
@@ -166,13 +163,9 @@
                     })
                     return;
                 }
-                // console.log(this.form);
                 const data = {
-                    name:this.form.name,
-                    prove:this.form.prove,
-                    source:this.form.source,
+                    ...this.form,
                     lawCaseId:this.lawCaseId,
-                    litigantId:this.form.litigantId,
                     evidenceId:this.evidenceId,
                     file:this.fileList2
                 }

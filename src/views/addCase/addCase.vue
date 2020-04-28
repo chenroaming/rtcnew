@@ -9,9 +9,9 @@
         </el-steps>
       </div>
       <div>
-        <addCaseStep1 ref="step1" v-if="nowActive == 1" :nextStr="nextStr" v-on:listenToChildEvent="receive"></addCaseStep1>
-        <addCaseStep2 ref="step2" v-if="nowActive == 2" v-on:listenToChildEvent="receive"></addCaseStep2>
-        <addCaseStep3 ref="step3" v-if="nowActive == 3" v-on:listenToChildEvent="receive"></addCaseStep3>
+        <addCaseStep1 ref="step1" v-if="nowActive == 1" :nextStr="nextStr" @listenToChildEvent="receive"></addCaseStep1>
+        <addCaseStep2 ref="step2" v-if="nowActive == 2" @listenToChildEvent="receive"></addCaseStep2>
+        <addCaseStep3 ref="step3" v-if="nowActive == 3" @listenToChildEvent="receive"></addCaseStep3>
       </div>
       <div style="text-align: right;padding:0 80px;margin: 20px 0px;">
         <el-button type="warning" size="mini" @click="upStep" v-show="nowActive != 1">上一步</el-button>
