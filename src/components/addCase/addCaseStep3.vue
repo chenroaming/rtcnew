@@ -22,7 +22,7 @@
             </template>
             </el-table-column>
         </el-table>
-        <el-dialog :close-on-click-modal="false" width="500px" :title="form.litigantId ? '编辑证据':'新增证据'" :visible.sync="dialogFormVisible">
+        <el-dialog :close-on-click-modal="false" width="500px" :title="titleText" :visible.sync="dialogFormVisible">
             <el-form :model="form" ref="form" :rules="rules">
                 <el-form-item label="当事人" prop="litigantId" :label-width="formLabelWidth">
                     <el-select v-model="form.litigantId" placeholder="请选择当事人">
@@ -108,10 +108,9 @@
         }
       },
       computed:{
-        
-      },
-      watch:{
-        
+        titleText(){
+            return this.form.litigantId ? '编辑证据':'新增证据'
+        },
       },
       mounted(){
         this.lawCaseId = this.$store.getters.getCaseId;
@@ -178,7 +177,6 @@
             })
         },
         upFile(){
-            // const button = document.getElementById('getFiles');
             const button = this.$refs.getFile;
             button.click();
             button.value = '';
@@ -278,20 +276,15 @@
                         }
                     }
                     if(item.evidence.length > 0){
-                        for(const item2 of item.evidence){
+                        const newArr = item.evidence.map(item2 => {
                             item2.litigantId = item.litigant.id;
                             item2.litigantName = item.litigant.litigantName;
-                            if(
-                                this.litigantId.some(unit => {
-                                    return unit == item2.litigantId//判断登录账号是否可编辑该证据
-                                })
-                            ){
-                                item2.canChange = true;
-                            }else{
-                                item2.canChange = false;
-                            }
-                            this.tableData.push(item2)
-                        }
+                            item2.canChange = this.litigantId.some(unit => {
+                                return unit == item2.litigantId
+                            }) ? true : false;//判断该登录账号是否可编辑该证据
+                            return item2;
+                        })
+                        this.tableData.push(...newArr);
                     }
                 }
             })

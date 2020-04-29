@@ -1,42 +1,12 @@
 <template>
   <div class="home">
-    <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <div class="header">
       <faceCheck ref="faceCheck"></faceCheck>
-      <div class="login-form">
-        <p>
-          <el-button type="primary" @click="loginType = 'court'" size="mini" :plain="loginType != 'court'">法院工作人员</el-button>
-          <el-button type="primary" @click="loginType = 'litigant'" size="mini" :plain="loginType != 'litigant'">当事人/诉讼代理人</el-button>
-        </p>
-        <!-- <p><span style="cursor: pointer;" @click="loginType = 'court'">法官登录</span><span style="margin-left: 10px;cursor: pointer;" @click="loginType = 'litigant'">当事人/诉讼代理人登录</span></p> -->
-        <el-form label-width="0px" ref="formLabelAlign" :rules="rules" :model="formLabelAlign">
-          <el-form-item prop="userName">
-            <el-input v-model="formLabelAlign.userName" placeholder="请输入账号">
-              <i slot="prefix" class="el-icon-user-solid"></i>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="passWord">
-            <el-input v-model="formLabelAlign.passWord" type="password" placeholder="请输入密码">
-              <i slot="prefix" class="el-icon-user"></i>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="checkCode">
-            <el-input v-model="formLabelAlign.checkCode" placeholder="请输入验证码">
-              <i slot="prefix" class="el-icon-picture"></i>
-            </el-input>
-            <img class="code" :src="codeSrc" @click="changeCode" alt="">
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="login">登录</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
+      <homeLogin></homeLogin>
     </div>
     <div class="carousel-box">
       <el-carousel :interval="4000" type="card" height="300px">
         <el-carousel-item v-for="item in 3" :key="item">
-          <!-- <h3 class="medium">{{ item }}</h3> -->
           <img src="../assets/img/pt_img1.png" alt="">
         </el-carousel-item>
       </el-carousel>
@@ -93,24 +63,18 @@
 
 <script>
 // @ is an alias to /src
-import md5 from 'md5'
-import faceCheck from '@/components/faceCheck/faceCheck.vue'
+import faceCheck from '@/components/home/homeFaceCheck.vue'
+import homeLogin from '@/components/home/homeLogin.vue'
 export default {
   name: 'Home',
   components: {
-    faceCheck
+    faceCheck,
+    homeLogin
   },
   data(){
     return {
       nowIndex:6,
-      isLogin:'未登录',
-      codeSrc:'/api/main/code.jhtml?tm=' + Math.random(),
       width:300,
-      formLabelAlign:{
-        userName:'',
-        passWord:'',
-        checkCode:''
-      },
       featuresList:[
         {src:require('../assets/img/icon1.png'),title:'人脸识别核验身份',des:'当事人身份在线认证'},//动态渲染图片需要添加require
         {src:require('../assets/img/icon2.png'),title:'证据材料同屏展示',des:'实时传输，证据材料同屏开示'},
@@ -144,54 +108,12 @@ export default {
       },
     }
   },
-    computed:{
-
-    },
-    watch:{
-      
-    },
   methods:{
     changeActive(e){
       this.nowIndex = e;
     },
     removeActive(e){
       this.nowIndex = 6;
-    },
-    changeCode(){
-      this.codeSrc = '/api/main/code.jhtml?tm=' + Math.random();
-    },
-    login(){
-      this.$refs['formLabelAlign'].validate((valid) => {
-        if(!valid){
-          return this.$message.warning('请输入正确的用户名/密码/验证码');
-        }
-        const {userName,passWord,checkCode} = this.formLabelAlign;
-        const data = {
-          username:userName,
-          password:md5(passWord),
-          loginType:this.loginType,
-          code:checkCode
-        }
-        this.$store.dispatch('login',data).then(res => {
-          if(res.state == 100){
-            const setType = {
-              roleType : res.data.roles[0].type
-            }
-          this.$api.user.optionRole(setType).then(res => {
-            if(res.state == 100 && !res.data.isFace){
-              this.$router.push({
-                name:'caseList'
-              })
-            }
-            if(res.state == 100 && res.data.isFace){
-              this.$refs.faceCheck.show();
-            }
-          })//调用设置用户类型接口
-          return ;
-          }
-          this.changeCode();
-        });
-      })
     },
   }
 }
@@ -213,23 +135,6 @@ export default {
     width: 1200px;
     height: 300px;
     margin: 0 auto;
-  }
-  .login-form{
-    width: 300px;
-    height: 280px;
-    position: absolute;
-    top: 190px;
-    right: 225px;
-    border: 1px solid #DEDEDE;
-    border-radius: 10px;
-    padding: 10px 30px;
-    background-color: #fff;
-    p {
-      color: #202020;
-      font-weight: bold;
-      font-size:16px;
-      margin-top: 0;
-    }
   }
   .features {
     ul{
@@ -292,12 +197,6 @@ export default {
     width: 100%;
     height: 460px;
     margin-top: 50px;
-  }
-  .code{
-    position: absolute;
-    top: 6px;
-    right: 15px;
-    z-index: 3;
   }
   .footer {
     width: 100%;

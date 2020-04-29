@@ -45,7 +45,7 @@
             </template>
             </el-table-column>
         </el-table>
-        <el-dialog :close-on-click-modal="false" width="500px" title="新增诉讼参与人" :visible.sync="dialogFormVisible">
+        <el-dialog :close-on-click-modal="false" width="500px" :title="titleText" :visible.sync="dialogFormVisible">
             <el-form ref="form" :rules="rules" :model="form">
                 <el-form-item label="诉讼地位" prop="litigationStatus" :label-width="formLabelWidth">
                     <el-select v-model="form.litigationStatus" placeholder="请选择诉讼地位">
@@ -162,6 +162,11 @@
             }
         })
       },
+      computed:{
+        titleText(){
+          return this.litigantId ? '编辑诉讼参与人' : '新增诉讼参与人';
+        },
+      },
       methods:{
         submit(){//进入下一步
             if(!this.isEdit){
@@ -176,6 +181,7 @@
         },
         addLitigant(name){//添加当事人
             this.litigantId = '';
+            this.form.layerList = [];
             this.form = {
                 litigationType:'',
                 name:'',
@@ -272,6 +278,7 @@
             })
         },
         edit(item){//编辑当事人
+            console.log(item)
             this.litigantId = item.litigant.id;
             this.form = {litigationStatus:'',layerList:[],...item.litigant};
             if(
@@ -319,7 +326,11 @@
             this.$api.caseList.getCaseDetail(data).then(res => {
                 this.tableData = res.litigants;
             })
-        }
+        },
+        clearForm(){
+            console.log(this.litigantId ? true : false)
+            this.litigantId || this.$refs['form'].resetFields();
+        },
       }
     }
   </script>

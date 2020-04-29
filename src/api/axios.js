@@ -74,7 +74,7 @@ service.interceptors.response.use(
         }
         return data
     },
-    (error) => {``
+    (error) => {
         loadingCount --
         if(loadingCount == 0){
             loadingInstance.close();//收到回复后隐藏加载效果
