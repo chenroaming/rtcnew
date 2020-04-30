@@ -26,7 +26,6 @@
     import addCaseStep1 from '@/components/addCase/addCaseStep1.vue'
     import addCaseStep2 from '@/components/addCase/addCaseStep2.vue'
     import addCaseStep3 from '@/components/addCase/addCaseStep3.vue'
-
     export default {
         name: 'addCase',
         components:{

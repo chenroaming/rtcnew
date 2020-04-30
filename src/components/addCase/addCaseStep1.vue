@@ -167,6 +167,7 @@
       },
       methods:{
         submit(){//提交案件信息或者修改案件信息
+          console.log(this.form.demo)
           if(!this.isEdit){
             this.$emit('listenToChildEvent',2);
             return;
@@ -207,7 +208,6 @@
               }else{
                 data.lawCaseId = this.lawCaseId;
                 const exchange = new Date(data.openDate);
-                // data.openDate = exchange.getFullYear()+'-'+(exchange.getMonth()+1)+'-'+exchange.getDate()+' '+exchange.getHours()+':'+exchange.getMinutes();
                 data.openDate = `${exchange.getFullYear()}-${(exchange.getMonth()+1)}-${exchange.getDate()} ${exchange.getHours()}:${exchange.getMinutes()}`;
                 this.$api.addCase.updateLawCase(data).then(res => {
                   if(res.state == 100){
@@ -279,26 +279,25 @@
             lawCaseId:this.lawCaseId
           }
           this.$api.caseList.getCaseDetail(data).then(res => {
-            if(res.state == 100){
-              this.form.caseType = res.lawCase.caesType;
-              this.form.caseReason = this.isEdit ? res.lawCase.brief.id : res.lawCase.brief.name;
-              this.form.courtType = res.lawCase.trialType;
-              this.form.caseNo = res.lawCase.caseNo;
-              this.form.judge = this.isEdit ? res.lawCase.judge.id : res.lawCase.judge.name;
-              this.form.clerk = this.isEdit ? res.lawCase.clerk.id : res.lawCase.clerk.name;
-              this.form.openTime = new Date(res.openDate);
-              this.form.juror = [];
-              if(res.lawCase.jurors.length > 0 && this.isEdit){
-                for(const item of res.lawCase.jurors){
-                  this.form.juror.push(item);
-                }
+            if (res.state == 100){
+              const {caesType,brief,trialType,caseNo,judge,clerk,jurors} = res.lawCase;
+              this.form = {
+                caseType : caesType,
+                caseReason : this.isEdit ? brief.id : brief.name,
+                courtType : trialType,
+                caseNo : caseNo,
+                judge : this.isEdit ? judge.id : judge.name,
+                clerk : this.isEdit ? clerk.id : clerk.name,
+                openTime : new Date(res.openDate),
+                juror : []
               }
-              if(res.lawCase.jurors.length > 0 && !this.isEdit){
-                for(const item of res.lawCase.jurors){
-                  this.form.juror.push(item.name);
-                }
+              if (jurors.length > 0 && this.isEdit){
+                this.form.juror.push(...jurors.map(item => item))
               }
-              if(res.indictment.length > 0 && res.indictment[0].filePaths.length > 0){
+              if (jurors.length > 0 && !this.isEdit){
+                this.form.juror.push(...jurors.map(item => item.name))
+              }
+              if (res.indictment.length > 0 && res.indictment[0].filePaths.length > 0){
                 this.filesList = res.indictment[0].filePaths;
                 this.indictmentId = res.indictment[0].id;
               }

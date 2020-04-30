@@ -13,12 +13,6 @@
                     @click="edit(scope.row)">
                     编辑
                 </el-button>
-                <!-- <el-button
-                    type="text"
-                    size="small"
-                    @click="del(scope.row)">
-                    删除
-                </el-button> -->
                 <i class="el-icon-chat-line-square" style="margin-left: 10px;cursor: pointer;" @click="send(scope.row)"></i>
             </template>
             </el-table-column>
@@ -41,15 +35,15 @@
       computed:{
         getData(){
             this.tableData = [];
-            this.data.map(item => {
-                const data = {
+            const newArr = this.data.map(item => {
+                return {
                     roleName:this.roleType[item.judgeType],
                     name:item.name,
                     phone:item.phone,
                     id:item.id
                 }
-                this.tableData.push(data);
             })
+            this.tableData.push(...newArr)
             return this.tableData;
         }
       },

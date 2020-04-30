@@ -1,5 +1,5 @@
 <template>
-    <div class="role-box">
+    <div class="role-box animated bounceIn delay-0.5s">
       <h1>你似乎来到了什么都没有的荒原。。。</h1>
       <el-button type="primary" @click="toHome">点我返回首页吧~</el-button>
     </div>
@@ -25,9 +25,9 @@
       },
       methods:{
         toHome(){
-            this.$router.push({
-                name:'Home'
-            })
+          this.$router.push({
+              name:'Home'
+          })
         }
       }
     }

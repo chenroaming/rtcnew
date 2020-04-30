@@ -13,7 +13,7 @@ Vue.use(ElementUI)
 Vue.use(VueRouter)
 
 Vue.config.productionTip = false
-
+console.log('written by roaming')
 new Vue({
   router,
   store,

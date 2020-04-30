@@ -143,9 +143,6 @@
     width: 100%;
     height: calc(100%-60px);
   }
-  .el-aside {
-    /* height: 100%; */
-  }
   .logo-box{
     width: 330px;
     float: left;
