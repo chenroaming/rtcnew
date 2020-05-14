@@ -3,7 +3,7 @@
       <h1>起诉状</h1>
       <el-collapse v-model="activeNames">
         <el-collapse-item v-for="(item,index) in caseList" :key="index" :title="item.caseNo" :name="item.caseNo">
-          <p v-for="(item2,index) in item.indictment" :key="index">
+          <p v-for="(item2,index) in item.indictment.filePaths" :key="index">
             {{item2.name}}
             <el-button size="mini" type="text" @click="showInd(item2)">查看</el-button>
           </p>
@@ -42,13 +42,12 @@
         }
         this.$api.roomItem.getEviByCaseIds(params).then(res => {
           if(res.state == 100){
-            // this.indictment = res.result[0].indictment;
             if(res.result.length > 0){
               this.caseList = [];
               for(const item of res.result){
                 const data = {
                   caseNo:item.caseNo,
-                  indictment:item.indictment
+                  indictment:[...item.indictment].pop()
                 }
                 this.caseList.push(data);
               }
@@ -58,8 +57,7 @@
       },
       methods:{
         showInd(item){//查看起诉状
-          console.log(item.filePaths[0])
-          this.fileItem = item.filePaths[0];
+          this.fileItem = item;
           this.$refs.toFile.showEvidence();
         },
       }

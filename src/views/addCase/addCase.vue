@@ -1,6 +1,6 @@
 <template>
     <div class="addCase-main">
-      <p>{{status ? '案件编辑' : '新增案件'}}</p>
+      <p>{{statusText}}</p>
       <div class="step-box">
         <el-steps :active="nowActive" align-center>
           <el-step title="基本信息"></el-step>
@@ -43,18 +43,16 @@
         }
       },
       computed:{
-        
+        statusText(){
+          return this.status ? '案件编辑' : '新增案件';
+        },
       },
       watch:{
         
       },
       mounted(){
         this.isEdit = this.$store.getters.getEditStatus;
-        if(this.$store.getters.getCaseId){
-          this.status = true;
-        }else{
-          this.status = false;
-        }
+        this.status = this.$store.getters.getCaseId ? true : false;
         if(!this.$store.getters.getCaseId && !this.$store.getters.getStatus){
           this.$router.push({
             name:'caseList'
@@ -66,7 +64,7 @@
           if(e){
             this.nowActive  = e;
             if(this.nowActive > 3){
-              this.$emit('getMessage',0);
+              this.$emit('update:getMessage',0);
               this.$router.push({
                 name:'caseList'
               })
@@ -87,7 +85,7 @@
           this.nowActive --;
         },
         search(params){
-          this.$emit('getMessage',1);
+          this.$emit('update:getMessage',1);
           this.$router.push({
             name:'caseList',
             params:params

@@ -1,7 +1,6 @@
 <template>
   <div class="home">
     <div class="header">
-      <faceCheck ref="faceCheck"></faceCheck>
       <homeLogin></homeLogin>
     </div>
     <div class="carousel-box">
@@ -14,7 +13,8 @@
     <div class="features">
       <p style="font-size: 22px;font-weight: bold;">平台功能</p>
       <ul>
-        <li v-for="(item,index) in featuresList" :class="{'float':nowIndex==index}" @mouseover="changeActive(index)" v-on:mouseout="removeActive()">
+        <li v-for="(item,index) in featuresList" :class="{'float':nowIndex==index}" @mouseover="changeActive(index)"
+          v-on:mouseout="removeActive()">
           <img :src="item.src" alt="">
           <p style="font-weight: bold;">{{item.title}}</p>
           <p style="font-size: 14px;">{{item.des}}</p>
@@ -62,61 +62,59 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import faceCheck from '@/components/home/homeFaceCheck.vue'
-import homeLogin from '@/components/home/homeLogin.vue'
-export default {
-  name: 'Home',
-  components: {
-    faceCheck,
-    homeLogin
-  },
-  data(){
-    return {
-      nowIndex:6,
-      width:300,
-      featuresList:[
-        {src:require('../assets/img/icon1.png'),title:'人脸识别核验身份',des:'当事人身份在线认证'},//动态渲染图片需要添加require
-        {src:require('../assets/img/icon2.png'),title:'证据材料同屏展示',des:'实时传输，证据材料同屏开示'},
-        {src:require('../assets/img/icon3.png'),title:'语音识别同步记录',des:'解放书记员双手'},
-        {src:require('../assets/img/icon4.png'),title:'庭审同步录音录像',des:'提高庭审流畅性'},
-        {src:require('../assets/img/icon5.png'),title:'庭审笔录在线签署',des:'全程留痕，自动归档'},
-      ],
-      infoList:[
-        {src:require('../assets/img/news-img.png'),date:'2020.03.12',title:'庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署',content:'全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档'},
-        {src:require('../assets/img/news-img.png'),date:'2020.03.12',title:'庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署',content:'全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档'},
-        {src:require('../assets/img/news-img.png'),date:'2020.03.12',title:'庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署',content:'全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档'},
-      ],
-      caseList:[
-        {src:require('../assets/img/case-logo.png'),title:'同安法院'},
-        {src:require('../assets/img/case-logo.png'),title:'同安法院'},
-        {src:require('../assets/img/case-logo.png'),title:'同安法院'},
-        {src:require('../assets/img/case-logo.png'),title:'同安法院'},
-        {src:require('../assets/img/case-logo.png'),title:'同安法院'},
-        {src:require('../assets/img/case-logo.png'),title:'同安法院'},
-        {src:require('../assets/img/case-logo.png'),title:'同安法院'},
-        {src:require('../assets/img/case-logo.png'),title:'同安法院'},
-      ],
-      loginType:'court',
-      rules:{
-        userName:[{required: true, message: '请输入用户名', trigger: 'change'}],
-        passWord:[{required: true, message: '请输入密码', trigger: 'change'}],
-        checkCode:[
-          {required: true, message: '请输入验证码', trigger: 'change'},
-          { min: 4, max: 4, message: '请输入正确的验证码', trigger: 'change' }
-        ]
+  // @ is an alias to /src
+  import homeLogin from '@/components/home/homeLogin.vue'
+  export default {
+    name: 'Home',
+    components: {
+      homeLogin
+    },
+    data() {
+      return {
+        nowIndex: 6,
+        width: 300,
+        featuresList: [
+          { src: require('../assets/img/icon1.png'), title: '人脸识别核验身份', des: '当事人身份在线认证' },//动态渲染图片需要添加require
+          { src: require('../assets/img/icon2.png'), title: '证据材料同屏展示', des: '实时传输，证据材料同屏开示' },
+          { src: require('../assets/img/icon3.png'), title: '语音识别同步记录', des: '解放书记员双手' },
+          { src: require('../assets/img/icon4.png'), title: '庭审同步录音录像', des: '提高庭审流畅性' },
+          { src: require('../assets/img/icon5.png'), title: '庭审笔录在线签署', des: '全程留痕，自动归档' },
+        ],
+        infoList: [
+          { src: require('../assets/img/news-img.png'), date: '2020.03.12', title: '庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署', content: '全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档' },
+          { src: require('../assets/img/news-img.png'), date: '2020.03.12', title: '庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署', content: '全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档' },
+          { src: require('../assets/img/news-img.png'), date: '2020.03.12', title: '庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署庭审笔录在线签署', content: '全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档全程留痕，自动归档' },
+        ],
+        caseList: [
+          { src: require('../assets/img/case-logo.png'), title: '同安法院' },
+          { src: require('../assets/img/case-logo.png'), title: '同安法院' },
+          { src: require('../assets/img/case-logo.png'), title: '同安法院' },
+          { src: require('../assets/img/case-logo.png'), title: '同安法院' },
+          { src: require('../assets/img/case-logo.png'), title: '同安法院' },
+          { src: require('../assets/img/case-logo.png'), title: '同安法院' },
+          { src: require('../assets/img/case-logo.png'), title: '同安法院' },
+          { src: require('../assets/img/case-logo.png'), title: '同安法院' },
+        ],
+        loginType: 'court',
+        rules: {
+          userName: [{ required: true, message: '请输入用户名', trigger: 'change' }],
+          passWord: [{ required: true, message: '请输入密码', trigger: 'change' }],
+          checkCode: [
+            { required: true, message: '请输入验证码', trigger: 'change' },
+            { min: 4, max: 4, message: '请输入正确的验证码', trigger: 'change' }
+          ]
+        },
+      }
+    },
+    methods: {
+      changeActive(e) {
+        this.nowIndex = e;
+      },
+      removeActive(e) {
+        this.nowIndex = 6;
       },
     }
-  },
-  methods:{
-    changeActive(e){
-      this.nowIndex = e;
-    },
-    removeActive(e){
-      this.nowIndex = 6;
-    },
   }
-}
 </script>
 
 
@@ -124,6 +122,7 @@ export default {
   .float {
     box-shadow: 1px 1px 5px #E5F7FC;
   }
+
   .header {
     width: 100%;
     height: 565px;
@@ -131,112 +130,134 @@ export default {
     background-size: 100% 100%;
     position: relative;
   }
+
   .carousel-box {
     width: 1200px;
     height: 300px;
     margin: 0 auto;
   }
+
   .features {
-    ul{
+    ul {
       list-style: none;
       width: 1200px;
       margin: 0 auto;
-      li{
+
+      li {
         list-style: none;
         float: left;
         width: 20%;
         height: 250px;
-        p:nth(1){
+
+        p:nth(1) {
           font-size: 16px;
           font-weight: bold;
         }
       }
     }
+
     width: 100%;
     height: 300px;
     margin-top: 50px;
   }
+
   .information {
-    ul{
+    ul {
       list-style: none;
       width: 1200px;
       margin: 0 auto;
-      li{
+
+      li {
         list-style: none;
         float: left;
         width: 33%;
         height: 250px;
-        p:nth(1){
+
+        p:nth(1) {
           font-size: 16px;
           font-weight: bold;
         }
       }
     }
+
     width: 100%;
     height: 450px;
     margin-top: 50px;
   }
+
   .case-box {
-    ul{
+    ul {
       list-style: none;
       width: 1200px;
       margin: 0 auto;
-      li{
+
+      li {
         list-style: none;
         float: left;
         width: 24%;
         height: 135px;
         padding-top: 50px;
         border: 1px solid #F5F5F5;
-        p:nth(1){
+
+        p:nth(1) {
           font-size: 16px;
           font-weight: bold;
         }
       }
     }
+
     width: 100%;
     height: 460px;
     margin-top: 50px;
   }
+
   .footer {
     width: 100%;
     height: 200px;
     background-image: url('../assets/img/footer.png');
     background-size: 100% 100%;
   }
+
   .footer-box {
     width: 1200px;
     margin: 0 auto;
     height: 100%;
-    div:nth-child(1){
+
+    div:nth-child(1) {
       width: 50%;
       height: 100%;
       float: left;
-      p:nth-child(1){
+
+      p:nth-child(1) {
         margin-top: 65px;
         font-size: 22px;
         color: #fff;
         padding: 0px 120px;
         text-align: left;
       }
-      p:nth-child(2){
+
+      p:nth-child(2) {
         padding: 0px 120px;
         text-align: left;
       }
     }
-    div:nth-child(2){
+
+    div:nth-child(2) {
       width: 50%;
       height: 100%;
       float: left;
-      p:nth-child(1){
+
+      p:nth-child(1) {
         margin-top: 65px;
       }
-      p:nth-child(2){
+
+      p:nth-child(2) {
         color: #fff;
         font-size: 14px;
       }
     }
-    span{
+
+    span {
       color: #fff;
       margin-right: 20px;
       font-size: 14px;

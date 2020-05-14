@@ -7,9 +7,8 @@ const service = axios.create({
 })
 const options = {
     lock: true,
-    text: 'Loading',
-    spinner: 'el-icon-loading',
-    background: 'rgba(255, 255, 255, 0.7)'
+    text: '正在加载中。。。',
+    background: 'rgba(255, 255, 255, 0.2)'
 }
 let loadingInstance
 let loadingCount = 0//全局加载效果计数器
@@ -23,10 +22,10 @@ service.interceptors.request.use(
             loadingInstance = Loading.service(options);//全局添加请求时的加载效果=
         }
         loadingCount ++
-        if (config.method === 'post' || config.method === 'put') {
-            // post、put 提交时，将对象转换为string, 为处理Java后台解析问题
-            config.data = JSON.stringify(config.data)
-        }
+        // if (config.method === 'post' || config.method === 'put') {
+        //     // post、put 提交时，将对象转换为string, 为处理Java后台解析问题
+        //     config.data = JSON.stringify({...config.data})
+        // }
         if(config.showTips){
             showTips = true;
         }
@@ -38,7 +37,6 @@ service.interceptors.request.use(
                 if(Array.isArray(data[key])){
                     for(const item of data[key]){
                         if(item['type']){
-                            console.log(item['type'])
                             fd.append('file',item)
                         }
                     }

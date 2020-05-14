@@ -8,9 +8,9 @@ export default {
     // return出去了一个promise
     return api.get(urls.getUserInfo, params, header)
   },
-  login(data){//登录接口
-    header = {'Content-type' : 'application/json'}
-    return api.post(urls.login, data,header,'',true)
+  login(params){//登录接口
+    header = {}
+    return api.post(urls.login, params,header,'',true)
   },
   updateIndictment(data){
     header = {'Content-Type': 'multipart/form-data'}//文件传输时更改请求头为form-data类型

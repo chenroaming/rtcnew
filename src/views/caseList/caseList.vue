@@ -130,7 +130,7 @@
       },
       methods:{
         getMessage(e){
-            this.$emit('getMessage',1);
+            this.$emit('update:getMessage',1);
         },
         rePage(e){
             this.totalPage = e;
@@ -217,29 +217,31 @@
     }
 </script>
 
-<style>
+<style lang="less">
+    @arrow-color:#199CFA;
     .wh_content_all {
         background-color: #E6F4FF!important;
     }
     .wh_content_item {
-        color:#199CFA!important;
+        color:@arrow-color!important;
         font-weight: bold;
     }
     .wh_content_li {
-        color: #199CFA!important;
+        color: @arrow-color!important;
         font-weight: bold;
     }
     .wh_jiantou1 {
-        border-top: 2px solid #199CFA!important;
-        border-left: 2px solid #199CFA!important;
+        border-top: 2px solid @arrow-color!important;
+        border-left: 2px solid @arrow-color!important;
     }
     .wh_jiantou2 {
-        border-top: 2px solid #199CFA!important;
-        border-right: 2px solid #199CFA!important;
+        border-top: 2px solid @arrow-color!important;
+        border-right: 2px solid @arrow-color!important;
     }
 </style>
 
-<style lang="less" scoped> 
+<style lang="less" scoped>
+    @arrow-color:#199CFA; 
     .case-main{
         width: 100%;
         height: 100%;
@@ -253,25 +255,25 @@
         color:#FE7175;
         }
         p:nth-child(1){
-            color: #199CFA;
+            color: @arrow-color;
             font-weight: bold;
             text-align: left;
             padding: 0 20px;
         }
         p:nth-child(3){
-            color: #199CFA;
+            color: @arrow-color;
             font-weight: bold;
             text-align: left;
             padding: 0 20px;
         }
         p:nth-child(4){
-            color: #199CFA;
+            color: @arrow-color;
             text-align: left;
             padding: 0 20px;
             font-size: 14px;
         }
         p:nth-child(5){
-            color: #199CFA;
+            color: @arrow-color;
             text-align: left;
             padding: 0 20px;
             font-size: 14px;

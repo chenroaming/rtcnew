@@ -22,7 +22,7 @@
           :total="totalPage">
         </el-pagination>
       </div>
-      <el-dialog :close-on-click-modal="false" width="500px" :title="form.id ? '编辑角色' : '新增角色'" :visible.sync="dialogFormVisible">
+      <el-dialog :close-on-click-modal="false" width="500px" :title="getEditStatus" :visible.sync="dialogFormVisible">
         <el-form :model="form" ref="form">
           <el-form-item label="角色名称" prop="roleName" :label-width="formLabelWidth">
               <el-radio-group v-model="form.roleName">
@@ -71,13 +71,15 @@
         }
       },
       computed:{
-        
+        getEditStatus(){
+          return this.form.id ? '编辑角色' : '新增角色';
+        },
       },
       watch:{
         
       },
       mounted(){        
-        this.$emit('getMessage',2);
+        this.$emit('update:getMessage',2);
         this.getJudgeList();
       },
       methods:{
@@ -85,10 +87,7 @@
           this.totalPage = e.total;
         },
         receive(e){
-          this.form.name = e.name;
-          this.form.roleName = e.roleName;
-          this.form.phone = e.phone;
-          this.form.id = e.id;
+          this.form = {...e};
           this.dialogFormVisible = true;
           this.noChoice = true;
         },
@@ -112,7 +111,7 @@
             this.$api.role.updateJudge(data).then(res => {
               if(res.state == 100){
                 this.dialogFormVisible = false;
-                this.changeRole(3);
+                this.getJudgeList(3);
               }
             })
             return;
@@ -125,7 +124,7 @@
           this.$api.role.addJudge(data).then(res => {
             if(res.state == 100){
               this.dialogFormVisible = false;
-              this.changeRole(3);
+              this.getJudgeList(3);
             }
           })
         },
@@ -149,15 +148,11 @@
           const data = {
             type:this.nowRole
           }
-          if(index === 3){
-            this.getJudgeList();
-          }else{
-            this.getJudgeList(data);
-          }
+          index === 3 ? this.getJudgeList() : this.getJudgeList(data);
           this.currentPage = 1;
         },
         search(params){
-          this.$emit('getMessage',1);
+          this.$emit('update:getMessage',1);
           this.$router.push({
             name:'caseList',
             params:params

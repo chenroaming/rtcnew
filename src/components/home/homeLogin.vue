@@ -1,11 +1,12 @@
 <template>
     <div class="login-form">
+        <faceCheck ref="faceCheck"></faceCheck>
         <p>
             <el-button type="primary" @click="loginType = 'court'" size="mini" :plain="loginType != 'court'">法院工作人员</el-button>
             <el-button type="primary" @click="loginType = 'litigant'" size="mini" :plain="loginType != 'litigant'">当事人/诉讼代理人</el-button>
         </p>
-        <!-- <p><span style="cursor: pointer;" @click="loginType = 'court'">法官登录</span><span style="margin-left: 10px;cursor: pointer;" @click="loginType = 'litigant'">当事人/诉讼代理人登录</span></p> -->
-        <el-form label-width="0px" ref="formLabelAlign" :rules="rules" :model="formLabelAlign">
+        <!-- onsubmit阻止避免多次提交造成请求错误 -->
+        <el-form onsubmit="return false" label-width="0px" ref="formLabelAlign" :rules="rules" :model="formLabelAlign">
             <el-form-item prop="userName">
             <el-input v-model="formLabelAlign.userName" placeholder="请输入账号">
                 <i slot="prefix" class="el-icon-user-solid"></i>
@@ -31,8 +32,12 @@
 
 <script>
     import md5 from 'md5'
+    import faceCheck from '@/components/home/homeFaceCheck.vue'
     export default {
         name:'homeLogin',
+        components : {
+            faceCheck,
+        },
         data () {
             return {
                 codeSrc:'/api/main/code.jhtml?tm=' + Math.random(),
@@ -46,8 +51,8 @@
                     userName:[{required: true, message: '请输入用户名', trigger: 'change'}],
                     passWord:[{required: true, message: '请输入密码', trigger: 'change'}],
                     checkCode:[
-                    {required: true, message: '请输入验证码', trigger: 'change'},
-                    { min: 4, max: 4, message: '请输入正确的验证码', trigger: 'change' }
+                        {required: true, message: '请输入验证码', trigger: 'change'},
+                        { min: 4, max: 4, message: '请输入正确的验证码', trigger: 'change' }
                     ]
                 },
             }

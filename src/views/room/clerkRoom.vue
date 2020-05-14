@@ -19,7 +19,7 @@
                         <span class="titile-text">当前主屏————{{caseInfo.name}}</span>
                     </el-col>
                     <el-col :span="4">
-                        <nowTime></nowTime>
+                        <roomNowTime></roomNowTime>
                     </el-col>
                     <el-col :span="4">
                         <roomChat ref="chat" @send="send"></roomChat>
@@ -39,7 +39,7 @@
                     <clerkRoomNote></clerkRoomNote>
                 </div>
                 <div id="remote-box" class="remote-box" style="width: 30%;overflow-y: scroll;">
-                    <remotePlay ref="remotePlay" @srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></remotePlay>
+                    <roomRemotePlayer ref="remotePlay" @srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></roomRemotePlayer>
                 </div>
             </div>
             <ul class="menu-list">
@@ -154,6 +154,7 @@
 
         for (const user of users) {
         // 每个用户当前是否发布
+            console.log(user)
             if(user.published){
                 if(user.userId != userId){//如果是自己则不订阅，否则会报错
                     this.userList.push(user);

@@ -4,7 +4,7 @@
             <span>{{info.roleName}}</span>
             <span>{{info.name}}</span>
             <span>{{info.address}}</span>
-            <el-button v-if="roleName != '书记员'" type="text" @click="fullScreen">放大</el-button>
+            <el-button v-if="roleName !== '书记员'" type="text" @click="fullScreen">放大</el-button>
         </div>
         <div v-show="isLook" class="isLook">查看证据中。。。</div>
         <div class="player" ref="player"></div>
@@ -74,6 +74,7 @@
   </script>
   
   <style lang="less" scoped>
+    @title-height:40px;
     .video-box {
         width: 300px;
         height: 200px;
@@ -102,6 +103,8 @@
         background-color: rgba(0,0,0,0.7);
         z-index: 999;
         font-size: 14px;
+        min-height: @title-height;
+        line-height: @title-height;
         span{
             margin-right: 10px;
         }
