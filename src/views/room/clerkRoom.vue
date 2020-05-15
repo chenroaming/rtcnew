@@ -39,7 +39,7 @@
                     <clerkRoomNote></clerkRoomNote>
                 </div>
                 <div id="remote-box" class="remote-box" style="width: 30%;overflow-y: scroll;">
-                    <roomRemotePlayer ref="remotePlay" @srcObj="receive" v-for="(item,index) in userList" :key="index" :user="item"></roomRemotePlayer>
+                    <roomRemotePlayer ref="remotePlay" v-for="(item,index) in userList" :key="index" :user="item"></roomRemotePlayer>
                 </div>
             </div>
             <ul class="menu-list">
@@ -177,8 +177,6 @@
         });
       },
       methods:{
-        receive(e){//接收子组件消息后放大全屏
-        },
         showEvi(e){//查看证据
             const name = e.split('/');
             this.fileItem = {

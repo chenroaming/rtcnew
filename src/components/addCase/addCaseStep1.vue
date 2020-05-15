@@ -144,7 +144,6 @@
     },
     methods: {
       submit() {//提交案件信息或者修改案件信息
-        console.log(this.form.demo)
         if (!this.isEdit) {
           this.$emit('listenToChildEvent', 2);
           return;

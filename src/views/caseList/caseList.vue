@@ -111,13 +111,11 @@
       mounted(){
         this.nowRole = this.$store.getters.getUserInfo.roleName;
         this.canCount = this.$store.getters.getUserInfo.result.name.includes('审管办');
-        if(this.roleArr.some(res => {
-            return res == this.nowRole;
-        })){
-            this.isShow = true;
-        }
+        this.isShow =  this.roleArr.some(res => {
+            return res === this.nowRole;
+        }) ? true : false;
         const today = new Date();
-        this.time = today.getFullYear() + '年' + (today.getMonth()+1) + '月' + today.getDate() + '日';
+        this.time = `${today.getFullYear()}年${(today.getMonth()+1)}月${today.getDate()}日`;
         if(this.$route.params){
             this.search(params);
             return;
@@ -130,7 +128,7 @@
       },
       methods:{
         getMessage(e){
-            this.$emit('update:getMessage',1);
+            this.$emit('update:getMessage',e);
         },
         rePage(e){
             this.totalPage = e;
@@ -143,14 +141,15 @@
                 for(let i in this.selectList){
                     if(e.item.caseNo == this.selectList[i].caseNo){
                         this.selectList.splice(i,1);
+                        break;
                     }
                 }
             }
             this.allSelect = this.isSelect == e.length ? true : false;
         },
         submitAll(e){
-            this.selectList = [...e];//不会影响
-            // this.selectList = e;//会影响
+            this.selectList = [...e];//解构后赋值父子组件之间绑定的值不会互相影响
+            // this.selectList = e;//直接赋值会影响父子组件之间绑定的值会互相影响
         },
         selectAll(e){
             if(e){

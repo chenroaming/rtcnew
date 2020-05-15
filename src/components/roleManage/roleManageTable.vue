@@ -1,6 +1,6 @@
 <template>
     <div style="width: 90%;margin: 0 auto;">
-        <el-table :data="getData" height="350" stripe style="width: 100%">
+        <el-table class="animated fadeIn" :key="tableKey" :data="getData" height="380" stripe style="width: 100%">
             <el-table-column type="index" label="序号"></el-table-column>
             <el-table-column prop="roleName" label="角色名称"></el-table-column>
             <el-table-column prop="name" label="姓名"></el-table-column>
@@ -26,14 +26,14 @@
         },
         data() {
             return {
+                tableKey:1,
                 tableData: [],
                 roleType: ['法官', '书记员', '陪审员'],
             }
         },
         computed: {
             getData() {
-                this.tableData = [];
-                const newArr = this.data.map(item => {
+                this.tableData = this.data.map(item => {
                     return {
                         roleName: this.roleType[item.judgeType],
                         name: item.name,
@@ -41,7 +41,7 @@
                         id: item.id
                     }
                 })
-                this.tableData.push(...newArr)
+                this.tableKey = this.tableKey === 1 ? 2 : 1;
                 return this.tableData;
             }
         },

@@ -3,7 +3,7 @@
         <el-button v-if="isEdit" type="primary" @click="addLitigant('form')"><i class="el-icon-circle-plus"></i>新增诉讼参与人</el-button>
         <el-table
             :data="tableData"
-            height="300"
+            height="370"
             stripe
             style="width: 100%">
             <el-table-column
@@ -12,32 +12,35 @@
             </el-table-column>
             <el-table-column
             prop="litigant.litigationStatus.name"
-            label="诉讼地位">
+            label="诉讼地位"
+            width="200">
             </el-table-column>
             <el-table-column
             prop="litigant.litigantName"
-            label="名称">
+            label="名称"
+            width="200">
             </el-table-column>
             <el-table-column
             prop="litigant.identityCard"
             label="证件号码"
-            width="180">
+            width="200">
             </el-table-column>
             <el-table-column
             prop="litigant.litigantPhone"
-            label="手机号码">
+            label="手机号码"
+            width="200">
             </el-table-column>
             <el-table-column
-            label="操作" v-if="isEdit">
+            label="操作" v-if="isEdit" fixed="right" width="150">
             <template slot-scope="scope">
                 <el-button
-                    type="text"
+                    type="primary"
                     size="small"
                     @click="edit(scope.row)">
                     编辑
                 </el-button>
                 <el-button
-                    type="text"
+                    type="warning"
                     size="small"
                     @click="del(scope.row)">
                     删除

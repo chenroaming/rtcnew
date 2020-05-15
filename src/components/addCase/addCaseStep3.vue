@@ -1,13 +1,13 @@
 <template>
     <div class="step1">
         <el-button type="primary" @click="addEvi('form')"><i class="el-icon-circle-plus"></i>新增证据</el-button>
-        <el-table :data="tableData" height="300" stripe style="width: 100%">
+        <el-table :data="tableData" height="350" stripe style="width: 100%">
             <el-table-column type="index" label="序号"></el-table-column>
-            <el-table-column prop="litigantName" label="当事人"></el-table-column>
-            <el-table-column prop="name" label="证据名称"></el-table-column>
-            <el-table-column prop="prove" label="证明对象"></el-table-column>
+            <el-table-column prop="litigantName" label="当事人" width="150"></el-table-column>
+            <el-table-column prop="name" label="证据名称" width="150"></el-table-column>
+            <el-table-column prop="prove" label="证明对象" width="150"></el-table-column>
             <el-table-column prop="source" label="证据来源" width="180"></el-table-column>
-            <el-table-column label="证据文件">
+            <el-table-column label="证据文件" width="250">
                 <template slot-scope="scope">
                     <p v-for="(item,index) in scope.row.filePaths">
                         {{item.name}}
@@ -15,10 +15,10 @@
                     </p>
                 </template>
             </el-table-column>
-            <el-table-column label="操作">
+            <el-table-column label="操作" width="150" fixed="right">
             <template slot-scope="scope">
-                <el-button v-if="scope.row.canChange || isEdit" type="text" size="small" @click="edit(scope.row)">编辑</el-button>
-                <el-button v-if="scope.row.canChange || isEdit" type="text" size="small" @click="delEvi(scope.row)">删除</el-button>
+                <el-button v-if="scope.row.canChange || isEdit" type="primary" size="small" @click="edit(scope.row)">编辑</el-button>
+                <el-button v-if="scope.row.canChange || isEdit" type="warning" size="small" @click="delEvi(scope.row)">删除</el-button>
             </template>
             </el-table-column>
         </el-table>
@@ -39,7 +39,7 @@
                     <el-input v-model="form.source"></el-input>
                 </el-form-item>
                 <el-form-item label="证据文件" prop="file" :label-width="formLabelWidth">
-                    <p v-for="(item,index) in filesList">
+                    <p v-for="(item,index) in filePaths">
                         <span>{{item.name}}</span>
                         <i class="el-icon-circle-close" style="cursor: pointer;" @click="delfiles(item,index,'online')"></i>
                     </p>
@@ -100,7 +100,7 @@
                 eviList:[]
             },
             lawCaseId:'',
-            filesList:[],
+            filePaths:[],
             fileList2:[],
             evidenceId:'',
             litigantId:[],
@@ -130,7 +130,7 @@
                 file:'',
                 eviList:[]
             };//清空表单函数偶尔失效，暂时先用赋值方式解决
-            this.filesList = [];
+            this.filePaths = [];
             this.fileList2 = [];
             this.evidenceId = '';
             // if (this.$refs[name] !== undefined) {
@@ -144,7 +144,7 @@
                 if(!valid){
                     return this.$message.warning('请确保选项填写完整！');
                 }
-                if(this.fileList2.length < 1 && this.filesList.length < 1){
+                if(this.fileList2.length < 1 && this.filePaths.length < 1){
                     return this.$message.warning('请上传证据文件！');
                 }
                 if(!this.evidenceId){
@@ -187,7 +187,7 @@
         delfiles(item,index,str){//删除证据文件
             if(str == 'online'){
                 if(!item.id){
-                    this.filesList.splice(index,1);
+                    this.filePaths.splice(index,1);
                 }else{
                     this.$confirm('确认删除该证据文件？', '提示', {
                         confirmButtonText: '确定',
@@ -200,7 +200,7 @@
                         this.$api.addCase.delFile(data).then(res => {
                             if(res.state == 100){
                                 this.getCaseDetail();
-                                this.filesList.splice(index,1);
+                                this.filePaths.splice(index,1);
                             }
                         })
                     }).catch(() => {
@@ -212,14 +212,10 @@
             this.fileList2.splice(index,1);
         },
         edit(item){//编辑证据文件
-            console.log(item)
             this.fileList2 = [];
             this.evidenceId = item.id;
-            this.form.litigantId = item.litigantId;
-            this.form.name = item.name;
-            this.form.prove = item.prove;
-            this.form.source = item.source;
-            this.filesList = item.filePaths;
+            this.form = {...item};
+            this.filePaths = item.filePaths;
             this.dialogFormVisible = true;
         },
         delEvi(item){//删除证据
@@ -277,12 +273,14 @@
                     }
                     if(item.evidence.length > 0){
                         const newArr = item.evidence.map(item2 => {
-                            item2.litigantId = item.litigant.id;
-                            item2.litigantName = item.litigant.litigantName;
-                            item2.canChange = this.litigantId.some(unit => {
-                                return unit == item2.litigantId
-                            }) ? true : false;//判断该登录账号是否可编辑该证据
-                            return item2;
+                            return {
+                                ...item2,
+                                litigantId:item.litigant.id,
+                                litigantName:item.litigant.litigantName,
+                                canChange:this.litigantId.some(unit => {
+                                    return unit == item2.litigantId
+                                }) ? true : false,//判断该登录账号是否可编辑该证据
+                            }
                         })
                         this.tableData.push(...newArr);
                     }

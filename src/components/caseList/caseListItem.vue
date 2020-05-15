@@ -2,7 +2,7 @@
     <div>
         <ul class="case-box">
             <p v-if="caseList.length == 0">暂无数据</p>
-            <li class="animated fadeInUp" v-for="(item,index) in getCaseList">
+            <li class="animated fadeIn" v-for="(item,index) in getCaseList" :key="item.caseId">
                 <img src="@/assets/img/state-3.png" v-if="!item.isOpen" class="isOpen" alt="">
                 <img src="@/assets/img/state-2.png" v-if="item.isOpen" class="isOpen" alt="">
                 <div style="text-align: left;padding: 0px 15px;">
@@ -14,7 +14,14 @@
                     <span v-else style="font-size: 20px;font-weight: bold;color: #282828;">
                         {{item.caseNo}}
                     </span>
-                    <el-button type="text" style="position: absolute;top: 20px;right: 100px;" @click="del(item)" v-if="isShow">删除</el-button>
+                    <el-popconfirm
+                        title="确认删除该案件吗？"
+                        @onConfirm="del(item)"
+                        style="position: absolute;top: 20px;right: 100px;"
+                        v-if="isShow"
+                    >
+                        <el-button type="text" slot="reference">删除</el-button>
+                    </el-popconfirm>
                     <el-button type="text" style="position: absolute;top: 20px;right: 139px;" @click="edit(item)">编辑</el-button>
                 </div>
                 <p class="title-box">
@@ -56,7 +63,7 @@
                         <img src="@/assets/img/down-icon.png" alt="">
                         <span>庭审录像</span>
                     </div>
-                    <div style="width: 175px;" class="button-box">
+                    <div style="width: 21%;" class="button-box">
                         <el-button type="success" size="mini" @click="intoRoom(item,0)">测试房间</el-button>
                         <el-button type="primary" size="mini" @click="intoRoom(item,1)">进入房间</el-button>
                     </div>
@@ -132,6 +139,7 @@
             caseList:[],
             tableData:[],
             nowIndex:null,
+            visible:false,
         }
       },
       computed:{
@@ -181,26 +189,17 @@
             })
         },
         del(item){
-            this.$confirm('确认删除该案件？', '提示', {
-                confirmButtonText: '确定',
-                type: 'warning'
-            }).then(() => {
-                const data = {
-                    lawCaseId:item.caseId
-                }
-                this.$api.caseList.delLawCase(data).then(res => {
-                    if(res.state == 100){
-                        const params = {
-                            caseNo:'',
-                            pageNumber:this.nowPage
-                        }
-                        this.search(params);
+            const data = {
+                lawCaseId:item.caseId
+            }
+            this.$api.caseList.delLawCase(data).then(res => {
+                if(res.state == 100){
+                    const params = {
+                        caseNo:'',
+                        pageNumber:this.nowPage
                     }
-                })
-                
-            })
-            .catch(() => {
-
+                    this.search(params);
+                }
             })
         },
         intoRoom(item,type){
@@ -447,7 +446,7 @@
         }
         .feature-content{
             text-align: left;
-            width: 107px;
+            width: 13%;
             height: 50px;
             margin-left: 10px;
             img{

@@ -10,10 +10,10 @@
                     :data="item.evidenceList"
                     style="width: 100%"
                     height="350">
-                    <el-table-column prop="name" label="证据名称" width="100"></el-table-column>
-                    <el-table-column prop="prove" label="证明对象" width="100"></el-table-column>
-                    <el-table-column prop="source" label="证据来源" width="100"></el-table-column>
-                    <el-table-column label="证据文件" width="100">
+                    <el-table-column prop="name" label="证据名称" width="200"></el-table-column>
+                    <el-table-column prop="prove" label="证明对象" width="200"></el-table-column>
+                    <el-table-column prop="source" label="证据来源" width="200"></el-table-column>
+                    <el-table-column label="证据文件" width="200">
                       <template slot-scope="scope">
                           <p v-for="(item2,index) in scope.row.file">
                             {{item2.fileName}}
@@ -21,7 +21,7 @@
                           </p>
                       </template>
                     </el-table-column>
-                    <el-table-column v-if="isEdit" label="操作" width="100">
+                    <el-table-column v-if="isEdit" fixed="right" label="操作" width="100">
                       <template slot-scope="scope">
                         <span v-if="scope.row.exmType == -1">已驳回</span>
                         <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,1)">通过</el-button>
@@ -44,10 +44,10 @@
                     :data="item.evidenceList"
                     style="width: 100%"
                     height="350">
-                    <el-table-column prop="name" label="证据名称" width="100"></el-table-column>
-                    <el-table-column prop="prove" label="证明对象" width="100"></el-table-column>
-                    <el-table-column prop="source" label="证据来源" width="100"></el-table-column>
-                    <el-table-column label="证据文件" width="100">
+                    <el-table-column prop="name" label="证据名称" width="200"></el-table-column>
+                    <el-table-column prop="prove" label="证明对象" width="200"></el-table-column>
+                    <el-table-column prop="source" label="证据来源" width="200"></el-table-column>
+                    <el-table-column label="证据文件" width="250">
                       <template slot-scope="scope">
                           <p v-for="(item2,index) in scope.row.file">
                             {{item2.fileName}}
@@ -55,7 +55,7 @@
                           </p>
                       </template>
                   </el-table-column>
-                  <el-table-column v-if="isEdit" label="操作" width="100">
+                  <el-table-column v-if="isEdit" label="操作" width="100" fixed="right">
                     <template slot-scope="scope" v-if="scope.row.exmType === 0 && isEdit">
                       <span v-if="scope.row.exmType == -1">已驳回</span>
                       <el-button type="text" v-if="scope.row.exmType===0 && isEdit" @click="examineEvi(scope.row.evidenceId,1)">通过</el-button>
@@ -184,8 +184,7 @@
           const {fileName,fileAddr} = item;
           if(this.isEdit){
             const sendObj = { 'name': '', 'roleName': '', 'type': 3, 'wav': '', 'content': fileAddr, 'createDate': '' };
-            // this.wsObj.send(JSON.stringify(sendObj));//发送证据同步投屏
-            this.$emit('send',JSON.stringify(sendObj))
+            this.$emit('send',JSON.stringify(sendObj))//发送证据同步投屏
           }
           this.fileItem = {
             name:fileName,
