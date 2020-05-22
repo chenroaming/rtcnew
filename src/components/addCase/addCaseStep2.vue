@@ -244,16 +244,17 @@
                 if(!valid){
                     return this.$message.warning('请确保选项填写完整正确！');
                 }
+                const { litigantName,identityCard,litigantPhone,litigantType,litigationStatus,idCardType,layerList } = this.form;
                 const data = {
-                    name:this.form.litigantName,
-                    idCard:this.form.identityCard,
-                    phone:this.form.litigantPhone,
-                    litigantType:this.form.litigantType,
-                    litigationStatus:this.form.litigationStatus,
-                    idCardType:this.form.idCardType,
+                    name:litigantName,
+                    idCard:identityCard,
+                    phone:litigantPhone,
+                    litigantType:litigantType,
+                    litigationStatus:litigationStatus,
+                    idCardType:idCardType,
                     litigantId:'',
                     lawCaseId:this.lawCaseId,
-                    lawyers:this.form.layerList
+                    lawyers:layerList
                 }
                 if(!this.litigantId){
                     this.$api.addCase.addTrialLitigant(data).then(res => {
@@ -265,7 +266,6 @@
                             this.$api.caseList.getCaseDetail(data2).then(res => {
                                 this.tableData = res.litigants;
                             })
-                            return;
                         }
                     })
                 }else{
@@ -274,14 +274,12 @@
                         if(res.state == 100){
                             this.dialogFormVisible = false;
                             this.getCaseDetail();
-                            return;
                         }
                     })
                 }
             })
         },
         edit(item){//编辑当事人
-            console.log(item)
             this.litigantId = item.litigant.id;
             this.form = {litigationStatus:'',layerList:[],...item.litigant};
             if(
@@ -291,17 +289,14 @@
             ){
                 this.form.litigationStatus = item.litigant.litigationStatus.id;
             }
-            if(item.litigant.lawyer.length > 0){
-                for(const item of item.litigant.lawyer){
-                    const data = {
-                        name:item.agentName,
-                        phone:item.agentMobile,
-                        idCard:item.agentIdentiCard,
-                        id:item.id
-                    }
-                    this.form.layerList.push(data);
+            this.form.layerList = item.litigant.lawyer.length > 0 ? item.litigant.lawyer.map(unit => {
+                return {
+                    name:unit.agentName,
+                    phone:unit.agentMobile,
+                    idCard:unit.agentIdentiCard,
+                    id:unit.id
                 }
-            }
+            }) : [];
             this.dialogFormVisible = true;
         },
         del(item){//删除当事人

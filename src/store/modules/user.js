@@ -23,11 +23,7 @@ const user = {
                     if(res.state == 100){
                         commit('SET_LOGIN',true)
                         commit('SET_USERINFO',res)
-                        if(res.roleName == '法官' || res.roleName == '书记员'){
-                            commit('SET_EDIT',true)
-                        }else{
-                            commit('SET_EDIT',false)
-                        }
+                        commit('SET_EDIT',res.roleName === '法官' || res.roleName === '书记员' ? true : false);
                     }else{
                         commit('SET_LOGIN',false)
                     }

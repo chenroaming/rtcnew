@@ -16,7 +16,7 @@
           <div class="item-left">
             <ul class="left-menu">
               <li></li>
-              <li v-for="(item,index) in getMenuList" :class="{'isSelect':nowSelect == index}"
+              <li v-for="(item,index) in getMenuList" :key="index" :class="{'isSelect':nowSelect == index}"
                 @click="go(index,item.name)">
                 <img :src="item.meta.imgSrc" alt="">
                 <p>{{item.meta.title}}</p>

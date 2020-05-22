@@ -150,12 +150,15 @@
         }
         this.$refs['form'].validate((valid) => {
           if (valid) {
-            const arr = [];
-            if (this.form.juror.length > 0) {
-              for (const item of this.form.juror) {
-                arr.push(item.id)
-              }
-            }
+            //第一种写法
+            // const arr = [];
+            // if (this.form.juror.length > 0) {
+            //   for (const item of this.form.juror) {
+            //     arr.push(item.id)
+            //   } 
+            // }
+            //第二种写法
+            const arr = this.form.juror.length > 0 ? this.form.juror.map(item => item.id) : [];
             const { caseType, caseReason, courtType, caseNo, judge, clerk, openTime } = this.form;
             const data = { caseType: caseType, briefId: caseReason, trialType: courtType, caseNo: caseNo, judgeId: judge, clerkId: clerk, openDate: openTime, lawCaseId: '', jurorId: arr.join(',') }
             if (!this.lawCaseId) {

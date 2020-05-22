@@ -21,16 +21,23 @@ const app = {
         setMenuList({ commit }){//根据用户类型设置菜单
             return new Promise((resolve,reject) => {
                 api.user.getUserInfo().then(res => {
-                    const menuList = [];
-                    for(const item of routes[1].children){
-                        if(
-                            item.access.some(res2 => {
-                                return res2 == res.roleName;
-                            })
-                        ){
-                           menuList.push(item); 
-                        }
-                    }
+                    //第一种写法
+                    // const menuList = [];
+                    // for(const item of routes[1].children){
+                    //     if(
+                    //         item.access.some(res2 => {
+                    //             return res2 === res.roleName;
+                    //         })
+                    //     ){
+                    //        menuList.push(item); 
+                    //     }
+                    // }
+                    //第二种写法
+                    const menuList = routes[1].children.filter(item => {
+                        return item.access.some(item2 => {
+                            return item2 == res.roleName
+                        }) === true
+                    });
                     commit('SET_MENULIST',menuList)
                     resolve(res)
                 })
