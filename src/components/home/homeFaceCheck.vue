@@ -64,13 +64,9 @@
                 tracker.setInitialScale(5)
                 this.trackerTask = window.tracking.track('#video', tracker, {camera: true})
                 tracker.on('track', (event) => {
-                    if (event.data.length > 0) {
-                        this.noHave = false;
-                        //人脸位置矩形顶点
-                        // console.log(event.data)
-                    } else {
-                        this.noHave = true;
-                    }
+                    // 人脸位置矩形顶点
+                    // console.log(event.data)
+                    this.noHave = event.data.length > 0 ? false : true;
                 })
             },
             show(){
