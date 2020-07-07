@@ -10,16 +10,17 @@ const options = {
     text: '正在加载中。。。',
     background: 'rgba(255, 255, 255, 0.2)'
 }
-let loadingInstance
+let loadingInstance = null
 let loadingCount = 0//全局加载效果计数器
 let showTips = false//消息提示开关
-service.defaults.headers.post['Content-Type'] = 'application/json'
+//如果设置传输头为application/json则传送序列化的参数数据，否则传输fromData数据
+// service.defaults.headers.post['Content-Type'] = 'application/json'
 service.defaults.headers.put['Content-Type'] = 'application/json'
 // 添加请求拦截器
 service.interceptors.request.use(
     (config) => {
         if(loadingCount == 0){
-            loadingInstance = Loading.service(options);//全局添加请求时的加载效果=
+            loadingInstance = Loading.service(options);//全局添加请求时的加载效果
         }
         loadingCount ++
         // if (config.method === 'post' || config.method === 'put') {
@@ -29,6 +30,7 @@ service.interceptors.request.use(
         if(config.showTips){
             showTips = true;
         }
+        console.log(config.data)
         // 请求发送前进行处理,判断是否使用form-data进行文件传输
         if(config.headers['Content-Type'] == 'multipart/form-data'){
             const data = config.params

@@ -42,7 +42,7 @@
             async openCamera () {
                 await this.change;
                 const video = this.$refs.video;
-                if (navigator.getUserMedia) {//将摄像头数据流放video标签里播放
+                if (navigator.getUserMedia) {//将摄像头数据流放video标签里播放 
                     navigator.getUserMedia({ audio: false, video: { width: 1280, height: 720 } },
                         (stream) => {
                             video.srcObject = stream

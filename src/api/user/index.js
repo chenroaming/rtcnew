@@ -1,6 +1,6 @@
 import api from '../index'
 import urls from './urls'
-
+import Qs from 'qs'
 let header = {}
 
 export default {
@@ -10,7 +10,8 @@ export default {
   },
   login(params){//登录接口
     header = {}
-    return api.post(urls.login, params,header,'',true)
+    // return api.post(urls.login, params,header,'',true)
+    return api.post(urls.login,'',header,Qs.stringify({...params}),true)
   },
   updateIndictment(data){
     header = {'Content-Type': 'multipart/form-data'}//文件传输时更改请求头为form-data类型

@@ -1,5 +1,5 @@
 import Home from '../views/Home.vue'
-//以下为路由引入页面
+//以下为路由懒加载引入页面
 const Main = () => import('../views/Main.vue')
 const caseList = () => import('../views/caseList/caseList.vue')
 const addCase = () => import('../views/addCase/addCase.vue')

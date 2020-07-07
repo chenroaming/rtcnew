@@ -14,9 +14,7 @@ const router = new VueRouter({
 router.beforeEach((to,from,next) => {
   store.dispatch('getUserInfo').then(res => {
     if(!to.name){//当访问不存在的页面时跳转至不存在的页面
-      next({
-        name:'noPage'
-      })
+      next({name:'noPage'})
       return;
     }
     if(
@@ -24,21 +22,15 @@ router.beforeEach((to,from,next) => {
         return unit == res.roleName
       }) && res.state == 100
     ){
-      next({
-        name:'Home'
-      })
+      next({name:'Home'})
       return;
     }
     if(to.name != 'Home' && res.state != 100){//未登录状态跳转至登录页
       document.title = '全在线庭审平台'
-      next({
-        name:'Home'
-      })
+      next({name:'Home'})
     }else if(to.name == 'Home' && res.state == 100){//已登录状态刷新跳转至案件列表页
       document.title = '案件列表'
-      next({
-        name:'caseList'
-      })
+      next({name:'caseList'})
     }else{
       document.title = to.meta.title
       next()

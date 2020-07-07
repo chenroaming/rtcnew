@@ -14,7 +14,7 @@
       <p style="font-size: 22px;font-weight: bold;">平台功能</p>
       <ul>
         <li v-for="(item,index) in featuresList" :class="{'float':nowIndex==index}" @mouseover="changeActive(index)"
-          v-on:mouseout="removeActive()">
+          v-on:mouseout="removeActive()" :key="index">
           <img :src="item.src" alt="">
           <p style="font-weight: bold;">{{item.title}}</p>
           <p style="font-size: 14px;">{{item.des}}</p>
