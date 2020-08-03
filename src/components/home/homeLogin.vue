@@ -5,8 +5,11 @@
             <el-button type="primary" @click="loginType = 'court'" size="mini" :plain="loginType != 'court'">法院工作人员</el-button>
             <el-button type="primary" @click="loginType = 'litigant'" size="mini" :plain="loginType != 'litigant'">当事人/诉讼代理人</el-button>
         </p>
-        <!-- onsubmit阻止避免多次提交造成请求错误 -->
-        <el-form onsubmit="return false" label-width="0px" ref="formLabelAlign" :rules="rules" :model="formLabelAlign">
+        <el-form
+            @keyup.enter.native="login"
+            label-width="0px" ref="formLabelAlign"
+            :rules="rules"
+            :model="formLabelAlign">
             <el-form-item prop="userName">
             <el-input v-model="formLabelAlign.userName" placeholder="请输入账号">
                 <i slot="prefix" class="el-icon-user-solid"></i>
@@ -24,7 +27,7 @@
             <img class="code" :src="getCode" @click="changeCode" alt="">
             </el-form-item>
             <el-form-item>
-            <el-button type="primary" @click="login" native-type="submit">登录</el-button>
+            <el-button type="primary" @click="login">登录</el-button>
             </el-form-item>
         </el-form>
     </div>
