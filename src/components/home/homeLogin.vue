@@ -7,6 +7,7 @@
         </p>
         <el-form
             @keyup.enter.native="login"
+            onsubmit="return false"
             label-width="0px" ref="formLabelAlign"
             :rules="rules"
             :model="formLabelAlign">
